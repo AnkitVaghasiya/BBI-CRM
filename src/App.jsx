@@ -154,7 +154,7 @@ const MainApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white transition-colors">
       {/* Top Navbar */}
       <Navbar onOpenSettings={() => setIsSettingsOpen(true)} />
 
@@ -164,7 +164,7 @@ const MainApp = () => {
         <Sidebar onOpenSettings={() => setIsSettingsOpen(true)} />
 
         {/* Dynamic Content View */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-950/95">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-950/95 transition-colors">
           <div className="max-w-7xl mx-auto">
             {renderActiveView()}
           </div>

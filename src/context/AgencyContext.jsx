@@ -4,8 +4,27 @@ import { TEAM_MEMBERS, SERVICE_CATEGORIES, generateClients, INITIAL_TASKS, INITI
 const AgencyContext = createContext();
 
 export const AgencyProvider = ({ children }) => {
+  // Theme state: 'light' or 'dark' (Default to 'light' for clean, simple, sober readability)
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('agency_ui_theme') || 'light';
+  });
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
+
+  useEffect(() => {
+    localStorage.setItem('agency_ui_theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.body.className = 'bg-slate-950 text-slate-100 antialiased min-h-screen';
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.className = 'bg-slate-50 text-slate-900 antialiased min-h-screen';
+    }
+  }, [theme]);
+
   // Current active user/role view
-  // Roles: 'management' (Admin), 'video-editing', 'ai-content', 'meta-ads', 'shooting-team', 'client'
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('agency_current_user');
     return saved ? JSON.parse(saved) : {
@@ -66,15 +85,8 @@ export const AgencyProvider = ({ children }) => {
   });
 
   // Active view navigation
-  // views: 'dashboard', 'clients', 'production', 'shoots', 'ads', 'calendar', 'approvals', 'chat', 'team', 'settings'
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedClientId, setSelectedClientId] = useState('client-1');
-
-  // Fresher / Beginner Guide Banner visibility toggle
-  const [showBeginnerGuide, setShowBeginnerGuide] = useState(() => {
-    const saved = localStorage.getItem('agency_show_guide');
-    return saved !== null ? JSON.parse(saved) : true;
-  });
 
   // Firebase Config State
   const [firebaseConfig, setFirebaseConfig] = useState(() => {
@@ -95,7 +107,7 @@ export const AgencyProvider = ({ children }) => {
     try {
       localStorage.setItem('agency_clients_v1', JSON.stringify(clients));
     } catch (e) {
-      console.warn('LocalStorage quota or serialization error:', e);
+      console.warn('LocalStorage error:', e);
     }
   }, [clients]);
 
@@ -124,14 +136,10 @@ export const AgencyProvider = ({ children }) => {
   }, [currentUser]);
 
   useEffect(() => {
-    localStorage.setItem('agency_show_guide', JSON.stringify(showBeginnerGuide));
-  }, [showBeginnerGuide]);
-
-  useEffect(() => {
     localStorage.setItem('agency_firebase_config', JSON.stringify(firebaseConfig));
   }, [firebaseConfig]);
 
-  // Helper format timestamp: "04/11/2026, 08:15 AM"
+  // Helper format timestamp: "04/11/2026, 08:50 AM"
   const getCurrentTimestamp = () => {
     const now = new Date();
     const d = String(now.getDate()).padStart(2, '0');
@@ -191,7 +199,6 @@ export const AgencyProvider = ({ children }) => {
       });
       setActiveTab('ads');
     } else {
-      // Management
       setCurrentUser({
         role: 'management',
         name: 'Neha Gupta (Admin / Director)',
@@ -402,7 +409,7 @@ export const AgencyProvider = ({ children }) => {
   const exportFullBackup = () => {
     const fullData = {
       backupDate: new Date().toISOString(),
-      version: '1.1',
+      version: '1.2',
       clients,
       tasks,
       shoots,
@@ -413,7 +420,7 @@ export const AgencyProvider = ({ children }) => {
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(fullData, null, 2))}`;
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', jsonString);
-    downloadAnchor.setAttribute('download', `omniagency_backup_${new Date().toISOString().split('T')[0]}.json`);
+    downloadAnchor.setAttribute('download', `bbi_crm_backup_${new Date().toISOString().split('T')[0]}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -436,7 +443,7 @@ export const AgencyProvider = ({ children }) => {
 
   // Reset to initial clean state
   const resetToFactoryState = () => {
-    if (window.confirm('क्या आप सच में सभी डेटा को रीसेट करना चाहते हैं? (Are you sure you want to reset all data to default demo data?)')) {
+    if (window.confirm('क्या आप सच में सभी डेटा को रीसेट करना चाहते हैं? (Reset to demo data)')) {
       localStorage.clear();
       setClients(generateClients());
       setTeamMembers(TEAM_MEMBERS);
@@ -451,6 +458,8 @@ export const AgencyProvider = ({ children }) => {
   return (
     <AgencyContext.Provider
       value={{
+        theme,
+        toggleTheme,
         currentUser,
         switchRole,
         clients,
@@ -477,8 +486,6 @@ export const AgencyProvider = ({ children }) => {
         setActiveTab,
         selectedClientId,
         setSelectedClientId,
-        showBeginnerGuide,
-        setShowBeginnerGuide,
         exportFullBackup,
         importBackup,
         resetToFactoryState,
