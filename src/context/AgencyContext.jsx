@@ -25,6 +25,14 @@ export const AgencyProvider = ({ children }) => {
     return generateClients();
   });
 
+  const [teamMembers, setTeamMembers] = useState(() => {
+    const saved = localStorage.getItem('agency_team_members_v1');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return TEAM_MEMBERS;
+  });
+
   const [tasks, setTasks] = useState(() => {
     const saved = localStorage.getItem('agency_tasks_v1');
     if (saved) {
@@ -62,6 +70,12 @@ export const AgencyProvider = ({ children }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedClientId, setSelectedClientId] = useState('client-1');
 
+  // Fresher / Beginner Guide Banner visibility toggle
+  const [showBeginnerGuide, setShowBeginnerGuide] = useState(() => {
+    const saved = localStorage.getItem('agency_show_guide');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
   // Firebase Config State
   const [firebaseConfig, setFirebaseConfig] = useState(() => {
     const saved = localStorage.getItem('agency_firebase_config');
@@ -86,6 +100,10 @@ export const AgencyProvider = ({ children }) => {
   }, [clients]);
 
   useEffect(() => {
+    localStorage.setItem('agency_team_members_v1', JSON.stringify(teamMembers));
+  }, [teamMembers]);
+
+  useEffect(() => {
     localStorage.setItem('agency_tasks_v1', JSON.stringify(tasks));
   }, [tasks]);
 
@@ -106,10 +124,14 @@ export const AgencyProvider = ({ children }) => {
   }, [currentUser]);
 
   useEffect(() => {
+    localStorage.setItem('agency_show_guide', JSON.stringify(showBeginnerGuide));
+  }, [showBeginnerGuide]);
+
+  useEffect(() => {
     localStorage.setItem('agency_firebase_config', JSON.stringify(firebaseConfig));
   }, [firebaseConfig]);
 
-  // Helper format timestamp: "03/11/2026, 06:15 PM"
+  // Helper format timestamp: "04/11/2026, 08:15 AM"
   const getCurrentTimestamp = () => {
     const now = new Date();
     const d = String(now.getDate()).padStart(2, '0');
@@ -180,7 +202,31 @@ export const AgencyProvider = ({ children }) => {
     }
   };
 
-  // Add / Update Client
+  // 1. Team Member CRUD
+  const saveTeamMember = (memberData) => {
+    setTeamMembers(prev => {
+      const index = prev.findIndex(m => m.id === memberData.id);
+      if (index >= 0) {
+        const updated = [...prev];
+        updated[index] = { ...updated[index], ...memberData };
+        return updated;
+      } else {
+        const newMember = {
+          ...memberData,
+          id: memberData.id || `tm-${Date.now()}`,
+          activeTasks: 0,
+          avatar: memberData.avatar || '👤'
+        };
+        return [...prev, newMember];
+      }
+    });
+  };
+
+  const deleteTeamMember = (memberId) => {
+    setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+  };
+
+  // 2. Client CRUD
   const saveClient = (clientData) => {
     setClients(prev => {
       const index = prev.findIndex(c => c.id === clientData.id);
@@ -199,13 +245,14 @@ export const AgencyProvider = ({ children }) => {
     });
   };
 
-  // Delete Client
   const deleteClient = (clientId) => {
     setClients(prev => prev.filter(c => c.id !== clientId));
     setTasks(prev => prev.filter(t => t.clientId !== clientId));
+    setShoots(prev => prev.filter(s => s.clientId !== clientId));
+    setAds(prev => prev.filter(a => a.clientId !== clientId));
   };
 
-  // Add / Update Task
+  // 3. Task / Deliverable CRUD
   const saveTask = (taskData) => {
     setTasks(prev => {
       const index = prev.findIndex(t => t.id === taskData.id);
@@ -228,6 +275,10 @@ export const AgencyProvider = ({ children }) => {
     });
   };
 
+  const deleteTask = (taskId) => {
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+  };
+
   // Client Approval Workflow: Approve
   const approveTask = (taskId, comment = 'Approved without revisions.') => {
     const timestamp = getCurrentTimestamp();
@@ -243,7 +294,6 @@ export const AgencyProvider = ({ children }) => {
       return t;
     }));
 
-    // Post notification message to client chat
     const task = tasks.find(t => t.id === taskId);
     if (task) {
       sendMessage(task.clientId, `✅ [DELIVERABLE APPROVED] "${task.title}" has been approved! Note: ${comment}`);
@@ -268,14 +318,13 @@ export const AgencyProvider = ({ children }) => {
       return t;
     }));
 
-    // Post revision notice to chat
     const task = tasks.find(t => t.id === taskId);
     if (task) {
       sendMessage(task.clientId, `⚠️ [REVISION REQUESTED] for "${task.title}": "${feedbackText}"`);
     }
   };
 
-  // Add / Update Shoot
+  // 4. Video Shoot CRUD
   const saveShoot = (shootData) => {
     setShoots(prev => {
       const index = prev.findIndex(s => s.id === shootData.id);
@@ -294,7 +343,11 @@ export const AgencyProvider = ({ children }) => {
     });
   };
 
-  // Add / Update Meta Ad
+  const deleteShoot = (shootId) => {
+    setShoots(prev => prev.filter(s => s.id !== shootId));
+  };
+
+  // 5. Meta Ad CRUD
   const saveAd = (adData) => {
     setAds(prev => {
       const index = prev.findIndex(a => a.id === adData.id);
@@ -313,7 +366,11 @@ export const AgencyProvider = ({ children }) => {
     });
   };
 
-  // Chat: Send Message
+  const deleteAd = (adId) => {
+    setAds(prev => prev.filter(a => a.id !== adId));
+  };
+
+  // 6. Chat: Send Message
   const sendMessage = (clientId, text) => {
     if (!text.trim()) return;
     const timestamp = getCurrentTimestamp();
@@ -345,13 +402,13 @@ export const AgencyProvider = ({ children }) => {
   const exportFullBackup = () => {
     const fullData = {
       backupDate: new Date().toISOString(),
-      version: '1.0',
+      version: '1.1',
       clients,
       tasks,
       shoots,
       ads,
       chats,
-      teamMembers: TEAM_MEMBERS
+      teamMembers
     };
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(fullData, null, 2))}`;
     const downloadAnchor = document.createElement('a');
@@ -366,6 +423,7 @@ export const AgencyProvider = ({ children }) => {
   const importBackup = (jsonData) => {
     try {
       if (jsonData.clients) setClients(jsonData.clients);
+      if (jsonData.teamMembers) setTeamMembers(jsonData.teamMembers);
       if (jsonData.tasks) setTasks(jsonData.tasks);
       if (jsonData.shoots) setShoots(jsonData.shoots);
       if (jsonData.ads) setAds(jsonData.ads);
@@ -378,9 +436,10 @@ export const AgencyProvider = ({ children }) => {
 
   // Reset to initial clean state
   const resetToFactoryState = () => {
-    if (window.confirm('Are you sure you want to reset all data to default demo data?')) {
+    if (window.confirm('क्या आप सच में सभी डेटा को रीसेट करना चाहते हैं? (Are you sure you want to reset all data to default demo data?)')) {
       localStorage.clear();
       setClients(generateClients());
+      setTeamMembers(TEAM_MEMBERS);
       setTasks(INITIAL_TASKS);
       setShoots(INITIAL_SHOOTS);
       setAds(INITIAL_ADS);
@@ -397,22 +456,29 @@ export const AgencyProvider = ({ children }) => {
         clients,
         saveClient,
         deleteClient,
+        teamMembers,
+        saveTeamMember,
+        deleteTeamMember,
         tasks,
         saveTask,
+        deleteTask,
         approveTask,
         requestRevision,
         shoots,
         saveShoot,
+        deleteShoot,
         ads,
         saveAd,
+        deleteAd,
         chats,
         sendMessage,
-        teamMembers: TEAM_MEMBERS,
         serviceCategories: SERVICE_CATEGORIES,
         activeTab,
         setActiveTab,
         selectedClientId,
         setSelectedClientId,
+        showBeginnerGuide,
+        setShowBeginnerGuide,
         exportFullBackup,
         importBackup,
         resetToFactoryState,

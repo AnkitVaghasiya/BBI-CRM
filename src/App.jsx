@@ -12,21 +12,33 @@ import { ApprovalsCenter } from './components/ApprovalsCenter';
 import { ChatSystem } from './components/ChatSystem';
 import { TeamDirectory } from './components/TeamDirectory';
 import { BackupSettingsModal } from './components/BackupSettingsModal';
-import { ClientModal, TaskModal, ShootModal, AdModal } from './components/ActionModals';
+import { ClientModal, TaskModal, ShootModal, AdModal, TeamMemberModal } from './components/ActionModals';
 
 const MainApp = () => {
   const { activeTab, currentUser } = useAgency();
 
   // Modals state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // Client Modal
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
   const [clientToEdit, setClientToEdit] = useState(null);
 
+  // Task Modal
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
 
+  // Shoot Modal
   const [isShootModalOpen, setIsShootModalOpen] = useState(false);
+  const [shootToEdit, setShootToEdit] = useState(null);
+
+  // Ad Modal
   const [isAdModalOpen, setIsAdModalOpen] = useState(false);
+  const [adToEdit, setAdToEdit] = useState(null);
+
+  // Team Member Modal
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [memberToEdit, setMemberToEdit] = useState(null);
 
   // Handlers
   const handleOpenNewClient = () => {
@@ -49,6 +61,36 @@ const MainApp = () => {
     setIsTaskModalOpen(true);
   };
 
+  const handleOpenNewShoot = () => {
+    setShootToEdit(null);
+    setIsShootModalOpen(true);
+  };
+
+  const handleEditShoot = (shoot) => {
+    setShootToEdit(shoot);
+    setIsShootModalOpen(true);
+  };
+
+  const handleOpenNewAd = () => {
+    setAdToEdit(null);
+    setIsAdModalOpen(true);
+  };
+
+  const handleEditAd = (ad) => {
+    setAdToEdit(ad);
+    setIsAdModalOpen(true);
+  };
+
+  const handleOpenNewMember = () => {
+    setMemberToEdit(null);
+    setIsMemberModalOpen(true);
+  };
+
+  const handleEditMember = (member) => {
+    setMemberToEdit(member);
+    setIsMemberModalOpen(true);
+  };
+
   const renderActiveView = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -56,7 +98,7 @@ const MainApp = () => {
           <Dashboard 
             onNewClient={handleOpenNewClient}
             onNewTask={handleOpenNewTask}
-            onNewShoot={() => setIsShootModalOpen(true)}
+            onNewShoot={handleOpenNewShoot}
           />
         );
       case 'clients':
@@ -76,13 +118,15 @@ const MainApp = () => {
       case 'shoots':
         return (
           <ShootingTracker 
-            onNewShoot={() => setIsShootModalOpen(true)}
+            onNewShoot={handleOpenNewShoot}
+            onEditShoot={handleEditShoot}
           />
         );
       case 'ads':
         return (
           <MetaAdsView 
-            onNewAd={() => setIsAdModalOpen(true)}
+            onNewAd={handleOpenNewAd}
+            onEditAd={handleEditAd}
           />
         );
       case 'calendar':
@@ -92,13 +136,18 @@ const MainApp = () => {
       case 'chat':
         return <ChatSystem />;
       case 'team':
-        return <TeamDirectory />;
+        return (
+          <TeamDirectory 
+            onNewMember={handleOpenNewMember}
+            onEditMember={handleEditMember}
+          />
+        );
       default:
         return (
           <Dashboard 
             onNewClient={handleOpenNewClient}
             onNewTask={handleOpenNewTask}
-            onNewShoot={() => setIsShootModalOpen(true)}
+            onNewShoot={handleOpenNewShoot}
           />
         );
     }
@@ -143,11 +192,19 @@ const MainApp = () => {
       <ShootModal 
         isOpen={isShootModalOpen}
         onClose={() => setIsShootModalOpen(false)}
+        shootToEdit={shootToEdit}
       />
 
       <AdModal 
         isOpen={isAdModalOpen}
         onClose={() => setIsAdModalOpen(false)}
+        adToEdit={adToEdit}
+      />
+
+      <TeamMemberModal 
+        isOpen={isMemberModalOpen}
+        onClose={() => setIsMemberModalOpen(false)}
+        memberToEdit={memberToEdit}
       />
     </div>
   );

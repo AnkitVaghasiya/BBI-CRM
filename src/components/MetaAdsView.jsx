@@ -3,17 +3,15 @@ import { useAgency } from '../context/AgencyContext';
 import { 
   Target, 
   TrendingUp, 
-  DollarSign, 
   Plus, 
   ExternalLink, 
-  BarChart3, 
-  Users, 
-  CheckCircle2, 
-  Clock 
+  Edit2, 
+  Trash2, 
+  HelpCircle 
 } from 'lucide-react';
 
-export const MetaAdsView = ({ onNewAd }) => {
-  const { ads, saveAd, teamMembers, clients } = useAgency();
+export const MetaAdsView = ({ onNewAd, onEditAd }) => {
+  const { ads, saveAd, deleteAd, teamMembers, clients } = useAgency();
 
   const handleStatusChange = (adId, newStatus) => {
     const ad = ads.find(a => a.id === adId);
@@ -27,19 +25,35 @@ export const MetaAdsView = ({ onNewAd }) => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-white">Meta Ads & Performance Marketing Hub</h1>
-          <p className="text-xs sm:text-sm text-slate-400">
-            Paid Social Funnels, Ad Creatives, Daily Budgets, ROAS & Lead Generation
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-black text-white">मेटा ऐड्स व परफॉर्मेंस मार्केटिंग हब (Meta Ads Hub)</h1>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              {ads.length} एक्टिव कैंपेंस
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            फेसबुक/इंस्टाग्राम विज्ञापन, डेली बजट, लीड्स काउंट, CPL व ROAS का आसान मैनेजमेंट।
           </p>
         </div>
 
         <button
           onClick={onNewAd}
-          className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition"
+          className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>New Meta Campaign</span>
+          <span>नया ऐड कैंपेन जोड़ें (New Campaign)</span>
         </button>
+      </div>
+
+      {/* Beginner Tips */}
+      <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-start gap-3 text-xs text-slate-300">
+        <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+        <div>
+          <span className="font-bold text-white block">💡 मेटा ऐड्स गाइड (Beginner Tips):</span>
+          <p className="text-slate-400 mt-0.5">
+            किसी भी कैंपेन के आगे <span className="text-emerald-400 font-semibold">"एडिट करें (Edit)"</span> बटन दबाकर आप डेली बजट, आए हुए लीड्स की संख्या, और क्रिएटिव लिंक अपडेट कर सकते हैं।
+          </p>
+        </div>
       </div>
 
       {/* Campaigns Table */}
@@ -48,13 +62,14 @@ export const MetaAdsView = ({ onNewAd }) => {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-slate-800 bg-slate-950/60 text-slate-400 font-bold uppercase tracking-wider text-[11px]">
-                <th className="py-3.5 px-4">Campaign Name & Client</th>
-                <th className="py-3.5 px-4">Platform</th>
-                <th className="py-3.5 px-4">Daily Budget</th>
-                <th className="py-3.5 px-4">Performance Metrics</th>
-                <th className="py-3.5 px-4">Creatives Link</th>
-                <th className="py-3.5 px-4">Media Buyer</th>
-                <th className="py-3.5 px-4">Status</th>
+                <th className="py-3.5 px-4">कैंपेन व क्लाइंट (Campaign & Client)</th>
+                <th className="py-3.5 px-4">प्लेटफ़ॉर्म</th>
+                <th className="py-3.5 px-4">डेली बजट (Budget)</th>
+                <th className="py-3.5 px-4">परफॉर्मेंस (Leads / ROAS)</th>
+                <th className="py-3.5 px-4">क्रिएटिव लिंक</th>
+                <th className="py-3.5 px-4">मीडिया बायर</th>
+                <th className="py-3.5 px-4">स्टेटस</th>
+                <th className="py-3.5 px-4 text-right">एक्शन (Edit / Delete)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
@@ -81,7 +96,7 @@ export const MetaAdsView = ({ onNewAd }) => {
 
                     <td className="py-3.5 px-4">
                       <div className="space-y-0.5 text-[11px]">
-                        <p className="text-white font-medium">🎯 Leads: <span className="text-emerald-400 font-bold">{ad.leadsGenerated}</span></p>
+                        <p className="text-white font-medium">🎯 लीड्स: <span className="text-emerald-400 font-bold">{ad.leadsGenerated}</span></p>
                         <p className="text-slate-400">CPL: {ad.cpl} • ROAS: <span className="text-blue-400 font-bold">{ad.roas}</span></p>
                       </div>
                     </td>
@@ -94,11 +109,10 @@ export const MetaAdsView = ({ onNewAd }) => {
                           rel="noreferrer"
                           className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg font-semibold text-[11px] transition"
                         >
-                          <span>Review Creatives</span>
-                          <ExternalLink className="w-2.5 h-2.5" />
+                          <span>क्रिएटिव देखें ↗</span>
                         </a>
                       ) : (
-                        <span className="text-slate-500">Pending</span>
+                        <span className="text-slate-500">पेंडिंग</span>
                       )}
                     </td>
 
@@ -120,6 +134,28 @@ export const MetaAdsView = ({ onNewAd }) => {
                         <option value="Active & Scaling">Active & Scaling</option>
                         <option value="Paused">Paused</option>
                       </select>
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => onEditAd(ad)}
+                          className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 flex items-center gap-1 transition"
+                        >
+                          <Edit2 className="w-3 h-3 text-emerald-400" />
+                          <span>एडिट</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`क्या आप "${ad.campaignName}" कैंपेन को हटाना चाहते हैं?`)) {
+                              deleteAd(ad.id);
+                            }
+                          }}
+                          className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

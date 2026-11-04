@@ -13,7 +13,8 @@ import {
   UserCheck, 
   Search, 
   Bell,
-  RefreshCw
+  RefreshCw,
+  HelpCircle
 } from 'lucide-react';
 
 export const Navbar = ({ onOpenSettings }) => {
@@ -24,28 +25,28 @@ export const Navbar = ({ onOpenSettings }) => {
     selectedClientId, 
     setSelectedClientId,
     exportFullBackup,
-    firebaseConfig 
+    firebaseConfig,
+    showBeginnerGuide,
+    setShowBeginnerGuide
   } = useAgency();
-
-  const [searchQuery, setSearchQuery] = useState('');
 
   const currentClient = clients.find(c => c.id === selectedClientId) || clients[0];
 
   return (
-    <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40">
+    <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md px-3 sm:px-6 flex items-center justify-between sticky top-0 z-40">
       {/* Brand & Workspace */}
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20 font-black text-xl text-white">
+        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20 font-black text-xl text-white shrink-0">
           ⚡
         </div>
         <div>
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-base tracking-tight text-white">OmniAgency <span className="text-blue-400">OS</span></span>
             <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              ERP & CRM
+              Agency CRM & ERP
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 hidden sm:block">200+ Clients & 25-Member Team Hub</p>
+          <p className="text-[11px] text-slate-400 hidden sm:block">200+ Clients & Staff Operations Hub</p>
         </div>
       </div>
 
@@ -53,26 +54,26 @@ export const Navbar = ({ onOpenSettings }) => {
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Role Switcher Pill */}
         <div className="flex items-center gap-1.5 bg-slate-800/90 border border-slate-700/80 rounded-xl px-2.5 py-1.5 shadow-inner">
-          <span className="text-xs text-slate-400 hidden md:inline font-medium">Viewing as:</span>
+          <span className="text-xs text-slate-400 hidden md:inline font-medium">रोल व्यू:</span>
           <select 
             value={currentUser.role === 'client' ? 'client' : currentUser.role}
             onChange={(e) => switchRole(e.target.value, currentClient)}
             aria-label="Select Role View"
             className="bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer pr-1"
           >
-            <option value="management" className="bg-slate-900 text-white">👑 Management (Super Admin)</option>
-            <option value="video-editing" className="bg-slate-900 text-white">🎬 Video Editing Team</option>
-            <option value="shooting-team" className="bg-slate-900 text-white">🎥 Shooting & DoP Team</option>
-            <option value="ai-content" className="bg-slate-900 text-white">🤖 AI Content & Prompts</option>
-            <option value="meta-ads" className="bg-slate-900 text-white">📊 Meta Ads & SMM</option>
-            <option value="client" className="bg-slate-900 text-emerald-400">👤 Client Portal View</option>
+            <option value="management" className="bg-slate-900 text-white">👑 एजेंसी डायरेक्टर / एडमिन (Admin)</option>
+            <option value="video-editing" className="bg-slate-900 text-white">🎬 वीडियो एडिटिंग टीम (Video Editors)</option>
+            <option value="shooting-team" className="bg-slate-900 text-white">🎥 शूटिंग व कैमरा क्रू (Shooting Team)</option>
+            <option value="ai-content" className="bg-slate-900 text-white">🤖 AI कंटेंट टीम (AI Prompts)</option>
+            <option value="meta-ads" className="bg-slate-900 text-white">📊 मेटा ऐड्स व सोशल मीडिया (Ads Lead)</option>
+            <option value="client" className="bg-slate-900 text-emerald-400">👤 क्लाइंट पोर्टल व्यू (Client Portal)</option>
           </select>
         </div>
 
         {/* If in Client View, let user choose which client they are simulating */}
         {currentUser.role === 'client' && (
           <div className="flex items-center gap-1 bg-emerald-950/60 border border-emerald-500/30 rounded-xl px-2.5 py-1.5">
-            <span className="text-xs text-emerald-400 font-medium">Client:</span>
+            <span className="text-xs text-emerald-400 font-medium">क्लाइंट:</span>
             <select
               value={selectedClientId}
               onChange={(e) => {
@@ -96,14 +97,14 @@ export const Navbar = ({ onOpenSettings }) => {
         <div 
           onClick={onOpenSettings}
           title={firebaseConfig.isEnabled ? "Firebase Cloud Sync Active" : "Local Storage Active (Click to connect Firebase / GitHub)"}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs cursor-pointer transition ${
+          className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs cursor-pointer transition ${
             firebaseConfig.isEnabled 
               ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-400 hover:bg-emerald-900/40' 
               : 'bg-slate-800 border-slate-700 text-slate-300 hover:border-slate-600'
           }`}
         >
           <span className={`w-2 h-2 rounded-full animate-pulse ${firebaseConfig.isEnabled ? 'bg-emerald-400' : 'bg-blue-400'}`}></span>
-          <span className="hidden lg:inline">{firebaseConfig.isEnabled ? 'Firebase Synced' : 'Local + Backup'}</span>
+          <span>{firebaseConfig.isEnabled ? 'Firebase Synced' : 'लोकल + बैकअप'}</span>
         </div>
 
         {/* 1-Click JSON Backup Button */}
@@ -113,7 +114,7 @@ export const Navbar = ({ onOpenSettings }) => {
           className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 rounded-xl text-xs font-semibold transition"
         >
           <Download className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Backup</span>
+          <span className="hidden sm:inline">बैकअप (Backup)</span>
         </button>
 
         {/* User Badge */}

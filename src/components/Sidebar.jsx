@@ -15,80 +15,77 @@ import {
 } from 'lucide-react';
 
 export const Sidebar = ({ onOpenSettings }) => {
-  const { activeTab, setActiveTab, currentUser, tasks, shoots, ads, clients } = useAgency();
+  const { activeTab, setActiveTab, currentUser, tasks, shoots, ads, clients, teamMembers } = useAgency();
 
-  // Pending counts
   const pendingApprovalsCount = tasks.filter(t => t.status === 'Client Approval Pending').length;
-  const revisionsCount = tasks.filter(t => t.status === 'Revision Requested').length;
 
   const navItems = [
     {
       id: 'dashboard',
-      label: 'Dashboard',
+      label: 'डैशबोर्ड (Dashboard)',
       icon: LayoutDashboard,
       roles: ['management', 'video-editing', 'shooting-team', 'ai-content', 'meta-ads'],
       badge: null
     },
     {
       id: 'clients',
-      label: 'Client CRM (200+)',
+      label: 'क्लाइंट्स (Clients CRM)',
       icon: Users,
       roles: ['management', 'meta-ads'],
       badge: `${clients.length}`
     },
     {
       id: 'production',
-      label: 'Production Tracker',
+      label: 'प्रोडक्शन ट्रैकर (Pipeline)',
       icon: Film,
       roles: ['management', 'video-editing', 'ai-content'],
-      badge: tasks.length
+      badge: `${tasks.length}`
     },
     {
       id: 'shoots',
-      label: 'Video Shoots',
+      label: 'वीडियो शूटिंग (Shoots)',
       icon: Camera,
       roles: ['management', 'shooting-team'],
-      badge: shoots.length
+      badge: `${shoots.length}`
     },
     {
       id: 'ads',
-      label: 'Meta Ads & SMM',
+      label: 'मेटा ऐड्स (Meta Ads)',
       icon: Target,
       roles: ['management', 'meta-ads'],
-      badge: ads.length
+      badge: `${ads.length}`
     },
     {
       id: 'calendar',
-      label: 'Posting Calendar',
+      label: 'पोस्टिंग कैलेंडर (Schedule)',
       icon: CalendarClock,
       roles: ['management', 'meta-ads', 'video-editing'],
       badge: null
     },
     {
       id: 'approvals',
-      label: 'Client Approvals',
+      label: 'क्लाइंट अप्रूवल (Approvals)',
       icon: CheckCircle2,
       roles: ['management', 'client', 'video-editing'],
-      badge: pendingApprovalsCount > 0 ? `${pendingApprovalsCount} Pending` : null,
+      badge: pendingApprovalsCount > 0 ? `${pendingApprovalsCount} पेंडिंग` : null,
       badgeColor: 'amber'
     },
     {
       id: 'chat',
-      label: 'Team & Client Chat',
+      label: 'चैट सिस्टम (Chat Hub)',
       icon: MessageSquare,
       roles: ['management', 'video-editing', 'shooting-team', 'ai-content', 'meta-ads', 'client'],
-      badge: 'Live'
+      badge: 'लाइव'
     },
     {
       id: 'team',
-      label: '25-Member Team',
+      label: 'स्टाफ डायरेक्टरी (Team Staff)',
       icon: Briefcase,
       roles: ['management'],
-      badge: '25'
+      badge: `${teamMembers.length}`
     }
   ];
 
-  // Filter nav items based on current role
   const visibleNav = navItems.filter(item => item.roles.includes(currentUser.role));
 
   return (
@@ -97,14 +94,14 @@ export const Sidebar = ({ onOpenSettings }) => {
         {/* Role banner if client */}
         {currentUser.role === 'client' && (
           <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs">
-            <p className="font-bold">Client Portal Active</p>
-            <p className="text-[11px] text-emerald-400/80 mt-0.5">Showing your brand deliverables, approval queue & dedicated chat.</p>
+            <p className="font-bold">🏢 क्लाइंट पोर्टल सक्रिय है</p>
+            <p className="text-[11px] text-emerald-400/80 mt-0.5">यहाँ केवल आपके ब्रांड के वीडियो, अप्रूवल और चैट दिखाई दे रहे हैं।</p>
           </div>
         )}
 
         <div>
           <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
-            Operations Menu
+            मुख्य मेन्यू (Navigation)
           </p>
           <nav className="space-y-1">
             {visibleNav.map((item) => {
@@ -122,11 +119,11 @@ export const Sidebar = ({ onOpenSettings }) => {
                 >
                   <div className="flex items-center gap-2.5">
                     <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                    <span>{item.label}</span>
+                    <span className="truncate">{item.label}</span>
                   </div>
 
                   {item.badge && (
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ${
                       isActive 
                         ? 'bg-white/20 text-white' 
                         : item.badgeColor === 'amber'
@@ -151,17 +148,14 @@ export const Sidebar = ({ onOpenSettings }) => {
         >
           <div className="flex items-center gap-2">
             <Settings className="w-4 h-4 text-slate-400" />
-            <span>Cloud & GitHub Setup</span>
+            <span>बैकअप, Firebase व GitHub</span>
           </div>
-          <span className="text-[10px] bg-slate-800 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">
-            Git / FB
-          </span>
         </button>
 
         <div className="px-3 pt-2 text-[11px] text-slate-500 flex items-center justify-between">
-          <span>v1.0.0 Production</span>
+          <span>v1.1.0 Sober UI</span>
           <span className="text-emerald-400 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ऑनलाइन
           </span>
         </div>
       </div>
