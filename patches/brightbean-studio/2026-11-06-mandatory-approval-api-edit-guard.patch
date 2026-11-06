@@ -1,0 +1,195 @@
+From 8a665f0d5f68c2a49675f6a9ab742f4cc3b3d652 Mon Sep 17 00:00:00 2001
+From: BrainBinary AI OS Automation <automation@brainbinary.invalid>
+Date: Fri, 6 Nov 2026 15:44:04 +0530
+Subject: [PATCH] Guard approved and scheduled content from API edits in
+ mandatory review workspaces
+
+---
+ apps/api/routers/posts.py                     |  29 +++-
+ .../test_brainbinary_approval_edit_guard.py   | 128 ++++++++++++++++++
+ 2 files changed, 156 insertions(+), 1 deletion(-)
+ create mode 100644 apps/api/tests/test_brainbinary_approval_edit_guard.py
+
+diff --git a/apps/api/routers/posts.py b/apps/api/routers/posts.py
+index 1e45334..63a5346 100644
+--- a/apps/api/routers/posts.py
++++ b/apps/api/routers/posts.py
+@@ -39,7 +39,7 @@ from apps.api.schemas import (
+     ScheduleRequest,
+     UpdatePostRequest,
+ )
+-from apps.composer.models import Post
++from apps.composer.models import PlatformPost, Post
+ from apps.composer.services import (
+     create_post,
+     media_change_blocker,
+@@ -306,6 +306,33 @@ def update(request, post_id: uuid.UUID, payload: UpdatePostRequest):
+     if not post.is_editable:
+         raise HttpError(409, f"Post is not editable in status {post.status}.")
+ 
++    # BrainBinary's mandatory approval policies must fail closed when an
++    # API caller attempts to change already reviewed or scheduled content.
++    # Internal notes and the draft-only proposed time remain editable.
++    # The normal composer review flow is responsible for returning content
++    # to draft/review and collecting a new approval; this API must not keep
++    # the old approval while silently changing its subject.
++    mandatory_modes = {"required_internal", "required_internal_and_client"}
++    publish_affecting_fields = (
++        "title", "caption", "first_comment", "media_asset_ids", "scheduled_at"
++    )
++    if (
++        post.workspace.approval_workflow_mode in mandatory_modes
++        and any(getattr(payload, name) is not None for name in publish_affecting_fields)
++        and post.platform_posts.exclude(
++            status__in=(
++                PlatformPost.Status.DRAFT,
++                PlatformPost.Status.CHANGES_REQUESTED,
++                PlatformPost.Status.REJECTED,
++            )
++        ).exists()
++    ):
++        raise HttpError(
++            409,
++            "Reviewed or scheduled content cannot be changed through the agent API. "
++            "Return the content to draft/review and obtain fresh approval first.",
++        )
++
+     # Re-timing a scheduled post is publish-budget behaviour: pushing
+     # ``scheduled_at`` into the past makes the publisher fire the post on
+     # its very next poll (~15 s), and pushing it far into the future buries
+diff --git a/apps/api/tests/test_brainbinary_approval_edit_guard.py b/apps/api/tests/test_brainbinary_approval_edit_guard.py
+new file mode 100644
+index 0000000..e8de8cd
+--- /dev/null
++++ b/apps/api/tests/test_brainbinary_approval_edit_guard.py
+@@ -0,0 +1,128 @@
++"""BrainBinary AI OS: mandatory-approval edit guard regression tests.
++
++Synthetic data only. These tests cover the Agent API PATCH path; they do not
++replace revision-bound approval records or publisher-worker authorization.
++"""
++import json
++from datetime import timedelta
++
++import pytest
++from django.test import Client
++from django.utils import timezone
++
++from apps.accounts.models import User
++from apps.api_keys import services
++from apps.composer.models import PlatformPost, Post
++from apps.members.models import OrgMembership, WorkspaceMembership, PERMISSION_KEYS
++from apps.organizations.models import Organization
++from apps.social_accounts.models import SocialAccount
++from apps.workspaces.models import Workspace
++
++
++@pytest.fixture
++def agency_api(db):
++    user = User.objects.create_user(
++        email="approval-editor@demo.example",
++        password="synthetic-test-value-only",
++        name="Synthetic Editor",
++        tos_accepted_at=timezone.now(),
++    )
++    org = Organization.objects.create(name="Synthetic BrainBinary")
++    ws = Workspace.objects.create(
++        organization=org, name="Client A",
++        approval_workflow_mode=Workspace.ApprovalWorkflowMode.REQUIRED_INTERNAL_AND_CLIENT,
++    )
++    OrgMembership.objects.create(
++        user=user, organization=org, org_role=OrgMembership.OrgRole.OWNER
++    )
++    WorkspaceMembership.objects.create(
++        user=user, workspace=ws, workspace_role=WorkspaceMembership.WorkspaceRole.OWNER
++    )
++    account = SocialAccount.objects.create(
++        workspace=ws, platform="linkedin_personal",
++        account_platform_id="synthetic-account",
++        account_name="Synthetic Account", connection_status="connected",
++    )
++    key = services.issue_api_key(
++        workspace=ws, social_accounts=[account], issued_by=user,
++        name="synthetic-approval-regression", permissions=list(PERMISSION_KEYS),
++    )
++    return Client(HTTP_AUTHORIZATION=f"Bearer {key.plaintext_token}"), ws, account
++
++
++def create_post(workspace, account, status):
++    post = Post.objects.create(workspace=workspace, caption="Approved original copy")
++    pp = PlatformPost.objects.create(
++        post=post, social_account=account, status=status,
++        scheduled_at=timezone.now() + timedelta(hours=2) if status == "scheduled" else None,
++    )
++    return post, pp
++
++
++def patch(client, post, fields):
++    return client.patch(
++        f"/api/v1/posts/{post.id}", data=json.dumps(fields),
++        content_type="application/json", secure=True,
++    )
++
++
++@pytest.mark.django_db
++class TestMandatoryApprovalPreventsAgentEdits:
++    def test_scheduled_caption_change_must_not_silently_keep_approval(self, agency_api):
++        client, ws, account = agency_api
++        post, pp = create_post(ws, account, "scheduled")
++        response = patch(client, post, {"caption": "Changed without client approval"})
++        assert response.status_code == 409
++        post.refresh_from_db()
++        pp.refresh_from_db()
++        assert post.caption == "Approved original copy"
++        assert pp.status == "scheduled"
++
++    def test_approved_first_comment_change_is_denied(self, agency_api):
++        client, ws, account = agency_api
++        post, _ = create_post(ws, account, "approved")
++        response = patch(client, post, {"first_comment": "New public comment"})
++        assert response.status_code == 409
++
++    def test_approved_media_clear_is_denied(self, agency_api):
++        client, ws, account = agency_api
++        post, _ = create_post(ws, account, "approved")
++        response = patch(client, post, {"media_asset_ids": []})
++        assert response.status_code == 409
++
++    def test_scheduled_retiming_is_denied_even_to_owner(self, agency_api):
++        client, ws, account = agency_api
++        post, pp = create_post(ws, account, "scheduled")
++        original = pp.scheduled_at
++        response = patch(
++            client, post,
++            {"scheduled_at": (timezone.now() + timedelta(minutes=5)).isoformat()},
++        )
++        assert response.status_code == 409
++        pp.refresh_from_db()
++        assert pp.scheduled_at == original
++
++    def test_draft_remains_editable_under_mandatory_approval(self, agency_api):
++        client, ws, account = agency_api
++        post, _ = create_post(ws, account, "draft")
++        response = patch(client, post, {"caption": "Draft revision"})
++        assert response.status_code == 200
++        post.refresh_from_db()
++        assert post.caption == "Draft revision"
++
++    def test_private_internal_note_remains_editable(self, agency_api):
++        client, ws, account = agency_api
++        post, _ = create_post(ws, account, "approved")
++        response = patch(client, post, {"internal_notes": "Internal production checklist"})
++        assert response.status_code == 200
++        post.refresh_from_db()
++        assert post.caption == "Approved original copy"
++        assert post.internal_notes == "Internal production checklist"
++
++    def test_optional_legacy_workflow_remains_unchanged(self, agency_api):
++        client, ws, account = agency_api
++        ws.approval_workflow_mode = Workspace.ApprovalWorkflowMode.OPTIONAL
++        ws.save(update_fields=["approval_workflow_mode"])
++        post, _ = create_post(ws, account, "approved")
++        response = patch(client, post, {"caption": "Optional-mode edit"})
++        assert response.status_code == 200
+-- 
+2.56.0.windows.4
