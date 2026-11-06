@@ -19,6 +19,7 @@ SUSPICIOUS_NAMES = {
     "service_account.json", ".npmrc", ".pypirc", ".netrc",
 }
 SUSPICIOUS_EXTENSIONS = {".p12", ".pfx", ".key", ".pem", ".sqlite", ".sqlite3", ".db", ".kdbx"}
+DEMO_EMAIL = re.compile(rb"\b[A-Z0-9._%+-]+@([A-Z0-9.-]+\.[A-Z]{2,})\b", re.IGNORECASE)
 SENSITIVE_CONTENT = (
     ("private-key marker", re.compile(rb"-----BEGIN (?:[A-Z0-9 ]* )?PRIVATE KEY-----")),
     ("AWS access-key pattern", re.compile(rb"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b")),
@@ -73,6 +74,9 @@ def scan_tracked(root: Path) -> list[tuple[str, str]]:
         if b"\x00" in data[:4096]:
             # Binary content needs a dedicated artifact/attachment scanner.
             continue
+        if path.as_posix() == "src/data/seedData.js":
+            if any(match.group(1).lower() != b"demo.example" for match in DEMO_EMAIL.finditer(data)):
+                findings.append((relative, "demo email must use the reserved @demo.example domain"))
         for reason, signature in SENSITIVE_CONTENT:
             if signature.search(data):
                 findings.append((relative, reason))
