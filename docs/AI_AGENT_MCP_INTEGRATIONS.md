@@ -8,8 +8,8 @@
 | Interface | URL | Unauthenticated smoke-test status |
 |---|---|---|
 | Studio login | `https://studio.130.210.32.49.sslip.io/accounts/login/` | HTTPS 200 |
-| API caller | `https://studio.130.210.32.49.sslip.io/api/v1/me` | HTTPS 401 |
-| Social accounts | `https://studio.130.210.32.49.sslip.io/api/v1/accounts` | HTTPS 401 |
+| API caller | `https://studio.130.210.32.49.sslip.io/api/v1/me/` | HTTPS 401 |
+| Social accounts | `https://studio.130.210.32.49.sslip.io/api/v1/accounts/` | HTTPS 401 |
 | MCP JSON-RPC (HTTP POST) | `https://studio.130.210.32.49.sslip.io/api/v1/mcp` | HTTPS 401 |
 
 Source: Upstream BrightBean Studio README's **API & MCP for Agents** section. Verify actual permissions and provider approvals before using this instance for real client information. The presence of an endpoint alone does not mean all supported tools, role scopes, or integrations have been end-to-end tested.
@@ -40,7 +40,7 @@ From the authorized Windows PC:
 python tools/ai_ops/check_mcp_auth_public.py
 ```
 
-Expected result: all three API/MCP unauthenticated routes respond 401/403. Unexpected successful access is a release-blocking security issue. This is a low-risk, read-only test; it does not validate authenticated tenant isolation or active social connections.
+Expected result: the three canonical API/MCP unauthenticated routes respond 401/403. Slashless `/api/v1/me` and `/api/v1/accounts` may redirect with 301; never accept a redirect in place of verifying the canonical route's authorization boundary. Unexpected successful access is a release-blocking security issue. This is a low-risk, read-only test; it does not validate authenticated tenant isolation or active social connections.
 
 ## Development release conditions
 
