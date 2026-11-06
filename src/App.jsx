@@ -157,6 +157,12 @@ const MainApp = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white transition-colors">
       {/* Top Navbar */}
       <Navbar onOpenSettings={() => setIsSettingsOpen(true)} />
+      <div role="status" className="px-4 py-2 bg-amber-50 border-b border-amber-200 text-amber-950 text-xs sm:text-sm">
+        <strong>Demo preview — not a secure client portal.</strong>{' '}
+        This prototype uses browser storage and simulated roles. Do not enter real client, employee,
+        financial, or credential data. Production access must use authenticated, tenant-isolated
+        BrainBinary Studio services.
+      </div>
 
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
