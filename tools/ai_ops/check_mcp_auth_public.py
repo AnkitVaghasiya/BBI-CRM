@@ -19,8 +19,8 @@ DEFAULT_BASE = "https://studio.130.210.32.49.sslip.io"
 # API/MCP calls must remain private. The POST is a synthetic JSON-RPC ping,
 # and should be denied by authentication before reaching an application tool.
 PROTECTED = (
-    ("GET", "/api/v1/me", None),
-    ("GET", "/api/v1/accounts", None),
+    ("GET", "/api/v1/me/", None),
+    ("GET", "/api/v1/accounts/", None),
     ("POST", "/api/v1/mcp", json.dumps(
         {"jsonrpc": "2.0", "id": "auth-smoke", "method": "ping"}
     ).encode("utf-8")),
