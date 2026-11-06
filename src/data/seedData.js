@@ -3,39 +3,39 @@
 
 export const TEAM_MEMBERS = [
   // 1. Management (5 Members)
-  { id: 'tm-1', name: 'Neha Gupta', role: 'Agency Director & Founder', department: 'Management', email: 'neha@agency.com', phone: '+91 98765 00001', activeTasks: 4, avatar: '👩‍💼' },
-  { id: 'tm-2', name: 'Karan Mehra', role: 'Operations & Delivery Head', department: 'Management', email: 'karan@agency.com', phone: '+91 98765 00002', activeTasks: 8, avatar: '👨‍💼' },
-  { id: 'tm-3', name: 'Priya Sharma', role: 'Lead Account Manager', department: 'Management', email: 'priya@agency.com', phone: '+91 98765 00003', activeTasks: 12, avatar: '👩‍💻' },
-  { id: 'tm-4', name: 'Rohit Verma', role: 'Client Success & Onboarding Lead', department: 'Management', email: 'rohit@agency.com', phone: '+91 98765 00004', activeTasks: 9, avatar: '👨‍💼' },
-  { id: 'tm-5', name: 'Ananya Roy', role: 'QC & Quality Assurance Lead', department: 'Management', email: 'ananya@agency.com', phone: '+91 98765 00005', activeTasks: 15, avatar: '👩‍🏫' },
+  { id: 'tm-1', name: 'Neha Gupta', role: 'Agency Director & Founder', department: 'Management', email: 'neha@demo.example', phone: '+91 98765 00001', activeTasks: 4, avatar: '👩‍💼' },
+  { id: 'tm-2', name: 'Karan Mehra', role: 'Operations & Delivery Head', department: 'Management', email: 'karan@demo.example', phone: '+91 98765 00002', activeTasks: 8, avatar: '👨‍💼' },
+  { id: 'tm-3', name: 'Priya Sharma', role: 'Lead Account Manager', department: 'Management', email: 'priya@demo.example', phone: '+91 98765 00003', activeTasks: 12, avatar: '👩‍💻' },
+  { id: 'tm-4', name: 'Rohit Verma', role: 'Client Success & Onboarding Lead', department: 'Management', email: 'rohit@demo.example', phone: '+91 98765 00004', activeTasks: 9, avatar: '👨‍💼' },
+  { id: 'tm-5', name: 'Ananya Roy', role: 'QC & Quality Assurance Lead', department: 'Management', email: 'ananya@demo.example', phone: '+91 98765 00005', activeTasks: 15, avatar: '👩‍🏫' },
 
   // 2. Video Editing Team (5 Members)
-  { id: 'tm-6', name: 'Rahul Sharma', role: 'Lead Video Editor', department: 'Video Editing', email: 'rahul.edit@agency.com', phone: '+91 98765 00006', activeTasks: 14, avatar: '🎬' },
-  { id: 'tm-7', name: 'Vicky Das', role: 'Reels & Viral Hooks Specialist', department: 'Video Editing', email: 'vicky@agency.com', phone: '+91 98765 00007', activeTasks: 11, avatar: '⚡' },
-  { id: 'tm-8', name: 'Amit Sen', role: 'Motion Graphics & VFX Artist', department: 'Video Editing', email: 'amit@agency.com', phone: '+91 98765 00008', activeTasks: 7, avatar: '✨' },
-  { id: 'tm-9', name: 'Pooja Rawat', role: 'Long-Form & YouTube Editor', department: 'Video Editing', email: 'pooja@agency.com', phone: '+91 98765 00009', activeTasks: 8, avatar: '🎞️' },
-  { id: 'tm-10', name: 'Kunal Joshi', role: 'Colorist & Sound Designer', department: 'Video Editing', email: 'kunal@agency.com', phone: '+91 98765 00010', activeTasks: 10, avatar: '🎧' },
+  { id: 'tm-6', name: 'Rahul Sharma', role: 'Lead Video Editor', department: 'Video Editing', email: 'rahul.edit@demo.example', phone: '+91 98765 00006', activeTasks: 14, avatar: '🎬' },
+  { id: 'tm-7', name: 'Vicky Das', role: 'Reels & Viral Hooks Specialist', department: 'Video Editing', email: 'vicky@demo.example', phone: '+91 98765 00007', activeTasks: 11, avatar: '⚡' },
+  { id: 'tm-8', name: 'Amit Sen', role: 'Motion Graphics & VFX Artist', department: 'Video Editing', email: 'amit@demo.example', phone: '+91 98765 00008', activeTasks: 7, avatar: '✨' },
+  { id: 'tm-9', name: 'Pooja Rawat', role: 'Long-Form & YouTube Editor', department: 'Video Editing', email: 'pooja@demo.example', phone: '+91 98765 00009', activeTasks: 8, avatar: '🎞️' },
+  { id: 'tm-10', name: 'Kunal Joshi', role: 'Colorist & Sound Designer', department: 'Video Editing', email: 'kunal@demo.example', phone: '+91 98765 00010', activeTasks: 10, avatar: '🎧' },
 
   // 3. AI & Creative Team (5 Members)
-  { id: 'tm-11', name: 'Sameer Khan', role: 'Lead AI Prompt Engineer & GenAI', department: 'AI Content', email: 'sameer@agency.com', phone: '+91 98765 00011', activeTasks: 16, avatar: '🤖' },
-  { id: 'tm-12', name: 'Divya Nair', role: 'AI Copywriter & Hook Architect', department: 'AI Content', email: 'divya@agency.com', phone: '+91 98765 00012', activeTasks: 13, avatar: '✍️' },
-  { id: 'tm-13', name: 'Ayush Patel', role: 'AI Voice & Video Synthesizer', department: 'AI Content', email: 'ayush@agency.com', phone: '+91 98765 00013', activeTasks: 9, avatar: '🎙️' },
-  { id: 'tm-14', name: 'Shreya Sen', role: 'Visual AI & Midjourney Creator', department: 'AI Content', email: 'shreya@agency.com', phone: '+91 98765 00014', activeTasks: 12, avatar: '🎨' },
-  { id: 'tm-15', name: 'Manisha Paul', role: 'AI QA & Brand Voice Analyst', department: 'AI Content', email: 'manisha@agency.com', phone: '+91 98765 00015', activeTasks: 11, avatar: '🔍' },
+  { id: 'tm-11', name: 'Sameer Khan', role: 'Lead AI Prompt Engineer & GenAI', department: 'AI Content', email: 'sameer@demo.example', phone: '+91 98765 00011', activeTasks: 16, avatar: '🤖' },
+  { id: 'tm-12', name: 'Divya Nair', role: 'AI Copywriter & Hook Architect', department: 'AI Content', email: 'divya@demo.example', phone: '+91 98765 00012', activeTasks: 13, avatar: '✍️' },
+  { id: 'tm-13', name: 'Ayush Patel', role: 'AI Voice & Video Synthesizer', department: 'AI Content', email: 'ayush@demo.example', phone: '+91 98765 00013', activeTasks: 9, avatar: '🎙️' },
+  { id: 'tm-14', name: 'Shreya Sen', role: 'Visual AI & Midjourney Creator', department: 'AI Content', email: 'shreya@demo.example', phone: '+91 98765 00014', activeTasks: 12, avatar: '🎨' },
+  { id: 'tm-15', name: 'Manisha Paul', role: 'AI QA & Brand Voice Analyst', department: 'AI Content', email: 'manisha@demo.example', phone: '+91 98765 00015', activeTasks: 11, avatar: '🔍' },
 
   // 4. Social Media Marketing & Meta Ads Team (5 Members)
-  { id: 'tm-16', name: 'Aryan Malhotra', role: 'Meta Ads & Media Buyer Lead', department: 'Meta Ads & SMM', email: 'aryan@agency.com', phone: '+91 98765 00016', activeTasks: 18, avatar: '📊' },
-  { id: 'tm-17', name: 'Tanvi Singhania', role: 'Paid Social Funnel Strategist', department: 'Meta Ads & SMM', email: 'tanvi@agency.com', phone: '+91 98765 00017', activeTasks: 14, avatar: '📈' },
-  { id: 'tm-18', name: 'Sahil Kapoor', role: 'Instagram & LinkedIn Growth Manager', department: 'Meta Ads & SMM', email: 'sahil@agency.com', phone: '+91 98765 00018', activeTasks: 15, avatar: '🚀' },
-  { id: 'tm-19', name: 'Riya Bose', role: 'Community & Scheduling Specialist', department: 'Meta Ads & SMM', email: 'riya@agency.com', phone: '+91 98765 00019', activeTasks: 22, avatar: '📅' },
-  { id: 'tm-20', name: 'Deep Patel', role: 'Tracking, Pixel & Analytics Lead', department: 'Meta Ads & SMM', email: 'deep@agency.com', phone: '+91 98765 00020', activeTasks: 10, avatar: '🎯' },
+  { id: 'tm-16', name: 'Aryan Malhotra', role: 'Meta Ads & Media Buyer Lead', department: 'Meta Ads & SMM', email: 'aryan@demo.example', phone: '+91 98765 00016', activeTasks: 18, avatar: '📊' },
+  { id: 'tm-17', name: 'Tanvi Singhania', role: 'Paid Social Funnel Strategist', department: 'Meta Ads & SMM', email: 'tanvi@demo.example', phone: '+91 98765 00017', activeTasks: 14, avatar: '📈' },
+  { id: 'tm-18', name: 'Sahil Kapoor', role: 'Instagram & LinkedIn Growth Manager', department: 'Meta Ads & SMM', email: 'sahil@demo.example', phone: '+91 98765 00018', activeTasks: 15, avatar: '🚀' },
+  { id: 'tm-19', name: 'Riya Bose', role: 'Community & Scheduling Specialist', department: 'Meta Ads & SMM', email: 'riya@demo.example', phone: '+91 98765 00019', activeTasks: 22, avatar: '📅' },
+  { id: 'tm-20', name: 'Deep Patel', role: 'Tracking, Pixel & Analytics Lead', department: 'Meta Ads & SMM', email: 'deep@demo.example', phone: '+91 98765 00020', activeTasks: 10, avatar: '🎯' },
 
   // 5. Shooting & Production Team (5 Members)
-  { id: 'tm-21', name: 'Vikram Rathore', role: 'Director of Photography (DoP)', department: 'Shooting Team', email: 'vikram@agency.com', phone: '+91 98765 00021', activeTasks: 6, avatar: '📹' },
-  { id: 'tm-22', name: 'Arjun Mehta', role: 'Senior Cinematographer & Drone Op', department: 'Shooting Team', email: 'arjun@agency.com', phone: '+91 98765 00022', activeTasks: 5, avatar: '🚁' },
-  { id: 'tm-23', name: 'Saurabh Mishra', role: 'Gimbal Operator & Reel Videographer', department: 'Shooting Team', email: 'saurabh@agency.com', phone: '+91 98765 00023', activeTasks: 7, avatar: '🎥' },
-  { id: 'tm-24', name: 'Simran Kaur', role: 'Shoot Producer & Wardrobe Stylist', department: 'Shooting Team', email: 'simran@agency.com', phone: '+91 98765 00024', activeTasks: 4, avatar: '👗' },
-  { id: 'tm-25', name: 'Chetan Vyas', role: 'Lighting & Sound Engineer', department: 'Shooting Team', email: 'chetan@agency.com', phone: '+91 98765 00025', activeTasks: 6, avatar: '💡' }
+  { id: 'tm-21', name: 'Vikram Rathore', role: 'Director of Photography (DoP)', department: 'Shooting Team', email: 'vikram@demo.example', phone: '+91 98765 00021', activeTasks: 6, avatar: '📹' },
+  { id: 'tm-22', name: 'Arjun Mehta', role: 'Senior Cinematographer & Drone Op', department: 'Shooting Team', email: 'arjun@demo.example', phone: '+91 98765 00022', activeTasks: 5, avatar: '🚁' },
+  { id: 'tm-23', name: 'Saurabh Mishra', role: 'Gimbal Operator & Reel Videographer', department: 'Shooting Team', email: 'saurabh@demo.example', phone: '+91 98765 00023', activeTasks: 7, avatar: '🎥' },
+  { id: 'tm-24', name: 'Simran Kaur', role: 'Shoot Producer & Wardrobe Stylist', department: 'Shooting Team', email: 'simran@demo.example', phone: '+91 98765 00024', activeTasks: 4, avatar: '👗' },
+  { id: 'tm-25', name: 'Chetan Vyas', role: 'Lighting & Sound Engineer', department: 'Shooting Team', email: 'chetan@demo.example', phone: '+91 98765 00025', activeTasks: 6, avatar: '💡' }
 ];
 
 export const SERVICE_CATEGORIES = [
@@ -57,7 +57,7 @@ export const generateClients = () => {
       name: 'IronCore Fitness',
       brand: 'IronCore',
       contactPerson: 'Aditya Oberoi',
-      email: 'aditya@ironcorefit.com',
+      email: 'aditya@demo.example',
       phone: '+91 98200 11223',
       industry: 'Fitness & Gym',
       monthlyRetainer: 85000,
@@ -80,7 +80,7 @@ export const generateClients = () => {
       name: 'Skyline Luxury Living',
       brand: 'Skyline Estates',
       contactPerson: 'Meera Chawla',
-      email: 'meera@skylineestates.in',
+      email: 'meera@demo.example',
       phone: '+91 98111 44556',
       industry: 'Real Estate',
       monthlyRetainer: 145000,
@@ -103,7 +103,7 @@ export const generateClients = () => {
       name: 'Zivah Coutures',
       brand: 'Zivah India',
       contactPerson: 'Kareena Kapoor',
-      email: 'contact@zivah.com',
+      email: 'contact@demo.example',
       phone: '+91 99300 77889',
       industry: 'Luxury Fashion',
       monthlyRetainer: 120000,
@@ -126,7 +126,7 @@ export const generateClients = () => {
       name: 'Apex Dental Care',
       brand: 'ApexSmile',
       contactPerson: 'Dr. Vivek Singhal',
-      email: 'care@apexdental.org',
+      email: 'care@demo.example',
       phone: '+91 98199 33221',
       industry: 'Dentist & Clinic',
       monthlyRetainer: 60000,
@@ -149,7 +149,7 @@ export const generateClients = () => {
       name: 'CloudSync SaaS',
       brand: 'CloudSync.io',
       contactPerson: 'Varun Grover',
-      email: 'varun@cloudsync.io',
+      email: 'varun@demo.example',
       phone: '+91 99201 88990',
       industry: 'Tech SaaS',
       monthlyRetainer: 95000,

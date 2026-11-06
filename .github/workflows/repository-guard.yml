@@ -1,0 +1,25 @@
+name: Repository secret-file guard
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, "security/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run synthetic guard tests
+        run: python3 -m unittest discover -s tools/security -p 'test_*.py' -v
+      - name: Inspect tracked worktree without printing secret matches
+        run: python3 tools/security/repository_guard.py
