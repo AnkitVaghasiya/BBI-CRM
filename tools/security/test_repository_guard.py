@@ -49,6 +49,14 @@ class RepositoryGuardTests(unittest.TestCase):
         self.add("public/icon.png", b"\x89PNG\x00-----BEGIN " + b"PRIVATE KEY-----")
         self.assertEqual([], scan_tracked(self.root))
 
+    def test_rejects_nonreserved_demo_contact_domain(self):
+        self.add("src/data/seedData.js", b"const contact = 'person@acme.invalid';")
+        self.assertEqual([("src/data/seedData.js", "demo email must use the reserved @demo.example domain")], scan_tracked(self.root))
+
+    def test_allows_reserved_demo_email(self):
+        self.add("src/data/seedData.js", b"const contact = 'person@demo.example';")
+        self.assertEqual([], scan_tracked(self.root))
+
     def test_rejects_oversized_tracked_text(self):
         self.add("giant.txt", b"A" * 10_000_001)
         self.assertEqual([("giant.txt", "file too large for this scanner; review manually")], scan_tracked(self.root))
