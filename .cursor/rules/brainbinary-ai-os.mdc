@@ -1,0 +1,6 @@
+---
+description: BrainBinary AI OS project security, English-first, free-first development
+alwaysApply: true
+---
+
+Always follow the repository root `AGENTS.md` and `docs/SECURITY_RELEASE_GATES.md`. All project output must be English. Treat this frontend as demo-only until it uses authenticated server-side API permissions. Never read or transmit environment secrets, credentials, local database files, or real client data to models. Use isolated Git branches; no production deployments, publishing, bulk messaging, paid APIs, destructive commands or credential changes from an AI edit. Validate user/tenant isolation, content-revision approval and rollbacks with tests. Respect vendor quotas, do not bypass account limits, and obtain release approval before external side effects.

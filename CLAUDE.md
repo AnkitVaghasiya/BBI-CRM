@@ -1,0 +1,3 @@
+# BrainBinary AI OS
+
+Follow [AGENTS.md](AGENTS.md) and [docs/SECURITY_RELEASE_GATES.md](docs/SECURITY_RELEASE_GATES.md) before working. The project language is English. Treat existing React state and demo roles as untrusted browser-only behavior. Never access production credentials, real client data, API tokens, browser profiles or database backups. Work in a separate branch, with tests, a backup and rollback plan. Use included subscription/approved free-tier model access only. Do not use paid Anthropic Console API calls or bypass Claude usage limits. Production publishing and external changes require explicit verified authorization.

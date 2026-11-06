@@ -1,0 +1,60 @@
+name: BrainBinary AI gateway and CRM checks
+
+on:
+  push:
+    branches:
+      - "agents/**"
+  pull_request:
+    branches:
+      - main
+      - feature/english-ai-os-requirements-20261106
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-gateway-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-security-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout project without writing credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Agent gateway no-network tests
+        run: python tools/ai_ops/test_agent_gateway.py
+
+      - name: Run staging-security contract regression tests (no network)
+        run: python tools/ai_ops/test_staging_smoke.py
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install locked frontend dependencies
+        run: npm ci --no-fund --no-audit
+
+      - name: Build English-language CRM prototype
+        run: npm run build
+
+      - name: Lint React application
+        run: npm run lint
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Ensure no whitespace errors
+        run: git diff --check
