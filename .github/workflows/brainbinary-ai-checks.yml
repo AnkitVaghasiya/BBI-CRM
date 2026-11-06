@@ -35,6 +35,9 @@ jobs:
       - name: Agent gateway no-network tests
         run: python tools/ai_ops/test_agent_gateway.py
 
+      - name: Run staging-security contract regression tests (no network)
+        run: python tools/ai_ops/test_staging_smoke.py
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
