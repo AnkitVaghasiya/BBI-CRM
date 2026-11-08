@@ -13,7 +13,8 @@ import {
   Settings,
   Bot,
   Network,
-  BarChart3
+  BarChart3,
+  Share2
 } from 'lucide-react';
 
 export const Sidebar = ({ onOpenSettings }) => {
@@ -43,6 +44,14 @@ export const Sidebar = ({ onOpenSettings }) => {
       icon: Users,
       roles: ['management', 'meta-ads'],
       badge: `${clients.length}`
+    },
+    {
+      id: 'channels',
+      label: 'Client Social & Meta Ads',
+      icon: Share2,
+      roles: ['management', 'meta-ads', 'video-editing', 'ai-content'],
+      badge: 'Channels',
+      badgeColor: 'emerald'
     },
     {
       id: 'production',

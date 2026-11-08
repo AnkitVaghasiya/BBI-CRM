@@ -69,6 +69,113 @@ export const SERVICE_CATEGORIES = [
   { id: 'raw-data', name: 'Raw Data & Cloud Drive', icon: 'HardDrive', color: 'cyan' }
 ];
 
+export const SOCIAL_PLATFORMS = [
+  { id: 'meta', name: 'Meta Ads & Facebook', icon: 'Target', color: 'blue', badge: 'Meta Marketing API', desc: 'Ad campaigns, Pixel tracking & Page posts' },
+  { id: 'instagram', name: 'Instagram', icon: 'Instagram', color: 'pink', badge: 'IG Graph API', desc: 'Reels, Carousels, Stories & Grid posts' },
+  { id: 'youtube', name: 'YouTube', icon: 'Youtube', color: 'red', badge: 'YouTube Data API v3', desc: 'Shorts, Long-form videos & Community posts' },
+  { id: 'pinterest', name: 'Pinterest', icon: 'Pin', color: 'rose', badge: 'Pinterest Business API', desc: 'Visual pins, Idea pins & Catalog boards' },
+  { id: 'snapchat', name: 'Snapchat', icon: 'Ghost', color: 'amber', badge: 'Snap Marketing API', desc: 'Spotlight videos, Public profile & Snap ads' },
+  { id: 'linkedin', name: 'LinkedIn', icon: 'Linkedin', color: 'indigo', badge: 'LinkedIn Marketing API', desc: 'B2B Company page & Thought leadership' }
+];
+
+export const generateClientSocialChannels = (clientName, brandName, i = 1) => {
+  const cleanSlug = (brandName || clientName).toLowerCase().replace(/[^a-z0-9]/g, '');
+  const hasMeta = true;
+  const hasIg = true;
+  const hasYt = i % 2 === 0 || i <= 5;
+  const hasPinterest = (i % 3 === 0) || (i === 2);
+  const hasSnapchat = (i % 2 !== 0) || (i === 1) || (i === 5);
+  const hasLinkedIn = (i % 4 === 0) || (i === 4);
+
+  return {
+    meta: {
+      active: hasMeta,
+      adAccountId: i === 1 ? 'act_1606985407825083' : `act_${1600000000000000 + i * 8371}`,
+      pixelId: `pix_${90000000 + i * 412}`,
+      pageId: `fb_${88000000 + i * 231}`,
+      handle: `@${cleanSlug}.official`,
+      url: `https://facebook.com/${cleanSlug}`,
+      accessToken: 'EAAZ_verified_token_active',
+      connected: true,
+      lastSynced: '2026-11-08 12:30'
+    },
+    instagram: {
+      active: hasIg,
+      handle: `@${cleanSlug}`,
+      url: `https://instagram.com/${cleanSlug}`,
+      followers: `${(12 + ((i * 4.3) % 90)).toFixed(1)}K`,
+      connected: true,
+      lastSynced: '2026-11-08 11:15'
+    },
+    youtube: {
+      active: hasYt,
+      handle: `@${cleanSlug}Official`,
+      channelId: `UC_${cleanSlug}_${i}`,
+      url: `https://youtube.com/@${cleanSlug}Official`,
+      subscribers: hasYt ? `${(3 + ((i * 1.8) % 45)).toFixed(1)}K` : '0',
+      connected: hasYt,
+      lastSynced: hasYt ? '2026-11-07 19:40' : null
+    },
+    pinterest: {
+      active: hasPinterest,
+      handle: `@${cleanSlug}_pins`,
+      url: `https://pinterest.com/${cleanSlug}`,
+      monthlyViews: hasPinterest ? `${(20 + ((i * 7) % 180)).toFixed(0)}K` : '0',
+      connected: hasPinterest,
+      lastSynced: hasPinterest ? '2026-11-06 14:10' : null
+    },
+    snapchat: {
+      active: hasSnapchat,
+      handle: `${cleanSlug}_snap`,
+      publicProfileId: `snap_${cleanSlug}_${i}`,
+      spotlightSubscribers: hasSnapchat ? `${(5 + ((i * 2.2) % 35)).toFixed(1)}K` : '0',
+      connected: hasSnapchat,
+      lastSynced: hasSnapchat ? '2026-11-08 09:45' : null
+    },
+    linkedin: {
+      active: hasLinkedIn,
+      handle: `${cleanSlug}-corp`,
+      url: `https://linkedin.com/company/${cleanSlug}`,
+      followers: hasLinkedIn ? `${(1.5 + ((i * 0.9) % 20)).toFixed(1)}K` : '0',
+      connected: hasLinkedIn,
+      lastSynced: hasLinkedIn ? '2026-11-05 16:00' : null
+    }
+  };
+};
+
+export const generateClientAiPreferences = (clientName, industry, brandName) => {
+  const isLuxury = industry.includes('Luxury') || industry.includes('Jewellery');
+  const isFitness = industry.includes('Fitness');
+  const isTech = industry.includes('Tech') || industry.includes('Finance');
+  const isClinic = industry.includes('Clinic') || industry.includes('Dentist');
+
+  return {
+    aiConnected: true,
+    brandVoice: isLuxury 
+      ? 'Sophisticated, aspirational, premium craftsmanship, timeless elegance with crisp tone'
+      : isFitness 
+      ? 'High-energy, relentless motivation, disciplined, transformational and hype-driven'
+      : isTech 
+      ? 'Authoritative, analytical, data-driven, ROI-focused and jargon-free clarity'
+      : isClinic 
+      ? 'Compassionate, medically reassuring, patient-centric, informative and trustworthy'
+      : 'Conversational, vibrant, community-focused, engaging and trend-conscious',
+    targetAudience: isLuxury
+      ? 'High-net-worth lifestyle buyers, watch collectors, corporate gifting (Age 24-50)'
+      : isFitness
+      ? 'Active professionals, athletes, bodybuilding enthusiasts, weight loss seekers (Age 18-40)'
+      : isTech
+      ? 'Founders, CFOs, accountants, business owners and tech decision makers (Age 28-55)'
+      : isClinic
+      ? 'Families, dental patients, wellness seekers, health-conscious urbanites (All ages)'
+      : 'Metro urban consumers, social media active youth and young families (Age 20-45)',
+    preferredAiModel: 'Gemini 2.0 Flash / Pro (Connected)',
+    toneKeywords: isLuxury ? ['Aspirational', 'Prestige', 'Authentic'] : isFitness ? ['Grind', 'Power', 'Victory'] : ['Precision', 'Growth', 'Reliability'],
+    enabledChannels: ['meta', 'instagram', 'youtube', 'snapchat', 'pinterest'],
+    dailyAutoPrompts: true
+  };
+};
+
 export const generateClients = () => {
   const baseClients = [
     {
@@ -218,7 +325,13 @@ export const generateClients = () => {
     }
   ];
 
-  const fullClients = [...baseClients];
+  const enhancedBaseClients = baseClients.map((c, idx) => ({
+    ...c,
+    socialChannels: c.socialChannels || generateClientSocialChannels(c.name, c.brand, idx + 1),
+    aiPreferences: c.aiPreferences || generateClientAiPreferences(c.name, c.industry, c.brand)
+  }));
+
+  const fullClients = [...enhancedBaseClients];
   const industries = ['Fitness & Gym', 'Real Estate', 'Luxury Fashion', 'Tech SaaS', 'Dentist & Clinic', 'Restaurant & Cafe', 'EdTech', 'E-commerce DTC', 'Jewellery', 'Interior Design'];
   
   for (let i = 6; i <= 210; i++) {
@@ -234,11 +347,13 @@ export const generateClients = () => {
     const gTarget = 8 + (i % 6);
     const sTarget = 14 + (i % 10);
     const pTarget = 18 + (i % 12);
+    const cName = `${ind.split(' ')[0]} Enterprise Brand #${i}`;
+    const bName = `Brand-${i} Global`;
 
     fullClients.push({
       id: `client-${i}`,
-      name: `${ind.split(' ')[0]} Enterprise Brand #${i}`,
-      brand: `Brand-${i} Global`,
+      name: cName,
+      brand: bName,
       contactPerson: `Executive Lead ${i}`,
       email: `contact.client${i}@agencydomain.com`,
       phone: `+91 98${(100 + i).toString().slice(-3)} ${(20000 + i).toString().slice(-5)}`,
@@ -254,6 +369,8 @@ export const generateClients = () => {
         smm: TEAM_MEMBERS[15 + (i % 5)].id
       },
       rawDriveUrl: `https://drive.google.com/drive/folders/client-${i}-footage-vault`,
+      socialChannels: generateClientSocialChannels(cName, bName, i),
+      aiPreferences: generateClientAiPreferences(cName, ind, bName),
       quotas: {
         videos: { target: vTarget, completed: Math.floor(vTarget * 0.7), inProgress: Math.max(1, Math.floor(vTarget * 0.15)) },
         graphics: { target: gTarget, completed: Math.floor(gTarget * 0.75), inProgress: Math.max(1, Math.floor(gTarget * 0.15)) },

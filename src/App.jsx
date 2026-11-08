@@ -14,6 +14,7 @@ import { TeamDirectory } from './components/TeamDirectory';
 import { IntegrationsHub } from './components/IntegrationsHub';
 import { AIStudio } from './components/AIStudio';
 import { DepartmentDashboards } from './components/DepartmentDashboards';
+import { ClientChannelsHub } from './components/ClientChannelsHub';
 import { BackupSettingsModal } from './components/BackupSettingsModal';
 import { ClientModal, TaskModal, ShootModal, AdModal, TeamMemberModal } from './components/ActionModals';
 
@@ -113,6 +114,8 @@ const MainApp = () => {
             onNewClient={handleOpenNewClient}
           />
         );
+      case 'channels':
+        return <ClientChannelsHub onOpenClientModal={handleEditClient} />;
       case 'production':
         return (
           <ProductionTracker 

@@ -9,7 +9,10 @@ import {
   INITIAL_CHATS,
   INITIAL_DAILY_LOGS,
   REVISION_REASONS,
-  DELIVERABLE_TYPES
+  DELIVERABLE_TYPES,
+  SOCIAL_PLATFORMS,
+  generateClientSocialChannels,
+  generateClientAiPreferences
 } from '../data/seedData';
 
 const AgencyContext = createContext();
@@ -50,7 +53,14 @@ export const AgencyProvider = ({ children }) => {
   const [clients, setClients] = useState(() => {
     const saved = localStorage.getItem('agency_clients_v3');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.map((c, idx) => ({
+          ...c,
+          socialChannels: c.socialChannels || generateClientSocialChannels(c.name, c.brand, idx + 1),
+          aiPreferences: c.aiPreferences || generateClientAiPreferences(c.name, c.industry || 'Business', c.brand)
+        }));
+      } catch (e) { console.error(e); }
     }
     return generateClients();
   });
@@ -351,6 +361,80 @@ export const AgencyProvider = ({ children }) => {
     }));
   };
 
+  // Update client social media channels
+  const updateClientChannels = (clientId, updatedChannels) => {
+    setClients(prev => prev.map(c => {
+      if (c.id === clientId) {
+        return {
+          ...c,
+          socialChannels: {
+            ...(c.socialChannels || {}),
+            ...updatedChannels
+          }
+        };
+      }
+      return c;
+    }));
+  };
+
+  // Toggle whether agency is currently actively managing this platform for the client
+  const toggleClientChannelActive = (clientId, platformKey, isActive) => {
+    setClients(prev => prev.map(c => {
+      if (c.id === clientId) {
+        const currentPlatform = c.socialChannels?.[platformKey] || {};
+        const newStatus = isActive !== undefined ? isActive : !currentPlatform.active;
+        return {
+          ...c,
+          socialChannels: {
+            ...(c.socialChannels || {}),
+            [platformKey]: {
+              ...currentPlatform,
+              active: newStatus
+            }
+          }
+        };
+      }
+      return c;
+    }));
+  };
+
+  // Specific Meta Ads connector for a client
+  const updateClientMetaAds = (clientId, metaData) => {
+    setClients(prev => prev.map(c => {
+      if (c.id === clientId) {
+        const currentMeta = c.socialChannels?.meta || {};
+        return {
+          ...c,
+          socialChannels: {
+            ...(c.socialChannels || {}),
+            meta: {
+              ...currentMeta,
+              ...metaData,
+              lastSynced: getCurrentTimestamp()
+            }
+          }
+        };
+      }
+      return c;
+    }));
+  };
+
+  // Update client AI brand voice and model configuration
+  const updateClientAiPreferences = (clientId, preferences) => {
+    setClients(prev => prev.map(c => {
+      if (c.id === clientId) {
+        return {
+          ...c,
+          aiPreferences: {
+            ...(c.aiPreferences || {}),
+            ...preferences
+          }
+        };
+      }
+      return c;
+    }));
+  };
+
   // 2. Team Member CRUD
   const saveTeamMember = (memberData) => {
     setTeamMembers(prev => {
@@ -641,6 +725,10 @@ export const AgencyProvider = ({ children }) => {
         saveClient,
         deleteClient,
         updateClientQuota,
+        updateClientChannels,
+        toggleClientChannelActive,
+        updateClientMetaAds,
+        updateClientAiPreferences,
         teamMembers,
         saveTeamMember,
         deleteTeamMember,
@@ -661,6 +749,7 @@ export const AgencyProvider = ({ children }) => {
         chats,
         sendMessage,
         serviceCategories: SERVICE_CATEGORIES,
+        socialPlatforms: SOCIAL_PLATFORMS,
         revisionReasons: REVISION_REASONS,
         deliverableTypes: DELIVERABLE_TYPES,
         activeTab,
