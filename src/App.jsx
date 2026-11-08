@@ -16,6 +16,7 @@ import { AIStudio } from './components/AIStudio';
 import { DepartmentDashboards } from './components/DepartmentDashboards';
 import { ClientChannelsHub } from './components/ClientChannelsHub';
 import { EmployeeHRHub } from './components/EmployeeHRHub';
+import { ClientDeliverablesTracker } from './components/ClientDeliverablesTracker';
 import { SecurityAuditModal } from './components/SecurityAuditModal';
 import { AuthModal } from './components/AuthModal';
 import { SnapshotVaultModal } from './components/SnapshotVaultModal';
@@ -132,6 +133,8 @@ const MainApp = () => {
             onNewClient={handleOpenNewClient}
           />
         );
+      case 'deliverables':
+        return <ClientDeliverablesTracker />;
       case 'channels':
         return <ClientChannelsHub onOpenClientModal={handleEditClient} />;
       case 'production':

@@ -76,6 +76,14 @@ export const Sidebar = ({ onOpenSettings, isMobileOpen, onCloseMobile, onOpenSec
       badge: `${safeClients.length}`
     },
     {
+      id: 'deliverables',
+      label: 'Deliverables & Staff Allocation',
+      icon: Target,
+      roles: ['management', 'video-editing', 'shooting-team', 'ai-content', 'meta-ads'],
+      badge: 'Tracker',
+      badgeColor: 'emerald'
+    },
+    {
       id: 'channels',
       label: 'Client Social & Meta Ads',
       icon: Share2,

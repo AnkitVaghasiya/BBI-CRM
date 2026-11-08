@@ -592,6 +592,173 @@ export const AgencyProvider = ({ children }) => {
     );
   };
 
+
+  // Assign an employee specialist to a client and update bilateral mappings
+  const assignEmployeeToClient = (clientId, roleKey, memberId) => {
+    const member = teamMembers.find(m => m.id === memberId);
+    const client = clients.find(c => c.id === clientId);
+    const memberName = member ? member.name : memberId;
+    const clientName = client ? client.name : clientId;
+
+    // 1. Update Client assignees
+    setClients(prev => prev.map(c => {
+      if (c.id === clientId) {
+        return {
+          ...c,
+          assignees: {
+            ...(c.assignees || {}),
+            [roleKey]: memberId
+          }
+        };
+      }
+      return c;
+    }));
+
+    // 2. Update Team Member assignedClientIds
+    setTeamMembers(prev => prev.map(m => {
+      if (m.id === memberId) {
+        const currentList = Array.isArray(m.assignedClientIds) ? m.assignedClientIds : [];
+        if (!currentList.includes(clientId)) {
+          return {
+            ...m,
+            assignedClientIds: [...currentList, clientId],
+            lastUpdated: new Date().toISOString().replace('T', ' ').substring(0, 16),
+            lastChangeReason: `Assigned to client ${clientName}`
+          };
+        }
+      }
+      return m;
+    }));
+
+    addAuditLog(
+      'Client',
+      clientId,
+      clientName,
+      'TEAM_ASSIGNMENT',
+      'Client Reassignment',
+      `Assigned ${memberName} as ${roleKey} lead for ${clientName}`,
+      currentUser.name
+    );
+
+    showLiveToast('Team Assignment Updated', `${memberName} assigned to ${clientName} (${roleKey})`, '< 1ms');
+    broadcastLiveSync('CLIENT_ASSIGNMENT_UPDATE');
+  };
+
+  // Unassign employee specialist from a client
+  const unassignEmployeeFromClient = (clientId, roleKey, memberId) => {
+    const member = teamMembers.find(m => m.id === memberId);
+    const client = clients.find(c => c.id === clientId);
+    const memberName = member ? member.name : memberId;
+    const clientName = client ? client.name : clientId;
+
+    // 1. Clear in Client
+    setClients(prev => prev.map(c => {
+      if (c.id === clientId) {
+        const nextAssignees = { ...(c.assignees || {}) };
+        if (nextAssignees[roleKey] === memberId) {
+          nextAssignees[roleKey] = null;
+        }
+        return { ...c, assignees: nextAssignees };
+      }
+      return c;
+    }));
+
+    // 2. Remove in Team Member
+    setTeamMembers(prev => prev.map(m => {
+      if (m.id === memberId) {
+        const currentList = Array.isArray(m.assignedClientIds) ? m.assignedClientIds : [];
+        return {
+          ...m,
+          assignedClientIds: currentList.filter(id => id !== clientId),
+          lastUpdated: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          lastChangeReason: `Unassigned from client ${clientName}`
+        };
+      }
+      return m;
+    }));
+
+    addAuditLog(
+      'Client',
+      clientId,
+      clientName,
+      'TEAM_UNASSIGNMENT',
+      'Client Reassignment',
+      `Removed ${memberName} from ${clientName}`,
+      currentUser.name
+    );
+
+    showLiveToast('Assignment Removed', `${memberName} unassigned from ${clientName}`, '< 1ms');
+    broadcastLiveSync('CLIENT_UNASSIGNMENT_UPDATE');
+  };
+
+  // 1-Click increment of delivered item progress
+  const logDeliverableProgress = (clientId, quotaCategory, increment = 1) => {
+    const client = clients.find(c => c.id === clientId);
+    const clientName = client ? client.name : clientId;
+
+    setClients(prev => prev.map(c => {
+      if (c.id === clientId) {
+        const currentQuotas = c.quotas || {
+          videos: { target: 16, completed: 0, inProgress: 0 },
+          graphics: { target: 12, completed: 0, inProgress: 0 },
+          posts: { target: 20, completed: 0, inProgress: 0 },
+          scripts: { target: 20, completed: 0, inProgress: 0 },
+          shoots: { target: 2, completed: 0, inProgress: 0 },
+          metaCampaigns: { target: 4, completed: 0, inProgress: 0 }
+        };
+        const catObj = currentQuotas[quotaCategory] || { target: 10, completed: 0, inProgress: 0 };
+        const newCompleted = Math.max(0, (catObj.completed || 0) + increment);
+        const newInProgress = Math.max(0, (catObj.inProgress || 0) - (increment > 0 ? 1 : 0));
+
+        return {
+          ...c,
+          quotas: {
+            ...currentQuotas,
+            [quotaCategory]: {
+              ...catObj,
+              completed: newCompleted,
+              inProgress: newInProgress
+            }
+          }
+        };
+      }
+      return c;
+    }));
+
+    showLiveToast('Deliverable Logged', `+${increment} ${quotaCategory} marked delivered for ${clientName}`, '< 1ms');
+    broadcastLiveSync('QUOTA_PROGRESS_UPDATE');
+  };
+
+  // Full Quota Update for a client with change reason
+  const updateClientFullQuotas = (clientId, newQuotas, changeReason = 'Monthly Quota Adjustment', changeNotes = '') => {
+    const client = clients.find(c => c.id === clientId);
+    const clientName = client ? client.name : clientId;
+
+    setClients(prev => prev.map(c => {
+      if (c.id === clientId) {
+        return {
+          ...c,
+          quotas: newQuotas,
+          lastQuotaUpdated: new Date().toISOString()
+        };
+      }
+      return c;
+    }));
+
+    addAuditLog(
+      'Client',
+      clientId,
+      clientName,
+      'QUOTA_UPDATE',
+      changeReason,
+      changeNotes || 'Monthly deliverable targets adjusted',
+      currentUser.name
+    );
+
+    showLiveToast('Quotas Updated', `Deliverables revised for ${clientName}`, '< 1ms');
+    broadcastLiveSync('FULL_QUOTAS_UPDATE');
+  };
+
   // Update specific deliverable quota for a client
   const updateClientQuota = (clientId, quotaCategory, field, value) => {
     setClients(prev => prev.map(c => {
@@ -1513,6 +1680,10 @@ export const AgencyProvider = ({ children }) => {
         saveClient,
         deleteClient,
         updateClientQuota,
+        assignEmployeeToClient,
+        unassignEmployeeFromClient,
+        logDeliverableProgress,
+        updateClientFullQuotas,
         updateClientChannels,
         toggleClientChannelActive,
         updateClientMetaAds,
