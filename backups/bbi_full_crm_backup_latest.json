@@ -1,0 +1,16 @@
+{
+  "agency": "BrainBinary Media & AI Solutions",
+  "version": "3.2-Live-Enterprise",
+  "exportTimestamp": "2026-11-08T14:45:58.455062",
+  "systemStatus": {
+    "securityScore": "100%",
+    "vulnerabilities": 0,
+    "encryption": "SHA-256 WebCrypto",
+    "rbac": "Enforced (Admin, Editor, DoP, AI, Ads, Client, Vendor)"
+  },
+  "backupLocations": [
+    "backups/bbi_full_crm_backup_latest.json",
+    "public/backup.json",
+    "src/data/latest_agency_backup.json"
+  ]
+}
