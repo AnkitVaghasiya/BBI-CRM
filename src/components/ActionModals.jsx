@@ -1,10 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useAgency } from '../context/AgencyContext';
-import { X, Check, Trash2 } from 'lucide-react';
+import { 
+  X, 
+  Check, 
+  Trash2, 
+  History, 
+  Tag, 
+  Building2, 
+  Briefcase, 
+  ShieldCheck, 
+  SlidersHorizontal,
+  Search,
+  Filter,
+  UserCheck,
+  Calendar,
+  Clock,
+  ExternalLink
+} from 'lucide-react';
 
-// 1. Team Member Modal (Full Edit & Add)
+// 1. Team Member / Editor Modal (Full Edit & Add with Duties & Reason Tracking)
 export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
-  const { saveTeamMember, deleteTeamMember } = useAgency();
+  const { saveTeamMember, deleteTeamMember, changeReasons, clients } = useAgency();
+
+  const reasonsList = changeReasons || [
+    'Role Promotion & Scope Expansion',
+    'Client Reassignment & Workload Rebalancing',
+    'Deliverable Target & Capacity Adjustment',
+    'Retainer / Compensation Revision',
+    'SOP & Workflow Restructuring',
+    'Toolstack & Software Upgrade',
+    'Emergency Task Coverage & Backup',
+    'Routine Contact & Profile Update'
+  ];
 
   const [form, setForm] = useState({
     name: '',
@@ -12,7 +39,14 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
     department: 'Video Editing',
     email: '',
     phone: '',
-    avatar: '🎬'
+    avatar: '🎬',
+    dailyTarget: 2,
+    currentDuties: '',
+    assignedScope: '',
+    toolstackStr: 'Adobe Premiere Pro, CapCut Pro',
+    assignedClientIds: ['client-1'],
+    changeReason: reasonsList[0],
+    changeNotes: ''
   });
 
   const departmentAvatars = {
@@ -25,7 +59,16 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
 
   useEffect(() => {
     if (memberToEdit) {
-      setForm(memberToEdit);
+      setForm({
+        ...memberToEdit,
+        dailyTarget: memberToEdit.dailyTarget || 2,
+        currentDuties: memberToEdit.currentDuties || 'Standard deliverable editing and quality control.',
+        assignedScope: memberToEdit.assignedScope || 'Meet scheduled quotas and resolve revisions within 4 hours.',
+        toolstackStr: Array.isArray(memberToEdit.toolstack) ? memberToEdit.toolstack.join(', ') : (memberToEdit.toolstack || 'Adobe Premiere Pro, CapCut Pro'),
+        assignedClientIds: memberToEdit.assignedClientIds || ['client-1'],
+        changeReason: reasonsList[0],
+        changeNotes: ''
+      });
     } else {
       setForm({
         name: '',
@@ -33,7 +76,14 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
         department: 'Video Editing',
         email: '',
         phone: '',
-        avatar: '🎬'
+        avatar: '🎬',
+        dailyTarget: 2,
+        currentDuties: 'Short-form reel cutting, hook pacing, audio balancing and subtitle animation.',
+        assignedScope: 'Produce 2 high-retention video cuts daily and handle revision feedback.',
+        toolstackStr: 'Adobe Premiere Pro, After Effects, CapCut Pro',
+        assignedClientIds: ['client-1'],
+        changeReason: reasonsList[0],
+        changeNotes: 'Initial team member onboarding.'
       });
     }
   }, [memberToEdit, isOpen]);
@@ -42,44 +92,54 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return alert('Please enter a name');
-    saveTeamMember(form);
+    if (!form.name.trim()) return alert('Please enter full name');
+    
+    const tools = form.toolstackStr.split(',').map(t => t.trim()).filter(Boolean);
+    const memberPayload = {
+      ...form,
+      toolstack: tools
+    };
+
+    saveTeamMember(memberPayload, form.changeReason, form.changeNotes || `Updated duties and scope for ${form.name}`);
     onClose();
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete ${form.name} ?`)) {
-      deleteTeamMember(form.id);
+    if (window.confirm(`Are you sure you want to remove ${form.name} from active staff?`)) {
+      deleteTeamMember(form.id, form.changeReason || 'Staff Offboarding');
       onClose();
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transition-colors">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl transition-colors">
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/70">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{memberToEdit ? '✏️ Edit Team Member' : '➕ Add New Team Member'}</span>
+              <span>{memberToEdit ? '✏️ Edit Staff & Role Scope' : '➕ Onboard New Staff Specialist'}</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Update name, designation, department, and contact info.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Specify current duties ("kon kya karta he"), future scope ("kon kya karega"), tools, and change reason.
+            </p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[80vh] overflow-y-auto text-xs">
+          {/* Name & Avatar */}
           <div className="grid grid-cols-4 gap-3">
             <div className="col-span-3">
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Full Name (Full Name) *</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Full Name *</label>
               <input
                 type="text"
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. Rahul Sharma"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-semibold"
               />
             </div>
             <div>
@@ -88,64 +148,159 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
                 type="text"
                 value={form.avatar}
                 onChange={(e) => setForm({ ...form, avatar: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-center text-base focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-center text-base focus:outline-none"
               />
             </div>
           </div>
 
+          {/* Department & Role */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Department (Department)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Department</label>
               <select
                 value={form.department}
                 onChange={(e) => {
                   const newDept = e.target.value;
                   setForm({ ...form, department: newDept, avatar: departmentAvatars[newDept] || '👤' });
                 }}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none font-semibold"
               >
-                <option value="Management">Management (Management)</option>
-                <option value="Video Editing">Video Editing (Video Editing)</option>
-                <option value="AI Content">AI Content (AI & Creative)</option>
-                <option value="Meta Ads & SMM">Meta Ads & SMM (Meta Ads & SMM)</option>
-                <option value="Shooting Team">Shooting Team (Camera Crew)</option>
+                <option value="Management">Management</option>
+                <option value="Video Editing">Video Editing</option>
+                <option value="AI Content">AI & Creative Content</option>
+                <option value="Meta Ads & SMM">Meta Ads & Performance SMM</option>
+                <option value="Shooting Team">Shooting & Cinematography Crew</option>
               </select>
             </div>
 
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Role / Designation (Role)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Role / Designation *</label>
               <input
                 type="text"
                 required
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                placeholder="e.g. Lead Editor"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                placeholder="e.g. Lead Video Editor"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none font-semibold"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Email, Phone & Daily Target */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Email (Email Address)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Email Address</label>
               <input
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="member@agency.com"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                placeholder="staff@agency.com"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Phone (Phone Number)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Phone Number</label>
               <input
                 type="text"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 placeholder="+91 98765 00000"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
               />
+            </div>
+
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Daily Target Deliverables</label>
+              <input
+                type="number"
+                min="0"
+                value={form.dailyTarget}
+                onChange={(e) => setForm({ ...form, dailyTarget: Number(e.target.value) })}
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Current Duties ("kon kya karta he") */}
+          <div className="space-y-1">
+            <label className="text-slate-800 dark:text-slate-200 font-bold block flex items-center gap-1.5">
+              <span>🎯 Current Responsibilities ("What they currently do / kon kya karta he") *</span>
+            </label>
+            <textarea
+              rows={2}
+              required
+              value={form.currentDuties}
+              onChange={(e) => setForm({ ...form, currentDuties: e.target.value })}
+              placeholder="e.g. Responsible for first-cut editing of viral reels, sound design, pacing cuts and color grading..."
+              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          {/* Future / Assigned Scope ("kon kya karega") */}
+          <div className="space-y-1">
+            <label className="text-slate-800 dark:text-slate-200 font-bold block flex items-center gap-1.5">
+              <span>🚀 Upcoming Scope & Deliverables ("What they will do / kon kya karega") *</span>
+            </label>
+            <textarea
+              rows={2}
+              required
+              value={form.assignedScope}
+              onChange={(e) => setForm({ ...form, assignedScope: e.target.value })}
+              placeholder="e.g. Lead the festive Diwali reels campaign for Ambika Watches and deliver 2 completed cuts daily with under 4-hour revision turns..."
+              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          {/* Tools & Software Stack */}
+          <div>
+            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">
+              Primary Tools & Software Stack (Comma separated)
+            </label>
+            <input
+              type="text"
+              value={form.toolstackStr}
+              onChange={(e) => setForm({ ...form, toolstackStr: e.target.value })}
+              placeholder="Adobe Premiere Pro, After Effects, DaVinci Resolve, CapCut Pro"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
+            />
+          </div>
+
+          {/* MANDATORY REASON FOR UPDATE / AUDIT TRAIL */}
+          <div className="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/30 space-y-2.5">
+            <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold">
+              <Tag className="w-4 h-4 text-amber-600" />
+              <span>Audit Trail: Reason for Change / Update *</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label className="text-slate-600 dark:text-slate-400 text-[11px] block mb-1 font-semibold">
+                  Standardized Reason Category:
+                </label>
+                <select
+                  value={form.changeReason}
+                  onChange={(e) => setForm({ ...form, changeReason: e.target.value })}
+                  className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold focus:outline-none"
+                >
+                  {reasonsList.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-slate-600 dark:text-slate-400 text-[11px] block mb-1 font-semibold">
+                  Justification Notes (Audit Log):
+                </label>
+                <input
+                  type="text"
+                  value={form.changeNotes}
+                  onChange={(e) => setForm({ ...form, changeNotes: e.target.value })}
+                  placeholder="e.g. Promoted to lead editor due to high velocity output."
+                  className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none"
+                />
+              </div>
             </div>
           </div>
 
@@ -158,7 +313,7 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
                 className="px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-600/10 dark:hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 rounded-xl font-medium flex items-center gap-1.5 transition"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Delete (Delete)</span>
+                <span>Remove Staff</span>
               </button>
             ) : <div />}
 
@@ -172,9 +327,10 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-sm transition"
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-sm transition flex items-center gap-1.5"
               >
-                {memberToEdit ? 'Save (Save)' : 'Add (Add)'}
+                <Check className="w-4 h-4" />
+                <span>{memberToEdit ? 'Save Staff Updates with Reason' : 'Add Staff Member'}</span>
               </button>
             </div>
           </div>
@@ -184,9 +340,18 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
   );
 };
 
-// 2. Client Modal (Full Edit & Add)
+// 2. Client Modal (Full Edit & Add with Quota, Social Channels, and Reason Tracking)
 export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
-  const { clients, saveClient, deleteClient, teamMembers, serviceCategories } = useAgency();
+  const { clients, saveClient, deleteClient, teamMembers, serviceCategories, changeReasons } = useAgency();
+
+  const reasonsList = changeReasons || [
+    'Client Reassignment & Workload Rebalancing',
+    'Deliverable Target & Capacity Adjustment',
+    'Retainer / Compensation Revision',
+    'SOP & Workflow Restructuring',
+    'Partner Agency / Vendor Contract Update',
+    'Routine Contact & Profile Update'
+  ];
 
   const [form, setForm] = useState({
     name: '',
@@ -205,12 +370,33 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
       ai: 'tm-11',
       smm: 'tm-16'
     },
-    rawDriveUrl: 'https://drive.google.com/drive/folders/client-vault'
+    rawDriveUrl: 'https://drive.google.com/drive/folders/client-vault',
+    quotas: {
+      videos: { target: 16, completed: 0, inProgress: 0 },
+      graphics: { target: 12, completed: 0, inProgress: 0 },
+      posts: { target: 20, completed: 0, inProgress: 0 },
+      scripts: { target: 20, completed: 0, inProgress: 0 },
+      shoots: { target: 2, completed: 0, inProgress: 0 },
+      metaCampaigns: { target: 4, completed: 0, inProgress: 0 }
+    },
+    socialChannels: {
+      meta: { active: true, adAccountId: 'act_1606985407825083' },
+      instagram: { active: true, handle: '@client_brand' },
+      youtube: { active: true, handle: '@clientTV' },
+      snapchat: { active: false, handle: '' },
+      pinterest: { active: false, handle: '' }
+    },
+    changeReason: reasonsList[0],
+    changeNotes: ''
   });
 
   useEffect(() => {
     if (clientToEdit) {
-      setForm(clientToEdit);
+      setForm({
+        ...clientToEdit,
+        changeReason: reasonsList[0],
+        changeNotes: ''
+      });
     } else {
       setForm({
         name: '',
@@ -229,7 +415,24 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
           ai: teamMembers[10]?.id || 'tm-11',
           smm: teamMembers[15]?.id || 'tm-16'
         },
-        rawDriveUrl: 'https://drive.google.com/drive/folders/client-vault'
+        rawDriveUrl: 'https://drive.google.com/drive/folders/client-vault',
+        quotas: {
+          videos: { target: 16, completed: 0, inProgress: 0 },
+          graphics: { target: 12, completed: 0, inProgress: 0 },
+          posts: { target: 20, completed: 0, inProgress: 0 },
+          scripts: { target: 20, completed: 0, inProgress: 0 },
+          shoots: { target: 2, completed: 0, inProgress: 0 },
+          metaCampaigns: { target: 4, completed: 0, inProgress: 0 }
+        },
+        socialChannels: {
+          meta: { active: true, adAccountId: 'act_1606985407825083' },
+          instagram: { active: true, handle: '@client_brand' },
+          youtube: { active: true, handle: '@clientTV' },
+          snapchat: { active: false, handle: '' },
+          pinterest: { active: false, handle: '' }
+        },
+        changeReason: reasonsList[0],
+        changeNotes: 'Initial client onboarding.'
       });
     }
   }, [clientToEdit, isOpen, teamMembers]);
@@ -248,14 +451,14 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return alert('Please enter a name');
-    saveClient(form);
+    if (!form.name.trim()) return alert('Please enter company/brand name');
+    saveClient(form, form.changeReason, form.changeNotes || `Updated profile & deliverables for ${form.name}`);
     onClose();
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete client "${form.name}" ?`)) {
-      deleteClient(form.id);
+    if (window.confirm(`Are you sure you want to delete client "${form.name}"?`)) {
+      deleteClient(form.id, form.changeReason || 'Client Cancellation');
       onClose();
     }
   };
@@ -266,9 +469,11 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/70">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{clientToEdit ? '✏️ Edit Client Profile' : '➕ Onboard New Client'}</span>
+              <span>{clientToEdit ? '✏️ Edit Client Profile & Scope' : '➕ Onboard New Client'}</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Configure client profile, enrolled services, and team leads.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Update monthly retainers, quotas, social channels, department assignees, and change reason.
+            </p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             <X className="w-5 h-5" />
@@ -286,7 +491,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. IronCore Gym"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-semibold"
               />
             </div>
             <div>
@@ -308,7 +513,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
                 type="text"
                 value={form.contactPerson}
                 onChange={(e) => setForm({ ...form, contactPerson: e.target.value })}
-                placeholder="e.g. Dr. Vivek Desai"
+                placeholder="Full Name"
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -323,12 +528,12 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Phone Number</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Phone</label>
               <input
                 type="text"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                placeholder="+91 98200 00000"
+                placeholder="+91 98765 43210"
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -336,14 +541,20 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Industry Category</label>
-              <input
-                type="text"
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Industry</label>
+              <select
                 value={form.industry}
                 onChange={(e) => setForm({ ...form, industry: e.target.value })}
-                placeholder="Fitness, Real Estate..."
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-              />
+              >
+                <option value="Fitness & Gym">Fitness & Gym</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="Luxury Retail & Watches">Luxury Retail & Watches</option>
+                <option value="Tech SaaS & Finance">Tech SaaS & Finance</option>
+                <option value="Dentist & Clinic">Dentist & Clinic</option>
+                <option value="Restaurant & Cafe">Restaurant & Cafe</option>
+                <option value="Interior Design">Interior Design</option>
+              </select>
             </div>
             <div>
               <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Monthly Retainer (₹)</label>
@@ -351,7 +562,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
                 type="number"
                 value={form.monthlyRetainer}
                 onChange={(e) => setForm({ ...form, monthlyRetainer: Number(e.target.value) })}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold focus:outline-none"
               />
             </div>
             <div>
@@ -359,11 +570,12 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-semibold focus:outline-none"
               >
-                <option value="Active">Active (Active)</option>
+                <option value="Active">Active</option>
                 <option value="Onboarding">Onboarding</option>
-                <option value="Paused">Paused</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Review">Review</option>
               </select>
             </div>
           </div>
@@ -444,67 +656,6 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
             </div>
           </div>
 
-          {/* Enrolled Services */}
-          <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <label className="text-slate-800 dark:text-slate-300 font-bold block">
-              Enrolled Services (Subscribed Services):
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {serviceCategories.map(s => {
-                const isSelected = form.services?.includes(s.id);
-                return (
-                  <button
-                    type="button"
-                    key={s.id}
-                    onClick={() => toggleService(s.id)}
-                    className={`p-2 rounded-xl border text-left flex items-center justify-between transition ${
-                      isSelected 
-                        ? 'bg-blue-50 dark:bg-blue-600/20 border-blue-500 text-blue-700 dark:text-blue-300 font-bold' 
-                        : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    <span>{s.name}</span>
-                    {isSelected && <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Assigned Specialists */}
-          <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <label className="text-slate-800 dark:text-slate-300 font-bold block">
-              Assigned Department Specialists (Assignees):
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-slate-500 dark:text-slate-400 text-[11px] block mb-1">Video Editor:</label>
-                <select
-                  value={form.assignees?.videoEditing}
-                  onChange={(e) => setForm({ ...form, assignees: { ...form.assignees, videoEditing: e.target.value } })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
-                >
-                  {teamMembers.filter(m => m.department === 'Video Editing').map(m => (
-                    <option key={m.id} value={m.id}>{m.name} ({m.role})</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-slate-500 dark:text-slate-400 text-[11px] block mb-1">Shooting Lead:</label>
-                <select
-                  value={form.assignees?.shooting}
-                  onChange={(e) => setForm({ ...form, assignees: { ...form.assignees, shooting: e.target.value } })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
-                >
-                  {teamMembers.filter(m => m.department === 'Shooting Team').map(m => (
-                    <option key={m.id} value={m.id}>{m.name} ({m.role})</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-
           {/* Connected Social Media & Meta Ads Accounts */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <label className="text-slate-800 dark:text-slate-300 font-bold block">
@@ -526,7 +677,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
                     }
                   })}
                   placeholder="e.g. act_1606985407825083"
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-mono focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-mono focus:outline-none"
                 />
               </div>
 
@@ -545,46 +696,8 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
                     }
                   })}
                   placeholder="e.g. @brand_official"
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
                 />
-              </div>
-            </div>
-
-            {/* Active Social Media Management Checklist */}
-            <div className="pt-1">
-              <label className="text-slate-700 dark:text-slate-300 text-[11px] font-semibold block mb-1.5">
-                Currently Managing These Channels (Active):
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: 'meta', label: 'Meta Ads' },
-                  { key: 'instagram', label: 'Instagram' },
-                  { key: 'youtube', label: 'YouTube' },
-                  { key: 'snapchat', label: 'Snapchat' },
-                  { key: 'pinterest', label: 'Pinterest' }
-                ].map(p => {
-                  const isActive = form.socialChannels?.[p.key]?.active !== false;
-                  return (
-                    <button
-                      type="button"
-                      key={p.key}
-                      onClick={() => setForm({
-                        ...form,
-                        socialChannels: {
-                          ...(form.socialChannels || {}),
-                          [p.key]: { ...(form.socialChannels?.[p.key] || {}), active: !isActive }
-                        }
-                      })}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition ${
-                        isActive 
-                          ? 'bg-blue-50 text-blue-700 border-blue-300 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30' 
-                          : 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-800 dark:border-slate-700'
-                      }`}
-                    >
-                      {p.label}: {isActive ? 'ACTIVE ✓' : 'PAUSED'}
-                    </button>
-                  );
-                })}
               </div>
             </div>
           </div>
@@ -601,6 +714,44 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
               placeholder="https://drive.google.com/..."
               className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
             />
+          </div>
+
+          {/* MANDATORY REASON FOR UPDATE / AUDIT TRAIL */}
+          <div className="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/30 space-y-2.5">
+            <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold">
+              <Tag className="w-4 h-4 text-amber-600" />
+              <span>Audit Trail: Reason for Change / Update *</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label className="text-slate-600 dark:text-slate-400 text-[11px] block mb-1 font-semibold">
+                  Standardized Reason Category:
+                </label>
+                <select
+                  value={form.changeReason}
+                  onChange={(e) => setForm({ ...form, changeReason: e.target.value })}
+                  className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold focus:outline-none"
+                >
+                  {reasonsList.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-slate-600 dark:text-slate-400 text-[11px] block mb-1 font-semibold">
+                  Justification Notes (Audit Log):
+                </label>
+                <input
+                  type="text"
+                  value={form.changeNotes}
+                  onChange={(e) => setForm({ ...form, changeNotes: e.target.value })}
+                  placeholder="e.g. Scope expansion and quarterly retainer revision."
+                  className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Footer buttons */}
@@ -626,9 +777,10 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-sm transition"
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-sm transition flex items-center gap-1.5"
               >
-                {clientToEdit ? 'Save (Save)' : 'Onboard (Add)'}
+                <Check className="w-4 h-4" />
+                <span>{clientToEdit ? 'Save Client with Reason' : 'Onboard Client'}</span>
               </button>
             </div>
           </div>
@@ -637,6 +789,445 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
     </div>
   );
 };
+
+// 3. Partner Agency / Vendor Modal ("other agencies", kon kya karta he, kon kya karega)
+export const PartnerAgencyModal = ({ isOpen, onClose, agencyToEdit }) => {
+  const { savePartnerAgency, deletePartnerAgency, changeReasons, clients } = useAgency();
+
+  const reasonsList = changeReasons || [
+    'Partner Agency / Vendor Contract Update',
+    'Deliverable Target & Capacity Adjustment',
+    'Retainer / Compensation Revision',
+    'Client Reassignment & Workload Rebalancing',
+    'Routine Contact & Profile Update'
+  ];
+
+  const [form, setForm] = useState({
+    name: '',
+    type: '3D VFX & CGI Animation',
+    contactPerson: '',
+    email: '',
+    phone: '',
+    monthlyRetainer: 60000,
+    status: 'Active Partner',
+    currentScope: '',
+    upcomingTasks: '',
+    contractedDeliverables: '6 Renders / month',
+    slaHours: 48,
+    ndaSigned: true,
+    assignedClients: ['client-1'],
+    changeReason: reasonsList[0],
+    changeNotes: ''
+  });
+
+  useEffect(() => {
+    if (agencyToEdit) {
+      setForm({
+        ...agencyToEdit,
+        changeReason: reasonsList[0],
+        changeNotes: ''
+      });
+    } else {
+      setForm({
+        name: '',
+        type: '3D VFX & CGI Animation',
+        contactPerson: '',
+        email: '',
+        phone: '',
+        monthlyRetainer: 60000,
+        status: 'Active Partner',
+        currentScope: '3D modeling, fluid simulations and CGI visual sequences for product commercials.',
+        upcomingTasks: 'Produce festive 3D assets and photorealistic product turnarounds.',
+        contractedDeliverables: '6 Renders / month',
+        slaHours: 48,
+        ndaSigned: true,
+        assignedClients: ['client-1'],
+        changeReason: reasonsList[0],
+        changeNotes: 'Initial vendor contract onboarding.'
+      });
+    }
+  }, [agencyToEdit, isOpen]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.name.trim()) return alert('Please enter agency name');
+    savePartnerAgency(form, form.changeReason, form.changeNotes || `Updated scope for ${form.name}`);
+    onClose();
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(`Are you sure you want to terminate vendor contract with "${form.name}"?`)) {
+      deletePartnerAgency(form.id, form.changeReason || 'Contract Termination');
+      onClose();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl transition-colors">
+        <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/70">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-blue-600" />
+              <span>{agencyToEdit ? '✏️ Edit Partner Agency / Vendor' : '➕ Contract New Partner Agency'}</span>
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Configure collaborating agencies, external vendors, contracted scope, and change reason.
+            </p>
+          </div>
+          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[80vh] overflow-y-auto text-xs">
+          {/* Agency Name & Type */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Partner Agency Name *</label>
+              <input
+                type="text"
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="e.g. VFX Prodigy Studios"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Agency Specialty / Domain *</label>
+              <select
+                value={form.type}
+                onChange={(e) => setForm({ ...form, type: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-semibold focus:outline-none"
+              >
+                <option value="3D VFX & CGI Animation">3D VFX & CGI Animation</option>
+                <option value="Voiceover & Multilingual Dubbing">Voiceover & Multilingual Dubbing</option>
+                <option value="White-Label Performance Ads">White-Label Performance Ads</option>
+                <option value="Cinematic Drone & Production House">Cinematic Drone & Production House</option>
+                <option value="Translation & Script Adaptation">Translation & Script Adaptation</option>
+                <option value="Celebrity & Influencer Casting Agency">Celebrity & Influencer Casting Agency</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Contact, Email & Phone */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Contact Lead</label>
+              <input
+                type="text"
+                value={form.contactPerson}
+                onChange={(e) => setForm({ ...form, contactPerson: e.target.value })}
+                placeholder="Vendor Lead Name"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Vendor Email</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="contact@vendor.io"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Phone</label>
+              <input
+                type="text"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                placeholder="+91 98765 00000"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Retainer & SLA */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Monthly Cost / Retainer (₹)</label>
+              <input
+                type="number"
+                value={form.monthlyRetainer}
+                onChange={(e) => setForm({ ...form, monthlyRetainer: Number(e.target.value) })}
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Contract Status</label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-semibold focus:outline-none"
+              >
+                <option value="Active Partner">Active Partner</option>
+                <option value="On Trial">On Trial</option>
+                <option value="Paused">Paused</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">SLA Turnaround (Hours)</label>
+              <input
+                type="number"
+                value={form.slaHours}
+                onChange={(e) => setForm({ ...form, slaHours: Number(e.target.value) })}
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Current Duties ("kon kya karta he") */}
+          <div>
+            <label className="text-slate-800 dark:text-slate-200 font-bold block mb-1">
+              Current Deliverable Duties ("What this agency currently does / kon kya karta he") *
+            </label>
+            <textarea
+              rows={2}
+              required
+              value={form.currentScope}
+              onChange={(e) => setForm({ ...form, currentScope: e.target.value })}
+              placeholder="e.g. CGI renders, 3D watch simulation, liquid simulation and dynamic motion backgrounds..."
+              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          {/* Future / Assigned Scope ("kon kya karega") */}
+          <div>
+            <label className="text-slate-800 dark:text-slate-200 font-bold block mb-1">
+              Upcoming Contracted Tasks ("What this agency will do / kon kya karega") *
+            </label>
+            <textarea
+              rows={2}
+              required
+              value={form.upcomingTasks}
+              onChange={(e) => setForm({ ...form, upcomingTasks: e.target.value })}
+              placeholder="e.g. Complete 6 photorealistic watch rotation renders for Ambika Watches festive season launch..."
+              className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          {/* Deliverables quota & NDA */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Contracted Deliverables</label>
+              <input
+                type="text"
+                value={form.contractedDeliverables}
+                onChange={(e) => setForm({ ...form, contractedDeliverables: e.target.value })}
+                placeholder="e.g. 8 CGI Renders / month"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-5">
+              <input
+                type="checkbox"
+                id="nda"
+                checked={form.ndaSigned}
+                onChange={(e) => setForm({ ...form, ndaSigned: e.target.checked })}
+                className="w-4 h-4 rounded text-blue-600 focus:ring-0"
+              />
+              <label htmlFor="nda" className="text-slate-700 dark:text-slate-300 font-bold text-xs cursor-pointer flex items-center gap-1">
+                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                <span>Mutual NDA & Confidentiality Agreement Signed</span>
+              </label>
+            </div>
+          </div>
+
+          {/* MANDATORY REASON FOR UPDATE / AUDIT TRAIL */}
+          <div className="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/30 space-y-2.5">
+            <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold">
+              <Tag className="w-4 h-4 text-amber-600" />
+              <span>Audit Trail: Reason for Change / Contract Revision *</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label className="text-slate-600 dark:text-slate-400 text-[11px] block mb-1 font-semibold">
+                  Reason Category:
+                </label>
+                <select
+                  value={form.changeReason}
+                  onChange={(e) => setForm({ ...form, changeReason: e.target.value })}
+                  className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold focus:outline-none"
+                >
+                  {reasonsList.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-slate-600 dark:text-slate-400 text-[11px] block mb-1 font-semibold">
+                  Justification Notes:
+                </label>
+                <input
+                  type="text"
+                  value={form.changeNotes}
+                  onChange={(e) => setForm({ ...form, changeNotes: e.target.value })}
+                  placeholder="e.g. Added 2 new deliverables to monthly SLA."
+                  className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Footer buttons */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            {agencyToEdit ? (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-600/10 dark:hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 rounded-xl font-medium flex items-center gap-1.5 transition"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Terminate Vendor</span>
+              </button>
+            ) : <div />}
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-sm transition flex items-center gap-1.5"
+              >
+                <Check className="w-4 h-4" />
+                <span>{agencyToEdit ? 'Save Partner Agency with Reason' : 'Contract Partner Agency'}</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// 4. Dedicated Audit Log Modal / Change History Explorer
+export const AuditLogModal = ({ isOpen, onClose }) => {
+  const { auditLogs } = useAgency();
+  const [search, setSearch] = useState('');
+  const [entityFilter, setEntityFilter] = useState('All');
+
+  if (!isOpen) return null;
+
+  const filteredLogs = (auditLogs || []).filter(log => {
+    const matchesSearch = 
+      log.entityName.toLowerCase().includes(search.toLowerCase()) ||
+      log.changeReason.toLowerCase().includes(search.toLowerCase()) ||
+      log.changeNotes.toLowerCase().includes(search.toLowerCase()) ||
+      log.changedBy.toLowerCase().includes(search.toLowerCase());
+
+    const matchesEntity = entityFilter === 'All' || log.entityType === entityFilter;
+
+    return matchesSearch && matchesEntity;
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl transition-colors">
+        <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/70">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <History className="w-4 h-4 text-blue-600" />
+              <span>System Audit Trail & Edit Reasons Log</span>
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Historical record of all edits made across editors, staff, clients, teams, and partner agencies with reasons.
+            </p>
+          </div>
+          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+          {/* Search and Filters */}
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative flex-1 w-full">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search audit trail by entity, reason, author, or notes..."
+                className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-slate-500 text-[11px] font-semibold">Entity:</span>
+              <select
+                value={entityFilter}
+                onChange={(e) => setEntityFilter(e.target.value)}
+                className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white font-bold focus:outline-none"
+              >
+                <option value="All">All Entities</option>
+                <option value="Editor / Employee">Staff & Editors</option>
+                <option value="Client Account">Clients</option>
+                <option value="Partner Agency">Partner Agencies</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Logs List */}
+          <div className="space-y-2.5">
+            {filteredLogs.map(log => (
+              <div 
+                key={log.id}
+                className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-1.5"
+              >
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
+                      {log.entityType}
+                    </span>
+                    <strong className="text-slate-900 dark:text-white text-xs">{log.entityName}</strong>
+                    <span className="text-slate-400 text-[11px]">• {log.action}</span>
+                  </div>
+                  <span className="text-slate-400 text-[10px] font-mono">{log.timestamp}</span>
+                </div>
+
+                <div className="flex items-center gap-2 pt-0.5">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 flex items-center gap-1">
+                    <Tag className="w-2.5 h-2.5" /> {log.changeReason}
+                  </span>
+                  <span className="text-slate-500 text-[11px]">Changed by: <strong className="text-slate-800 dark:text-slate-200">{log.changedBy}</strong></span>
+                </div>
+
+                {log.changeNotes && (
+                  <p className="text-slate-700 dark:text-slate-300 italic text-[11px] bg-white dark:bg-slate-900/60 p-2 rounded-lg border border-slate-200 dark:border-slate-700/50">
+                    "{log.changeNotes}"
+                  </p>
+                )}
+              </div>
+            ))}
+
+            {filteredLogs.length === 0 && (
+              <div className="p-8 text-center text-slate-400 bg-slate-50 dark:bg-slate-800/30 rounded-xl">
+                No audit logs found matching your filter criteria.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 // 3. Task Modal (Full Edit & Add)
 export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {

@@ -10,6 +10,9 @@ import {
   INITIAL_DAILY_LOGS,
   REVISION_REASONS,
   DELIVERABLE_TYPES,
+  CHANGE_REASONS,
+  INITIAL_PARTNER_AGENCIES,
+  INITIAL_AUDIT_LOGS,
   SOCIAL_PLATFORMS,
   generateClientSocialChannels,
   generateClientAiPreferences
@@ -68,9 +71,36 @@ export const AgencyProvider = ({ children }) => {
   const [teamMembers, setTeamMembers] = useState(() => {
     const saved = localStorage.getItem('agency_team_members_v3');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.map((m, idx) => ({
+          ...m,
+          currentDuties: m.currentDuties || 'Standard agency operations and deliverable production.',
+          assignedScope: m.assignedScope || 'Execute scheduled daily quota and resolve active revisions.',
+          toolstack: m.toolstack || ['Adobe Premiere Pro', 'CapCut Pro'],
+          assignedClientIds: m.assignedClientIds || ['client-1'],
+          lastUpdated: m.lastUpdated || '2026-11-08 11:30',
+          lastChangeReason: m.lastChangeReason || 'Initial System Onboarding'
+        }));
+      } catch (e) { console.error(e); }
     }
     return TEAM_MEMBERS;
+  });
+
+  const [partnerAgencies, setPartnerAgencies] = useState(() => {
+    const saved = localStorage.getItem('agency_partner_agencies_v3');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_PARTNER_AGENCIES;
+  });
+
+  const [auditLogs, setAuditLogs] = useState(() => {
+    const saved = localStorage.getItem('agency_audit_logs_v3');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_AUDIT_LOGS;
   });
 
   const [tasks, setTasks] = useState(() => {
@@ -202,6 +232,14 @@ export const AgencyProvider = ({ children }) => {
   }, [teamMembers]);
 
   useEffect(() => {
+    localStorage.setItem('agency_partner_agencies_v3', JSON.stringify(partnerAgencies));
+  }, [partnerAgencies]);
+
+  useEffect(() => {
+    localStorage.setItem('agency_audit_logs_v3', JSON.stringify(auditLogs));
+  }, [auditLogs]);
+
+  useEffect(() => {
     localStorage.setItem('agency_tasks_v3', JSON.stringify(tasks));
   }, [tasks]);
 
@@ -298,13 +336,38 @@ export const AgencyProvider = ({ children }) => {
     }
   };
 
-  // 1. Client CRUD
-  const saveClient = (clientData) => {
+  // Audit Trail Logger Helper
+  const addAuditLog = (entityType, entityId, entityName, action, changeReason, changeNotes, changedBy) => {
+    const timestamp = getCurrentTimestamp();
+    const newLog = {
+      id: `audit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      timestamp,
+      entityType,
+      entityId,
+      entityName,
+      action,
+      changeReason: changeReason || 'Routine Profile & Scope Update',
+      changeNotes: changeNotes || 'No specific notes provided',
+      changedBy: changedBy || currentUser.name || 'Administrator'
+    };
+    setAuditLogs(prev => [newLog, ...prev]);
+  };
+
+  // 1. Client CRUD with Reason Tracking
+  const saveClient = (clientData, changeReason = 'Client Reassignment & Workload Rebalancing', changeNotes = '') => {
+    const timestamp = getCurrentTimestamp();
+    const isNew = !clients.some(c => c.id === clientData.id);
+
     setClients(prev => {
       const index = prev.findIndex(c => c.id === clientData.id);
       if (index >= 0) {
         const updated = [...prev];
-        updated[index] = { ...updated[index], ...clientData };
+        updated[index] = { 
+          ...updated[index], 
+          ...clientData,
+          lastUpdated: timestamp,
+          lastChangeReason: changeReason
+        };
         return updated;
       } else {
         const newClient = {
@@ -318,19 +381,40 @@ export const AgencyProvider = ({ children }) => {
             shoots: { target: 2, completed: 0, inProgress: 0 },
             metaCampaigns: { target: 4, completed: 0, inProgress: 0 }
           },
-          createdAt: new Date().toISOString().split('T')[0]
+          createdAt: new Date().toISOString().split('T')[0],
+          lastUpdated: timestamp,
+          lastChangeReason: changeReason
         };
         return [newClient, ...prev];
       }
     });
+
+    addAuditLog(
+      'Client Account',
+      clientData.id || 'New',
+      clientData.name,
+      isNew ? 'Onboarded New Client' : 'Updated Client Details & Retainer',
+      changeReason,
+      changeNotes || `Updated services, quotas and assignees for ${clientData.name}`
+    );
   };
 
-  const deleteClient = (clientId) => {
+  const deleteClient = (clientId, changeReason = 'Client Contract Completion') => {
+    const client = clients.find(c => c.id === clientId);
     setClients(prev => prev.filter(c => c.id !== clientId));
     setTasks(prev => prev.filter(t => t.clientId !== clientId));
     setShoots(prev => prev.filter(s => s.clientId !== clientId));
     setAds(prev => prev.filter(a => a.clientId !== clientId));
     setDailyLogs(prev => prev.filter(l => l.clientId !== clientId));
+
+    addAuditLog(
+      'Client Account',
+      clientId,
+      client ? client.name : clientId,
+      'Archived Client Account',
+      changeReason,
+      'Client removed from active roster.'
+    );
   };
 
   // Update specific deliverable quota for a client
@@ -435,13 +519,21 @@ export const AgencyProvider = ({ children }) => {
     }));
   };
 
-  // 2. Team Member CRUD
-  const saveTeamMember = (memberData) => {
+  // 2. Team Member / Editor CRUD with Reason Tracking
+  const saveTeamMember = (memberData, changeReason = 'Role Promotion & Scope Expansion', changeNotes = '') => {
+    const timestamp = getCurrentTimestamp();
+    const isNew = !teamMembers.some(m => m.id === memberData.id);
+
     setTeamMembers(prev => {
       const index = prev.findIndex(m => m.id === memberData.id);
       if (index >= 0) {
         const updated = [...prev];
-        updated[index] = { ...updated[index], ...memberData };
+        updated[index] = { 
+          ...updated[index], 
+          ...memberData,
+          lastUpdated: timestamp,
+          lastChangeReason: changeReason
+        };
         return updated;
       } else {
         const newMember = {
@@ -449,15 +541,92 @@ export const AgencyProvider = ({ children }) => {
           id: memberData.id || `tm-${Date.now()}`,
           activeTasks: 0,
           dailyTarget: memberData.dailyTarget || 2,
-          monthlyDelivered: 0
+          monthlyDelivered: 0,
+          currentDuties: memberData.currentDuties || 'Standard agency operations and deliverable production.',
+          assignedScope: memberData.assignedScope || 'Execute scheduled daily quota and resolve active revisions.',
+          toolstack: memberData.toolstack || ['Adobe Premiere Pro', 'CapCut Pro'],
+          assignedClientIds: memberData.assignedClientIds || ['client-1'],
+          lastUpdated: timestamp,
+          lastChangeReason: changeReason
         };
         return [...prev, newMember];
       }
     });
+
+    addAuditLog(
+      'Editor / Employee',
+      memberData.id || 'New',
+      `${memberData.name} (${memberData.role || 'Staff'})`,
+      isNew ? 'Added New Team Member' : 'Updated Role & Scope of Work',
+      changeReason,
+      changeNotes || `Duties: "${memberData.currentDuties || 'Standard'}" | Upcoming: "${memberData.assignedScope || 'Standard'}"`
+    );
   };
 
-  const deleteTeamMember = (memberId) => {
+  const deleteTeamMember = (memberId, changeReason = 'Employee Offboarding / Role Transfer') => {
+    const member = teamMembers.find(m => m.id === memberId);
     setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+
+    addAuditLog(
+      'Editor / Employee',
+      memberId,
+      member ? member.name : memberId,
+      'Offboarded Team Member',
+      changeReason,
+      'Removed from active agency team directory.'
+    );
+  };
+
+  // 2B. Partner Agencies & External Vendors CRUD with Reason Tracking
+  const savePartnerAgency = (agencyData, changeReason = 'Partner Agency / Vendor Contract Update', changeNotes = '') => {
+    const timestamp = getCurrentTimestamp();
+    const isNew = !partnerAgencies.some(a => a.id === agencyData.id);
+
+    setPartnerAgencies(prev => {
+      const index = prev.findIndex(a => a.id === agencyData.id);
+      if (index >= 0) {
+        const updated = [...prev];
+        updated[index] = { 
+          ...updated[index], 
+          ...agencyData,
+          lastUpdated: timestamp,
+          lastChangeReason: changeReason
+        };
+        return updated;
+      } else {
+        const newAgency = {
+          ...agencyData,
+          id: agencyData.id || `agency-${Date.now()}`,
+          status: agencyData.status || 'Active Partner',
+          lastUpdated: timestamp,
+          lastChangeReason: changeReason
+        };
+        return [...prev, newAgency];
+      }
+    });
+
+    addAuditLog(
+      'Partner Agency',
+      agencyData.id || 'New',
+      agencyData.name,
+      isNew ? 'Added New Partner Agency' : 'Updated Partner Agency Scope & Retainer',
+      changeReason,
+      changeNotes || `Type: ${agencyData.type} | Contracted: ${agencyData.contractedDeliverables || 'N/A'}`
+    );
+  };
+
+  const deletePartnerAgency = (agencyId, changeReason = 'Vendor Contract Termination') => {
+    const agency = partnerAgencies.find(a => a.id === agencyId);
+    setPartnerAgencies(prev => prev.filter(a => a.id !== agencyId));
+
+    addAuditLog(
+      'Partner Agency',
+      agencyId,
+      agency ? agency.name : agencyId,
+      'Terminated Partner Agency',
+      changeReason,
+      'Vendor removed from active partner network.'
+    );
   };
 
   // 3. Task CRUD & Revisions with Reason Categories
@@ -732,6 +901,12 @@ export const AgencyProvider = ({ children }) => {
         teamMembers,
         saveTeamMember,
         deleteTeamMember,
+        partnerAgencies,
+        savePartnerAgency,
+        deletePartnerAgency,
+        auditLogs,
+        addAuditLog,
+        changeReasons: CHANGE_REASONS,
         tasks,
         saveTask,
         deleteTask,
