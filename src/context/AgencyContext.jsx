@@ -1,10 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { TEAM_MEMBERS, SERVICE_CATEGORIES, generateClients, INITIAL_TASKS, INITIAL_SHOOTS, INITIAL_ADS, INITIAL_CHATS } from '../data/seedData';
+import { 
+  TEAM_MEMBERS, 
+  SERVICE_CATEGORIES, 
+  generateClients, 
+  INITIAL_TASKS, 
+  INITIAL_SHOOTS, 
+  INITIAL_ADS, 
+  INITIAL_CHATS,
+  INITIAL_DAILY_LOGS,
+  REVISION_REASONS,
+  DELIVERABLE_TYPES
+} from '../data/seedData';
 
 const AgencyContext = createContext();
 
 export const AgencyProvider = ({ children }) => {
-  // Theme state: 'light' or 'dark' (Default to 'light' for clean, simple, sober readability)
+  // Theme state: 'light' or 'dark'
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('agency_ui_theme') || 'light';
   });
@@ -35,9 +46,9 @@ export const AgencyProvider = ({ children }) => {
     };
   });
 
-  // Database States with LocalStorage fallback
+  // Database States with LocalStorage fallback (v3 to incorporate full Quota & Revision schema)
   const [clients, setClients] = useState(() => {
-    const saved = localStorage.getItem('agency_clients_v2');
+    const saved = localStorage.getItem('agency_clients_v3');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -45,7 +56,7 @@ export const AgencyProvider = ({ children }) => {
   });
 
   const [teamMembers, setTeamMembers] = useState(() => {
-    const saved = localStorage.getItem('agency_team_members_v2');
+    const saved = localStorage.getItem('agency_team_members_v3');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -53,15 +64,23 @@ export const AgencyProvider = ({ children }) => {
   });
 
   const [tasks, setTasks] = useState(() => {
-    const saved = localStorage.getItem('agency_tasks_v2');
+    const saved = localStorage.getItem('agency_tasks_v3');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
     return INITIAL_TASKS;
   });
 
+  const [dailyLogs, setDailyLogs] = useState(() => {
+    const saved = localStorage.getItem('agency_daily_logs_v3');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_DAILY_LOGS;
+  });
+
   const [shoots, setShoots] = useState(() => {
-    const saved = localStorage.getItem('agency_shoots_v2');
+    const saved = localStorage.getItem('agency_shoots_v3');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -69,7 +88,7 @@ export const AgencyProvider = ({ children }) => {
   });
 
   const [ads, setAds] = useState(() => {
-    const saved = localStorage.getItem('agency_ads_v2');
+    const saved = localStorage.getItem('agency_ads_v3');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -77,7 +96,7 @@ export const AgencyProvider = ({ children }) => {
   });
 
   const [chats, setChats] = useState(() => {
-    const saved = localStorage.getItem('agency_chats_v2');
+    const saved = localStorage.getItem('agency_chats_v3');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -88,7 +107,7 @@ export const AgencyProvider = ({ children }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedClientId, setSelectedClientId] = useState('client-1');
 
-  // Integrations Hub state (Meta, AI, WhatsApp, Google, BrightBean, Grafana)
+  // Integrations Hub state
   const [integrations, setIntegrations] = useState(() => {
     const saved = localStorage.getItem('agency_integrations');
     return saved ? JSON.parse(saved) : {
@@ -135,7 +154,6 @@ export const AgencyProvider = ({ children }) => {
 
   const syncMetaAds = () => {
     setAds(prev => prev.map(ad => {
-      // Simulate live fresh sync from Meta Marketing Graph API
       const randomExtraLeads = Math.floor(Math.random() * 3);
       return {
         ...ad,
@@ -163,30 +181,34 @@ export const AgencyProvider = ({ children }) => {
   // Sync to LocalStorage
   useEffect(() => {
     try {
-      localStorage.setItem('agency_clients_v2', JSON.stringify(clients));
+      localStorage.setItem('agency_clients_v3', JSON.stringify(clients));
     } catch (e) {
       console.warn('LocalStorage error:', e);
     }
   }, [clients]);
 
   useEffect(() => {
-    localStorage.setItem('agency_team_members_v2', JSON.stringify(teamMembers));
+    localStorage.setItem('agency_team_members_v3', JSON.stringify(teamMembers));
   }, [teamMembers]);
 
   useEffect(() => {
-    localStorage.setItem('agency_tasks_v2', JSON.stringify(tasks));
+    localStorage.setItem('agency_tasks_v3', JSON.stringify(tasks));
   }, [tasks]);
 
   useEffect(() => {
-    localStorage.setItem('agency_shoots_v2', JSON.stringify(shoots));
+    localStorage.setItem('agency_daily_logs_v3', JSON.stringify(dailyLogs));
+  }, [dailyLogs]);
+
+  useEffect(() => {
+    localStorage.setItem('agency_shoots_v3', JSON.stringify(shoots));
   }, [shoots]);
 
   useEffect(() => {
-    localStorage.setItem('agency_ads_v2', JSON.stringify(ads));
+    localStorage.setItem('agency_ads_v3', JSON.stringify(ads));
   }, [ads]);
 
   useEffect(() => {
-    localStorage.setItem('agency_chats_v2', JSON.stringify(chats));
+    localStorage.setItem('agency_chats_v3', JSON.stringify(chats));
   }, [chats]);
 
   useEffect(() => {
@@ -231,7 +253,7 @@ export const AgencyProvider = ({ children }) => {
         id: 'tm-6',
         clientId: null
       });
-      setActiveTab('production');
+      setActiveTab('departments');
     } else if (roleType === 'shooting-team') {
       setCurrentUser({
         role: 'shooting-team',
@@ -239,7 +261,7 @@ export const AgencyProvider = ({ children }) => {
         id: 'tm-21',
         clientId: null
       });
-      setActiveTab('shoots');
+      setActiveTab('departments');
     } else if (roleType === 'ai-content') {
       setCurrentUser({
         role: 'ai-content',
@@ -247,7 +269,7 @@ export const AgencyProvider = ({ children }) => {
         id: 'tm-11',
         clientId: null
       });
-      setActiveTab('ai-studio');
+      setActiveTab('departments');
     } else if (roleType === 'meta-ads') {
       setCurrentUser({
         role: 'meta-ads',
@@ -255,7 +277,7 @@ export const AgencyProvider = ({ children }) => {
         id: 'tm-16',
         clientId: null
       });
-      setActiveTab('ads');
+      setActiveTab('departments');
     } else {
       setCurrentUser({
         role: 'management',
@@ -278,6 +300,14 @@ export const AgencyProvider = ({ children }) => {
         const newClient = {
           ...clientData,
           id: clientData.id || `client-${Date.now()}`,
+          quotas: clientData.quotas || {
+            videos: { target: 16, completed: 0, inProgress: 0 },
+            graphics: { target: 12, completed: 0, inProgress: 0 },
+            posts: { target: 20, completed: 0, inProgress: 0 },
+            scripts: { target: 20, completed: 0, inProgress: 0 },
+            shoots: { target: 2, completed: 0, inProgress: 0 },
+            metaCampaigns: { target: 4, completed: 0, inProgress: 0 }
+          },
           createdAt: new Date().toISOString().split('T')[0]
         };
         return [newClient, ...prev];
@@ -290,6 +320,35 @@ export const AgencyProvider = ({ children }) => {
     setTasks(prev => prev.filter(t => t.clientId !== clientId));
     setShoots(prev => prev.filter(s => s.clientId !== clientId));
     setAds(prev => prev.filter(a => a.clientId !== clientId));
+    setDailyLogs(prev => prev.filter(l => l.clientId !== clientId));
+  };
+
+  // Update specific deliverable quota for a client
+  const updateClientQuota = (clientId, quotaCategory, field, value) => {
+    setClients(prev => prev.map(c => {
+      if (c.id === clientId) {
+        const currentQuotas = c.quotas || {
+          videos: { target: 16, completed: 0, inProgress: 0 },
+          graphics: { target: 12, completed: 0, inProgress: 0 },
+          posts: { target: 20, completed: 0, inProgress: 0 },
+          scripts: { target: 20, completed: 0, inProgress: 0 },
+          shoots: { target: 2, completed: 0, inProgress: 0 },
+          metaCampaigns: { target: 4, completed: 0, inProgress: 0 }
+        };
+        const catObj = currentQuotas[quotaCategory] || { target: 0, completed: 0, inProgress: 0 };
+        return {
+          ...c,
+          quotas: {
+            ...currentQuotas,
+            [quotaCategory]: {
+              ...catObj,
+              [field]: Number(value)
+            }
+          }
+        };
+      }
+      return c;
+    }));
   };
 
   // 2. Team Member CRUD
@@ -304,7 +363,9 @@ export const AgencyProvider = ({ children }) => {
         const newMember = {
           ...memberData,
           id: memberData.id || `tm-${Date.now()}`,
-          activeTasks: 0
+          activeTasks: 0,
+          dailyTarget: memberData.dailyTarget || 2,
+          monthlyDelivered: 0
         };
         return [...prev, newMember];
       }
@@ -315,7 +376,7 @@ export const AgencyProvider = ({ children }) => {
     setTeamMembers(prev => prev.filter(m => m.id !== memberId));
   };
 
-  // 3. Task CRUD & Approvals
+  // 3. Task CRUD & Revisions with Reason Categories
   const saveTask = (taskData) => {
     const timestamp = getCurrentTimestamp();
     setTasks(prev => {
@@ -328,10 +389,11 @@ export const AgencyProvider = ({ children }) => {
         const newTask = {
           ...taskData,
           id: taskData.id || `task-${Date.now()}`,
-          status: taskData.status || 'Raw Data',
+          deliverableType: taskData.deliverableType || 'Video Reel',
+          status: taskData.status || 'Raw Data Ingest',
           version: taskData.version || 'v1',
           revisionsCount: 0,
-          clientFeedback: '',
+          revisionsHistory: [],
           lastUpdated: timestamp
         };
         return [newTask, ...prev];
@@ -343,30 +405,68 @@ export const AgencyProvider = ({ children }) => {
     setTasks(prev => prev.filter(t => t.id !== taskId));
   };
 
-  const approveTask = (taskId) => {
+  const approveTask = (taskId, approvalNotes = 'Deliverable approved for publishing.') => {
     const timestamp = getCurrentTimestamp();
     setTasks(prev => prev.map(t => {
       if (t.id === taskId) {
+        // Also increment client quota completed
+        if (t.clientId) {
+          const qCategory = t.deliverableType === 'Video Reel' || t.deliverableType === 'Long-Form Video' 
+            ? 'videos'
+            : t.deliverableType === 'Social Graphic' ? 'graphics'
+            : t.deliverableType === 'Script / Concept' ? 'scripts'
+            : 'posts';
+          
+          setClients(cPrev => cPrev.map(cl => {
+            if (cl.id === t.clientId && cl.quotas?.[qCategory]) {
+              return {
+                ...cl,
+                quotas: {
+                  ...cl.quotas,
+                  [qCategory]: {
+                    ...cl.quotas[qCategory],
+                    completed: cl.quotas[qCategory].completed + 1,
+                    inProgress: Math.max(0, (cl.quotas[qCategory].inProgress || 1) - 1)
+                  }
+                }
+              };
+            }
+            return cl;
+          }));
+        }
+
         return {
           ...t,
           status: 'Approved',
+          version: 'Final Master',
           lastUpdated: timestamp,
-          clientFeedback: 'Approved by Client via Client Portal.'
+          clientFeedback: approvalNotes
         };
       }
       return t;
     }));
   };
 
-  const requestRevision = (taskId, feedbackText) => {
+  const requestRevision = (taskId, reasonCategory, feedbackText, author = 'Client') => {
     const timestamp = getCurrentTimestamp();
     setTasks(prev => prev.map(t => {
       if (t.id === taskId) {
+        const currentCount = t.revisionsCount || 0;
+        const newCount = currentCount + 1;
+        const newHistoryItem = {
+          iteration: newCount,
+          date: timestamp,
+          author,
+          reasonCategory: reasonCategory || 'Pacing & Fast Cuts',
+          feedback: feedbackText
+        };
+
         return {
           ...t,
           status: 'Revision Requested',
-          revisionsCount: (t.revisionsCount || 0) + 1,
-          version: `v${(t.revisionsCount || 0) + 2}`,
+          revisionsCount: newCount,
+          version: `v${newCount + 1}`,
+          revisionsHistory: [...(t.revisionsHistory || []), newHistoryItem],
           clientFeedback: feedbackText,
           lastUpdated: timestamp
         };
@@ -375,7 +475,33 @@ export const AgencyProvider = ({ children }) => {
     }));
   };
 
-  // 4. Shoot CRUD
+  // 4. Daily Creator Output Worklogs
+  const addDailyLog = (logData) => {
+    const timestamp = getCurrentTimestamp();
+    const newLog = {
+      ...logData,
+      id: logData.id || `log-${Date.now()}`,
+      timestamp,
+      date: logData.date || new Date().toISOString().split('T')[0]
+    };
+    setDailyLogs(prev => [newLog, ...prev]);
+
+    // Update team member delivered count
+    if (logData.memberId) {
+      setTeamMembers(prev => prev.map(m => {
+        if (m.id === logData.memberId) {
+          return { ...m, monthlyDelivered: (m.monthlyDelivered || 0) + 1 };
+        }
+        return m;
+      }));
+    }
+  };
+
+  const deleteDailyLog = (logId) => {
+    setDailyLogs(prev => prev.filter(l => l.id !== logId));
+  };
+
+  // 5. Shoot CRUD
   const saveShoot = (shootData) => {
     setShoots(prev => {
       const index = prev.findIndex(s => s.id === shootData.id);
@@ -398,7 +524,7 @@ export const AgencyProvider = ({ children }) => {
     setShoots(prev => prev.filter(s => s.id !== shootId));
   };
 
-  // 5. Meta Ad CRUD
+  // 6. Meta Ad CRUD
   const saveAd = (adData) => {
     setAds(prev => {
       const index = prev.findIndex(a => a.id === adData.id);
@@ -421,7 +547,7 @@ export const AgencyProvider = ({ children }) => {
     setAds(prev => prev.filter(a => a.id !== adId));
   };
 
-  // 6. Chat: Send Message
+  // 7. Chat: Send Message
   const sendMessage = (clientId, text) => {
     if (!text.trim()) return;
     const timestamp = getCurrentTimestamp();
@@ -453,9 +579,10 @@ export const AgencyProvider = ({ children }) => {
   const exportFullBackup = () => {
     const fullData = {
       backupDate: new Date().toISOString(),
-      version: '2.0-English',
+      version: '3.0-Production-Robust',
       clients,
       tasks,
+      dailyLogs,
       shoots,
       ads,
       chats,
@@ -477,6 +604,7 @@ export const AgencyProvider = ({ children }) => {
       if (jsonData.clients) setClients(jsonData.clients);
       if (jsonData.teamMembers) setTeamMembers(jsonData.teamMembers);
       if (jsonData.tasks) setTasks(jsonData.tasks);
+      if (jsonData.dailyLogs) setDailyLogs(jsonData.dailyLogs);
       if (jsonData.shoots) setShoots(jsonData.shoots);
       if (jsonData.ads) setAds(jsonData.ads);
       if (jsonData.chats) setChats(jsonData.chats);
@@ -494,6 +622,7 @@ export const AgencyProvider = ({ children }) => {
       setClients(generateClients());
       setTeamMembers(TEAM_MEMBERS);
       setTasks(INITIAL_TASKS);
+      setDailyLogs(INITIAL_DAILY_LOGS);
       setShoots(INITIAL_SHOOTS);
       setAds(INITIAL_ADS);
       setChats(INITIAL_CHATS);
@@ -511,6 +640,7 @@ export const AgencyProvider = ({ children }) => {
         clients,
         saveClient,
         deleteClient,
+        updateClientQuota,
         teamMembers,
         saveTeamMember,
         deleteTeamMember,
@@ -519,6 +649,9 @@ export const AgencyProvider = ({ children }) => {
         deleteTask,
         approveTask,
         requestRevision,
+        dailyLogs,
+        addDailyLog,
+        deleteDailyLog,
         shoots,
         saveShoot,
         deleteShoot,
@@ -528,6 +661,8 @@ export const AgencyProvider = ({ children }) => {
         chats,
         sendMessage,
         serviceCategories: SERVICE_CATEGORIES,
+        revisionReasons: REVISION_REASONS,
+        deliverableTypes: DELIVERABLE_TYPES,
         activeTab,
         setActiveTab,
         selectedClientId,

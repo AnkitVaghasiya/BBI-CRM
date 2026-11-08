@@ -13,6 +13,7 @@ import { ChatSystem } from './components/ChatSystem';
 import { TeamDirectory } from './components/TeamDirectory';
 import { IntegrationsHub } from './components/IntegrationsHub';
 import { AIStudio } from './components/AIStudio';
+import { DepartmentDashboards } from './components/DepartmentDashboards';
 import { BackupSettingsModal } from './components/BackupSettingsModal';
 import { ClientModal, TaskModal, ShootModal, AdModal, TeamMemberModal } from './components/ActionModals';
 
@@ -103,6 +104,8 @@ const MainApp = () => {
             onNewShoot={handleOpenNewShoot}
           />
         );
+      case 'departments':
+        return <DepartmentDashboards />;
       case 'clients':
         return (
           <ClientsView 

@@ -2,41 +2,60 @@
 // 25 Team Members across 5 Departments
 // Standard English baseline for BrainBinary AI OS / OmniAgency CRM
 
+export const REVISION_REASONS = [
+  'Pacing & Fast Cuts',
+  'Text, Captions & Typography',
+  'Audio, Voiceover & Music',
+  'Color Grading & Visual Tone',
+  'Brand Guidelines & Logo',
+  'Actor / Shot Replacement',
+  'Client Script Drift / Scope Change'
+];
+
+export const DELIVERABLE_TYPES = [
+  'Video Reel',
+  'Long-Form Video',
+  'Social Graphic',
+  'Carousel Post',
+  'Script / Concept',
+  'Meta Ad Creative'
+];
+
 export const TEAM_MEMBERS = [
   // 1. Management (5 Members)
-  { id: 'tm-1', name: 'Neha Gupta', role: 'Agency Director & Founder', department: 'Management', email: 'neha@agency.com', phone: '+91 98765 00001', activeTasks: 4, avatar: '👩‍💼' },
-  { id: 'tm-2', name: 'Karan Mehra', role: 'Operations & Delivery Head', department: 'Management', email: 'karan@agency.com', phone: '+91 98765 00002', activeTasks: 8, avatar: '👨‍💼' },
-  { id: 'tm-3', name: 'Priya Sharma', role: 'Lead Account Manager', department: 'Management', email: 'priya@agency.com', phone: '+91 98765 00003', activeTasks: 12, avatar: '👩‍💻' },
-  { id: 'tm-4', name: 'Rohit Verma', role: 'Client Success & Onboarding Lead', department: 'Management', email: 'rohit@agency.com', phone: '+91 98765 00004', activeTasks: 9, avatar: '👨‍💼' },
-  { id: 'tm-5', name: 'Ananya Roy', role: 'QC & Quality Assurance Lead', department: 'Management', email: 'ananya@agency.com', phone: '+91 98765 00005', activeTasks: 15, avatar: '👩‍🏫' },
+  { id: 'tm-1', name: 'Neha Gupta', role: 'Agency Director & Founder', department: 'Management', email: 'neha@agency.com', phone: '+91 98765 00001', activeTasks: 4, avatar: '👩‍💼', dailyTarget: 0, monthlyDelivered: 42 },
+  { id: 'tm-2', name: 'Karan Mehra', role: 'Operations & Delivery Head', department: 'Management', email: 'karan@agency.com', phone: '+91 98765 00002', activeTasks: 8, avatar: '👨‍💼', dailyTarget: 0, monthlyDelivered: 58 },
+  { id: 'tm-3', name: 'Priya Sharma', role: 'Lead Account Manager', department: 'Management', email: 'priya@agency.com', phone: '+91 98765 00003', activeTasks: 12, avatar: '👩‍💻', dailyTarget: 0, monthlyDelivered: 64 },
+  { id: 'tm-4', name: 'Rohit Verma', role: 'Client Success & Onboarding Lead', department: 'Management', email: 'rohit@agency.com', phone: '+91 98765 00004', activeTasks: 9, avatar: '👨‍💼', dailyTarget: 0, monthlyDelivered: 50 },
+  { id: 'tm-5', name: 'Ananya Roy', role: 'QC & Quality Assurance Lead', department: 'Management', email: 'ananya@agency.com', phone: '+91 98765 00005', activeTasks: 15, avatar: '👩‍🏫', dailyTarget: 8, monthlyDelivered: 112 },
 
   // 2. Video Editing Team (5 Members)
-  { id: 'tm-6', name: 'Rahul Sharma', role: 'Lead Video Editor', department: 'Video Editing', email: 'rahul.edit@agency.com', phone: '+91 98765 00006', activeTasks: 14, avatar: '🎬' },
-  { id: 'tm-7', name: 'Vicky Das', role: 'Reels & Viral Hooks Specialist', department: 'Video Editing', email: 'vicky@agency.com', phone: '+91 98765 00007', activeTasks: 11, avatar: '⚡' },
-  { id: 'tm-8', name: 'Amit Sen', role: 'Motion Graphics & VFX Artist', department: 'Video Editing', email: 'amit@agency.com', phone: '+91 98765 00008', activeTasks: 7, avatar: '✨' },
-  { id: 'tm-9', name: 'Pooja Rawat', role: 'Long-Form & YouTube Editor', department: 'Video Editing', email: 'pooja@agency.com', phone: '+91 98765 00009', activeTasks: 8, avatar: '🎞️' },
-  { id: 'tm-10', name: 'Kunal Joshi', role: 'Colorist & Sound Designer', department: 'Video Editing', email: 'kunal@agency.com', phone: '+91 98765 00010', activeTasks: 10, avatar: '🎧' },
+  { id: 'tm-6', name: 'Rahul Sharma', role: 'Lead Video Editor', department: 'Video Editing', email: 'rahul.edit@agency.com', phone: '+91 98765 00006', activeTasks: 14, avatar: '🎬', dailyTarget: 2, monthlyDelivered: 48 },
+  { id: 'tm-7', name: 'Vicky Das', role: 'Reels & Viral Hooks Specialist', department: 'Video Editing', email: 'vicky@agency.com', phone: '+91 98765 00007', activeTasks: 11, avatar: '⚡', dailyTarget: 3, monthlyDelivered: 56 },
+  { id: 'tm-8', name: 'Amit Sen', role: 'Motion Graphics & VFX Artist', department: 'Video Editing', email: 'amit@agency.com', phone: '+91 98765 00008', activeTasks: 7, avatar: '✨', dailyTarget: 2, monthlyDelivered: 38 },
+  { id: 'tm-9', name: 'Pooja Rawat', role: 'Long-Form & YouTube Editor', department: 'Video Editing', email: 'pooja@agency.com', phone: '+91 98765 00009', activeTasks: 8, avatar: '🎞️', dailyTarget: 1, monthlyDelivered: 24 },
+  { id: 'tm-10', name: 'Kunal Joshi', role: 'Colorist & Sound Designer', department: 'Video Editing', email: 'kunal@agency.com', phone: '+91 98765 00010', activeTasks: 10, avatar: '🎧', dailyTarget: 4, monthlyDelivered: 72 },
 
   // 3. AI & Creative Team (5 Members)
-  { id: 'tm-11', name: 'Sameer Khan', role: 'Lead AI Prompt Engineer & GenAI', department: 'AI Content', email: 'sameer@agency.com', phone: '+91 98765 00011', activeTasks: 16, avatar: '🤖' },
-  { id: 'tm-12', name: 'Divya Nair', role: 'AI Copywriter & Hook Architect', department: 'AI Content', email: 'divya@agency.com', phone: '+91 98765 00012', activeTasks: 13, avatar: '✍️' },
-  { id: 'tm-13', name: 'Ayush Patel', role: 'AI Voice & Video Synthesizer', department: 'AI Content', email: 'ayush@agency.com', phone: '+91 98765 00013', activeTasks: 9, avatar: '🎙️' },
-  { id: 'tm-14', name: 'Shreya Sen', role: 'Visual AI & Midjourney Creator', department: 'AI Content', email: 'shreya@agency.com', phone: '+91 98765 00014', activeTasks: 12, avatar: '🎨' },
-  { id: 'tm-15', name: 'Manisha Paul', role: 'AI QA & Brand Voice Analyst', department: 'AI Content', email: 'manisha@agency.com', phone: '+91 98765 00015', activeTasks: 11, avatar: '🔍' },
+  { id: 'tm-11', name: 'Sameer Khan', role: 'Lead AI Prompt Engineer & GenAI', department: 'AI Content', email: 'sameer@agency.com', phone: '+91 98765 00011', activeTasks: 16, avatar: '🤖', dailyTarget: 5, monthlyDelivered: 96 },
+  { id: 'tm-12', name: 'Divya Nair', role: 'AI Copywriter & Hook Architect', department: 'AI Content', email: 'divya@agency.com', phone: '+91 98765 00012', activeTasks: 13, avatar: '✍️', dailyTarget: 6, monthlyDelivered: 115 },
+  { id: 'tm-13', name: 'Ayush Patel', role: 'AI Voice & Video Synthesizer', department: 'AI Content', email: 'ayush@agency.com', phone: '+91 98765 00013', activeTasks: 9, avatar: '🎙️', dailyTarget: 3, monthlyDelivered: 54 },
+  { id: 'tm-14', name: 'Shreya Sen', role: 'Visual AI & Midjourney Creator', department: 'AI Content', email: 'shreya@agency.com', phone: '+91 98765 00014', activeTasks: 12, avatar: '🎨', dailyTarget: 4, monthlyDelivered: 82 },
+  { id: 'tm-15', name: 'Manisha Paul', role: 'AI QA & Brand Voice Analyst', department: 'AI Content', email: 'manisha@agency.com', phone: '+91 98765 00015', activeTasks: 11, avatar: '🔍', dailyTarget: 8, monthlyDelivered: 140 },
 
   // 4. Social Media Marketing & Meta Ads Team (5 Members)
-  { id: 'tm-16', name: 'Aryan Malhotra', role: 'Meta Ads & Media Buyer Lead', department: 'Meta Ads & SMM', email: 'aryan@agency.com', phone: '+91 98765 00016', activeTasks: 18, avatar: '📊' },
-  { id: 'tm-17', name: 'Tanvi Singhania', role: 'Paid Social Funnel Strategist', department: 'Meta Ads & SMM', email: 'tanvi@agency.com', phone: '+91 98765 00017', activeTasks: 14, avatar: '📈' },
-  { id: 'tm-18', name: 'Sahil Kapoor', role: 'Instagram & LinkedIn Growth Manager', department: 'Meta Ads & SMM', email: 'sahil@agency.com', phone: '+91 98765 00018', activeTasks: 15, avatar: '🚀' },
-  { id: 'tm-19', name: 'Riya Bose', role: 'Community & Scheduling Specialist', department: 'Meta Ads & SMM', email: 'riya@agency.com', phone: '+91 98765 00019', activeTasks: 22, avatar: '📅' },
-  { id: 'tm-20', name: 'Deep Patel', role: 'Tracking, Pixel & Analytics Lead', department: 'Meta Ads & SMM', email: 'deep@agency.com', phone: '+91 98765 00020', activeTasks: 10, avatar: '🎯' },
+  { id: 'tm-16', name: 'Aryan Malhotra', role: 'Meta Ads & Media Buyer Lead', department: 'Meta Ads & SMM', email: 'aryan@agency.com', phone: '+91 98765 00016', activeTasks: 18, avatar: '📊', dailyTarget: 2, monthlyDelivered: 36 },
+  { id: 'tm-17', name: 'Tanvi Singhania', role: 'Paid Social Funnel Strategist', department: 'Meta Ads & SMM', email: 'tanvi@agency.com', phone: '+91 98765 00017', activeTasks: 14, avatar: '📈', dailyTarget: 2, monthlyDelivered: 32 },
+  { id: 'tm-18', name: 'Sahil Kapoor', role: 'Instagram & LinkedIn Growth Manager', department: 'Meta Ads & SMM', email: 'sahil@agency.com', phone: '+91 98765 00018', activeTasks: 15, avatar: '🚀', dailyTarget: 4, monthlyDelivered: 84 },
+  { id: 'tm-19', name: 'Riya Bose', role: 'Community & Scheduling Specialist', department: 'Meta Ads & SMM', email: 'riya@agency.com', phone: '+91 98765 00019', activeTasks: 22, avatar: '📅', dailyTarget: 8, monthlyDelivered: 160 },
+  { id: 'tm-20', name: 'Deep Patel', role: 'Tracking, Pixel & Analytics Lead', department: 'Meta Ads & SMM', email: 'deep@agency.com', phone: '+91 98765 00020', activeTasks: 10, avatar: '🎯', dailyTarget: 1, monthlyDelivered: 20 },
 
   // 5. Shooting & Production Team (5 Members)
-  { id: 'tm-21', name: 'Vikram Rathore', role: 'Director of Photography (DoP)', department: 'Shooting Team', email: 'vikram@agency.com', phone: '+91 98765 00021', activeTasks: 6, avatar: '📹' },
-  { id: 'tm-22', name: 'Arjun Mehta', role: 'Senior Cinematographer & Drone Op', department: 'Shooting Team', email: 'arjun@agency.com', phone: '+91 98765 00022', activeTasks: 5, avatar: '🚁' },
-  { id: 'tm-23', name: 'Saurabh Mishra', role: 'Gimbal Operator & Reel Videographer', department: 'Shooting Team', email: 'saurabh@agency.com', phone: '+91 98765 00023', activeTasks: 7, avatar: '🎥' },
-  { id: 'tm-24', name: 'Simran Kaur', role: 'Shoot Producer & Wardrobe Stylist', department: 'Shooting Team', email: 'simran@agency.com', phone: '+91 98765 00024', activeTasks: 4, avatar: '👗' },
-  { id: 'tm-25', name: 'Chetan Vyas', role: 'Lighting & Sound Engineer', department: 'Shooting Team', email: 'chetan@agency.com', phone: '+91 98765 00025', activeTasks: 6, avatar: '💡' }
+  { id: 'tm-21', name: 'Vikram Rathore', role: 'Director of Photography (DoP)', department: 'Shooting Team', email: 'vikram@agency.com', phone: '+91 98765 00021', activeTasks: 6, avatar: '📹', dailyTarget: 1, monthlyDelivered: 18 },
+  { id: 'tm-22', name: 'Arjun Mehta', role: 'Senior Cinematographer & Drone Op', department: 'Shooting Team', email: 'arjun@agency.com', phone: '+91 98765 00022', activeTasks: 5, avatar: '🚁', dailyTarget: 1, monthlyDelivered: 16 },
+  { id: 'tm-23', name: 'Saurabh Mishra', role: 'Gimbal Operator & Reel Videographer', department: 'Shooting Team', email: 'saurabh@agency.com', phone: '+91 98765 00023', activeTasks: 7, avatar: '🎥', dailyTarget: 1, monthlyDelivered: 22 },
+  { id: 'tm-24', name: 'Simran Kaur', role: 'Shoot Producer & Wardrobe Stylist', department: 'Shooting Team', email: 'simran@agency.com', phone: '+91 98765 00024', activeTasks: 4, avatar: '👗', dailyTarget: 1, monthlyDelivered: 14 },
+  { id: 'tm-25', name: 'Chetan Vyas', role: 'Lighting & Sound Engineer', department: 'Shooting Team', email: 'chetan@agency.com', phone: '+91 98765 00025', activeTasks: 6, avatar: '💡', dailyTarget: 1, monthlyDelivered: 20 }
 ];
 
 export const SERVICE_CATEGORIES = [
@@ -45,7 +64,8 @@ export const SERVICE_CATEGORIES = [
   { id: 'social-media-posting', name: 'Posting & Scheduling', icon: 'Calendar', color: 'purple' },
   { id: 'meta-ads', name: 'Meta Ads Management', icon: 'Target', color: 'emerald' },
   { id: 'ai-posts', name: 'AI Posts & Visuals', icon: 'Bot', color: 'pink' },
-  { id: 'photos', name: 'Photos & Retouching', icon: 'Image', color: 'indigo' },
+  { id: 'photos', name: 'Photos & Graphics', icon: 'Image', color: 'indigo' },
+  { id: 'scripts', name: 'Scripts & Concepts', icon: 'FileText', color: 'teal' },
   { id: 'raw-data', name: 'Raw Data & Cloud Drive', icon: 'HardDrive', color: 'cyan' }
 ];
 
@@ -61,7 +81,7 @@ export const generateClients = () => {
       industry: 'Luxury Retail & Watches',
       monthlyRetainer: 95000,
       status: 'Active',
-      services: ['video-editing', 'video-shooting', 'social-media-posting', 'meta-ads', 'ai-posts', 'raw-data'],
+      services: ['video-editing', 'video-shooting', 'social-media-posting', 'meta-ads', 'ai-posts', 'photos', 'scripts', 'raw-data'],
       assignees: {
         management: 'tm-3',
         videoEditing: 'tm-7',
@@ -70,8 +90,14 @@ export const generateClients = () => {
         smm: 'tm-16'
       },
       rawDriveUrl: 'https://drive.google.com/drive/folders/ambika-watches-campaign-assets',
-      totalQuota: { reels: 24, shoots: 2, metaCampaigns: 4, aiPosts: 16 },
-      completedQuota: { reels: 18, shoots: 2, metaCampaigns: 4, aiPosts: 14 },
+      quotas: {
+        videos: { target: 20, completed: 15, inProgress: 3 },
+        graphics: { target: 12, completed: 9, inProgress: 2 },
+        posts: { target: 24, completed: 18, inProgress: 4 },
+        scripts: { target: 25, completed: 22, inProgress: 3 },
+        shoots: { target: 2, completed: 2, inProgress: 0 },
+        metaCampaigns: { target: 4, completed: 4, inProgress: 0 }
+      },
       createdAt: '2026-01-15'
     },
     {
@@ -84,7 +110,7 @@ export const generateClients = () => {
       industry: 'Interior Design',
       monthlyRetainer: 135000,
       status: 'Active',
-      services: ['video-editing', 'video-shooting', 'social-media-posting', 'meta-ads', 'photos', 'raw-data'],
+      services: ['video-editing', 'video-shooting', 'social-media-posting', 'meta-ads', 'photos', 'scripts', 'raw-data'],
       assignees: {
         management: 'tm-2',
         videoEditing: 'tm-6',
@@ -93,8 +119,14 @@ export const generateClients = () => {
         smm: 'tm-17'
       },
       rawDriveUrl: 'https://drive.google.com/drive/folders/livdecor-interiors-footage',
-      totalQuota: { reels: 16, shoots: 3, metaCampaigns: 6, aiPosts: 12 },
-      completedQuota: { reels: 12, shoots: 2, metaCampaigns: 5, aiPosts: 9 },
+      quotas: {
+        videos: { target: 16, completed: 12, inProgress: 2 },
+        graphics: { target: 10, completed: 8, inProgress: 1 },
+        posts: { target: 20, completed: 15, inProgress: 3 },
+        scripts: { target: 18, completed: 16, inProgress: 2 },
+        shoots: { target: 3, completed: 2, inProgress: 1 },
+        metaCampaigns: { target: 6, completed: 5, inProgress: 1 }
+      },
       createdAt: '2026-02-01'
     },
     {
@@ -107,7 +139,7 @@ export const generateClients = () => {
       industry: 'Dentist & Clinic',
       monthlyRetainer: 110000,
       status: 'Active',
-      services: ['video-editing', 'social-media-posting', 'meta-ads', 'ai-posts', 'raw-data'],
+      services: ['video-editing', 'social-media-posting', 'meta-ads', 'ai-posts', 'photos', 'scripts', 'raw-data'],
       assignees: {
         management: 'tm-4',
         videoEditing: 'tm-8',
@@ -116,8 +148,14 @@ export const generateClients = () => {
         smm: 'tm-16'
       },
       rawDriveUrl: 'https://drive.google.com/drive/folders/prime-care-patient-stories',
-      totalQuota: { reels: 18, shoots: 2, metaCampaigns: 5, aiPosts: 20 },
-      completedQuota: { reels: 14, shoots: 1, metaCampaigns: 4, aiPosts: 17 },
+      quotas: {
+        videos: { target: 18, completed: 14, inProgress: 2 },
+        graphics: { target: 15, completed: 12, inProgress: 2 },
+        posts: { target: 22, completed: 18, inProgress: 3 },
+        scripts: { target: 20, completed: 17, inProgress: 2 },
+        shoots: { target: 2, completed: 1, inProgress: 1 },
+        metaCampaigns: { target: 5, completed: 4, inProgress: 1 }
+      },
       createdAt: '2026-02-10'
     },
     {
@@ -130,7 +168,7 @@ export const generateClients = () => {
       industry: 'Tech SaaS & Finance',
       monthlyRetainer: 80000,
       status: 'Active',
-      services: ['video-editing', 'social-media-posting', 'meta-ads', 'ai-posts'],
+      services: ['video-editing', 'social-media-posting', 'meta-ads', 'ai-posts', 'scripts'],
       assignees: {
         management: 'tm-1',
         videoEditing: 'tm-9',
@@ -139,8 +177,14 @@ export const generateClients = () => {
         smm: 'tm-18'
       },
       rawDriveUrl: 'https://drive.google.com/drive/folders/azone-tax-season-reels',
-      totalQuota: { reels: 10, shoots: 1, metaCampaigns: 3, aiPosts: 15 },
-      completedQuota: { reels: 8, shoots: 1, metaCampaigns: 3, aiPosts: 12 },
+      quotas: {
+        videos: { target: 10, completed: 8, inProgress: 1 },
+        graphics: { target: 8, completed: 6, inProgress: 1 },
+        posts: { target: 16, completed: 14, inProgress: 2 },
+        scripts: { target: 15, completed: 12, inProgress: 2 },
+        shoots: { target: 1, completed: 1, inProgress: 0 },
+        metaCampaigns: { target: 3, completed: 3, inProgress: 0 }
+      },
       createdAt: '2026-02-14'
     },
     {
@@ -153,7 +197,7 @@ export const generateClients = () => {
       industry: 'Fitness & Gym',
       monthlyRetainer: 90000,
       status: 'Active',
-      services: ['video-editing', 'video-shooting', 'social-media-posting', 'meta-ads', 'ai-posts', 'raw-data'],
+      services: ['video-editing', 'video-shooting', 'social-media-posting', 'meta-ads', 'ai-posts', 'photos', 'scripts', 'raw-data'],
       assignees: {
         management: 'tm-3',
         videoEditing: 'tm-7',
@@ -162,8 +206,14 @@ export const generateClients = () => {
         smm: 'tm-16'
       },
       rawDriveUrl: 'https://drive.google.com/drive/folders/ironcore-benchpress-raw-4k',
-      totalQuota: { reels: 20, shoots: 2, metaCampaigns: 4, aiPosts: 15 },
-      completedQuota: { reels: 15, shoots: 2, metaCampaigns: 4, aiPosts: 12 },
+      quotas: {
+        videos: { target: 20, completed: 15, inProgress: 3 },
+        graphics: { target: 10, completed: 8, inProgress: 2 },
+        posts: { target: 25, completed: 20, inProgress: 3 },
+        scripts: { target: 22, completed: 18, inProgress: 2 },
+        shoots: { target: 2, completed: 2, inProgress: 0 },
+        metaCampaigns: { target: 4, completed: 4, inProgress: 0 }
+      },
       createdAt: '2026-02-18'
     }
   ];
@@ -175,10 +225,15 @@ export const generateClients = () => {
     const ind = industries[i % industries.length];
     const hasShooting = i % 2 === 0;
     const hasAds = i % 3 !== 0;
-    const activeServices = ['video-editing', 'social-media-posting', 'raw-data'];
+    const activeServices = ['video-editing', 'social-media-posting', 'photos', 'scripts', 'raw-data'];
     if (hasShooting) activeServices.push('video-shooting');
     if (hasAds) activeServices.push('meta-ads');
     activeServices.push('ai-posts');
+
+    const vTarget = 12 + (i % 8);
+    const gTarget = 8 + (i % 6);
+    const sTarget = 14 + (i % 10);
+    const pTarget = 18 + (i % 12);
 
     fullClients.push({
       id: `client-${i}`,
@@ -199,8 +254,14 @@ export const generateClients = () => {
         smm: TEAM_MEMBERS[15 + (i % 5)].id
       },
       rawDriveUrl: `https://drive.google.com/drive/folders/client-${i}-footage-vault`,
-      totalQuota: { reels: 12 + (i % 8), shoots: hasShooting ? 2 : 0, metaCampaigns: hasAds ? 3 : 0, aiPosts: 10 + (i % 10) },
-      completedQuota: { reels: Math.floor((12 + (i % 8)) * 0.7), shoots: hasShooting ? 1 : 0, metaCampaigns: hasAds ? 2 : 0, aiPosts: Math.floor((10 + (i % 10)) * 0.75) },
+      quotas: {
+        videos: { target: vTarget, completed: Math.floor(vTarget * 0.7), inProgress: Math.max(1, Math.floor(vTarget * 0.15)) },
+        graphics: { target: gTarget, completed: Math.floor(gTarget * 0.75), inProgress: Math.max(1, Math.floor(gTarget * 0.15)) },
+        posts: { target: pTarget, completed: Math.floor(pTarget * 0.7), inProgress: Math.max(1, Math.floor(pTarget * 0.2)) },
+        scripts: { target: sTarget, completed: Math.floor(sTarget * 0.8), inProgress: Math.max(1, Math.floor(sTarget * 0.15)) },
+        shoots: { target: hasShooting ? 2 : 0, completed: hasShooting ? 1 : 0, inProgress: hasShooting ? 1 : 0 },
+        metaCampaigns: { target: hasAds ? 3 : 0, completed: hasAds ? 2 : 0, inProgress: hasAds ? 1 : 0 }
+      },
       createdAt: '2026-03-01'
     });
   }
@@ -208,22 +269,32 @@ export const generateClients = () => {
   return fullClients;
 };
 
+// Initial Production Tasks & Deliverables with Versioning and Multi-Tier Revision History
 export const INITIAL_TASKS = [
   {
     id: 'task-101',
     title: 'Fastrack x Ambika Authorized Dealer Reel #01 (Left Cut)',
     clientId: 'client-1',
     clientName: 'Ambika Watches (Fastrack Authorized)',
+    deliverableType: 'Video Reel',
     service: 'video-editing',
-    assignedTo: 'tm-7',
+    assignedTo: 'tm-7', // Vicky Das
     scheduledDate: '2026-11-09',
     scheduledTime: '18:30',
     rawMediaUrl: 'https://drive.google.com/drive/folders/ambika-watch-vetra-raw',
     outputUrl: 'https://vimeo.com/manage/videos/ambika-watch-vetra-v2',
     status: 'Client Approval Pending',
-    version: 'v2 Master',
+    version: 'v2',
     revisionsCount: 1,
-    clientFeedback: 'Fastrack branding looks crisp; yellow accent pop verified at 0:08.',
+    revisionsHistory: [
+      {
+        iteration: 1,
+        date: '08/11/2026, 11:20 AM',
+        author: 'Ankit Vaghasiya (Client)',
+        reasonCategory: 'Text, Captions & Typography',
+        feedback: 'Fastrack branding looks crisp. Please make accent font color golden yellow at 0:08 and add subtle drop shadow.'
+      }
+    ],
     lastUpdated: '08/11/2026, 12:40 PM',
     priority: 'Urgent'
   },
@@ -232,16 +303,25 @@ export const INITIAL_TASKS = [
     title: 'LivDecor Signature Villa Interior Walkthrough (4K Reel)',
     clientId: 'client-2',
     clientName: 'LivDecor Luxury Living & Interiors',
+    deliverableType: 'Video Reel',
     service: 'video-editing',
-    assignedTo: 'tm-6',
+    assignedTo: 'tm-6', // Rahul Sharma
     scheduledDate: '2026-11-10',
     scheduledTime: '19:00',
     rawMediaUrl: 'https://drive.google.com/drive/folders/livdecor-interiors-footage',
     outputUrl: 'https://vimeo.com/manage/videos/livdecor-villa-final',
     status: 'Approved',
     version: 'Final Master',
-    revisionsCount: 0,
-    clientFeedback: 'Approved! Schedule for Tuesday evening prime time on Instagram & Facebook.',
+    revisionsCount: 1,
+    revisionsHistory: [
+      {
+        iteration: 1,
+        date: '07/11/2026, 04:15 PM',
+        author: 'Ruchita Patel (Client)',
+        reasonCategory: 'Audio, Voiceover & Music',
+        feedback: 'Swap modern lo-fi music with elegant instrumental classical violin at 0:14.'
+      }
+    ],
     lastUpdated: '08/11/2026, 11:15 AM',
     priority: 'High'
   },
@@ -250,26 +330,43 @@ export const INITIAL_TASKS = [
     title: 'Prime Care Diwali Dental Wellness Reel Campaign',
     clientId: 'client-3',
     clientName: 'Prime Care Super Speciality Clinic',
-    service: 'ai-posts',
-    assignedTo: 'tm-11',
+    deliverableType: 'Video Reel',
+    service: 'video-editing',
+    assignedTo: 'tm-8', // Amit Sen
     scheduledDate: '2026-11-09',
     scheduledTime: '12:00',
     rawMediaUrl: 'https://frame.io/projects/prime-care-smile-stills',
     outputUrl: 'https://drive.google.com/drive/folders/prime-care-diwali-visuals',
-    status: 'In Progress',
-    version: 'v1 Draft',
-    revisionsCount: 0,
-    clientFeedback: '',
+    status: 'Revision Requested',
+    version: 'v2',
+    revisionsCount: 2,
+    revisionsHistory: [
+      {
+        iteration: 1,
+        date: '06/11/2026, 02:00 PM',
+        author: 'Ananya Roy (Internal QC)',
+        reasonCategory: 'Pacing & Fast Cuts',
+        feedback: 'Doctor soundbite has 0.9s dead air before case study graphics reveal.'
+      },
+      {
+        iteration: 2,
+        date: '08/11/2026, 10:20 AM',
+        author: 'Dr. Vivek Desai (Client)',
+        reasonCategory: 'Color Grading & Visual Tone',
+        feedback: 'Clinic interior lighting looks slightly green in the surgery room shot; warm up white balance.'
+      }
+    ],
     lastUpdated: '08/11/2026, 10:20 AM',
-    priority: 'Medium'
+    priority: 'Urgent'
   },
   {
     id: 'task-104',
     title: 'Azone Tax Season & Wealth Management Explainer',
     clientId: 'client-4',
     clientName: 'Azone Global Accounting & Advisory',
-    service: 'video-editing',
-    assignedTo: 'tm-8',
+    deliverableType: 'Carousel Post',
+    service: 'photos',
+    assignedTo: 'tm-14', // Shreya Sen
     scheduledDate: '2026-11-11',
     scheduledTime: '17:00',
     rawMediaUrl: 'https://drive.google.com/drive/folders/azone-tax-season-reels',
@@ -277,15 +374,35 @@ export const INITIAL_TASKS = [
     status: 'Internal QC',
     version: 'v1',
     revisionsCount: 0,
-    clientFeedback: '',
+    revisionsHistory: [],
     lastUpdated: '08/11/2026, 09:45 AM',
     priority: 'Medium'
   },
   {
     id: 'task-105',
+    title: 'Fastrack Festive Edition 3-Second Viral Hook Script #12',
+    clientId: 'client-1',
+    clientName: 'Ambika Watches (Fastrack Authorized)',
+    deliverableType: 'Script / Concept',
+    service: 'scripts',
+    assignedTo: 'tm-12', // Divya Nair
+    scheduledDate: '2026-11-09',
+    scheduledTime: '11:00',
+    rawMediaUrl: '',
+    outputUrl: 'https://docs.google.com/document/d/fastrack-scripts-festive',
+    status: 'Approved',
+    version: 'v1 Master',
+    revisionsCount: 0,
+    revisionsHistory: [],
+    lastUpdated: '08/11/2026, 08:30 AM',
+    priority: 'High'
+  },
+  {
+    id: 'task-106',
     title: 'IronCore Transformational Athlete Highlight Reel',
     clientId: 'client-5',
     clientName: 'IronCore Elite Fitness Hub',
+    deliverableType: 'Video Reel',
     service: 'video-editing',
     assignedTo: 'tm-7',
     scheduledDate: '2026-11-10',
@@ -294,10 +411,107 @@ export const INITIAL_TASKS = [
     outputUrl: 'https://vimeo.com/manage/videos/ironcore-athlete-draft',
     status: 'Scheduled',
     version: 'Final Master',
-    revisionsCount: 0,
-    clientFeedback: 'Confirmed and locked for release.',
+    revisionsCount: 1,
+    revisionsHistory: [
+      {
+        iteration: 1,
+        date: '07/11/2026, 03:00 PM',
+        author: 'Aditya Oberoi (Client)',
+        reasonCategory: 'Brand Guidelines & Logo',
+        feedback: 'Position IronCore crest 15px higher so it does not collide with Instagram caption area.'
+      }
+    ],
     lastUpdated: '07/11/2026, 05:10 PM',
     priority: 'High'
+  }
+];
+
+// Initial Daily Creator & Editor Worklogs
+export const INITIAL_DAILY_LOGS = [
+  {
+    id: 'log-1',
+    date: '2026-11-08',
+    timestamp: '08/11/2026, 12:45 PM',
+    memberId: 'tm-7',
+    memberName: 'Vicky Das',
+    department: 'Video Editing',
+    clientId: 'client-1',
+    clientName: 'Ambika Watches (Fastrack Authorized)',
+    taskTitle: 'Fastrack x Ambika Authorized Dealer Reel #01',
+    assetType: 'Video Reel',
+    activity: 'Revision Edit (Pacing & Font Pop)',
+    version: 'v2',
+    durationMinutes: 75,
+    status: 'Client Approval Pending',
+    notes: 'Re-rendered in 4K 60fps with golden yellow kinetic subtitles.'
+  },
+  {
+    id: 'log-2',
+    date: '2026-11-08',
+    timestamp: '08/11/2026, 11:30 AM',
+    memberId: 'tm-6',
+    memberName: 'Rahul Sharma',
+    department: 'Video Editing',
+    clientId: 'client-2',
+    clientName: 'LivDecor Luxury Living & Interiors',
+    taskTitle: 'LivDecor Signature Villa Interior Walkthrough',
+    assetType: 'Video Reel',
+    activity: 'Master Export & Color Polish',
+    version: 'Final Master',
+    durationMinutes: 120,
+    status: 'Approved',
+    notes: 'Final export delivered to client portal with violins audio stem.'
+  },
+  {
+    id: 'log-3',
+    date: '2026-11-08',
+    timestamp: '08/11/2026, 10:15 AM',
+    memberId: 'tm-12',
+    memberName: 'Divya Nair',
+    department: 'AI Content',
+    clientId: 'client-1',
+    clientName: 'Ambika Watches (Fastrack Authorized)',
+    taskTitle: 'Fastrack Festive Edition 3-Second Viral Hook Script #12',
+    assetType: 'Script / Concept',
+    activity: 'Scriptwriting & Hook Generation',
+    version: 'v1 Master',
+    durationMinutes: 45,
+    status: 'Approved',
+    notes: 'Generated 3 high-retention hooks and shot directions for macro watch reel.'
+  },
+  {
+    id: 'log-4',
+    date: '2026-11-08',
+    timestamp: '08/11/2026, 09:30 AM',
+    memberId: 'tm-14',
+    memberName: 'Shreya Sen',
+    department: 'AI Content',
+    clientId: 'client-4',
+    clientName: 'Azone Global Accounting & Advisory',
+    taskTitle: 'Azone Tax Season & Wealth Management Explainer',
+    assetType: 'Carousel Post',
+    activity: 'Design & Visual Assembly',
+    version: 'v1',
+    durationMinutes: 90,
+    status: 'Internal QC',
+    notes: 'Designed 6-slide infographic carousel on corporate tax optimization.'
+  },
+  {
+    id: 'log-5',
+    date: '2026-11-07',
+    timestamp: '07/11/2026, 04:30 PM',
+    memberId: 'tm-8',
+    memberName: 'Amit Sen',
+    department: 'Video Editing',
+    clientId: 'client-3',
+    clientName: 'Prime Care Super Speciality Clinic',
+    taskTitle: 'Prime Care Diwali Dental Wellness Reel Campaign',
+    assetType: 'Video Reel',
+    activity: 'Motion Graphics & 3D Teeth Retouch',
+    version: 'v1',
+    durationMinutes: 140,
+    status: 'Revision Requested',
+    notes: 'Assembled animated lower-thirds and doctor credential overlays.'
   }
 ];
 

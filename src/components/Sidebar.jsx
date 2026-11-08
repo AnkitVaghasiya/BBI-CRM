@@ -12,7 +12,8 @@ import {
   Briefcase, 
   Settings,
   Bot,
-  Network
+  Network,
+  BarChart3
 } from 'lucide-react';
 
 export const Sidebar = ({ onOpenSettings }) => {
@@ -27,6 +28,14 @@ export const Sidebar = ({ onOpenSettings }) => {
       icon: LayoutDashboard,
       roles: ['management', 'video-editing', 'shooting-team', 'ai-content', 'meta-ads'],
       badge: null
+    },
+    {
+      id: 'departments',
+      label: 'Department Dashboards',
+      icon: BarChart3,
+      roles: ['management', 'video-editing', 'shooting-team', 'ai-content', 'meta-ads'],
+      badge: '5 Hubs',
+      badgeColor: 'blue'
     },
     {
       id: 'clients',

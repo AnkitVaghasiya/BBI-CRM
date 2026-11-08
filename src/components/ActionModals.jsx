@@ -368,6 +368,82 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
             </div>
           </div>
 
+          {/* Monthly Deliverables Targets */}
+          <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <label className="text-slate-800 dark:text-slate-300 font-bold block">
+              Monthly Deliverable Target Quotas:
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div>
+                <label className="text-[11px] text-slate-500 dark:text-slate-400 block mb-1">Target Videos</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.quotas?.videos?.target ?? 16}
+                  onChange={(e) => setForm({
+                    ...form,
+                    quotas: {
+                      ...(form.quotas || {}),
+                      videos: { ...(form.quotas?.videos || { completed: 0, inProgress: 0 }), target: Number(e.target.value) }
+                    }
+                  })}
+                  className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-slate-500 dark:text-slate-400 block mb-1">Target Graphics</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.quotas?.graphics?.target ?? 12}
+                  onChange={(e) => setForm({
+                    ...form,
+                    quotas: {
+                      ...(form.quotas || {}),
+                      graphics: { ...(form.quotas?.graphics || { completed: 0, inProgress: 0 }), target: Number(e.target.value) }
+                    }
+                  })}
+                  className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-slate-500 dark:text-slate-400 block mb-1">Target Scripts</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.quotas?.scripts?.target ?? 20}
+                  onChange={(e) => setForm({
+                    ...form,
+                    quotas: {
+                      ...(form.quotas || {}),
+                      scripts: { ...(form.quotas?.scripts || { completed: 0, inProgress: 0 }), target: Number(e.target.value) }
+                    }
+                  })}
+                  className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-slate-500 dark:text-slate-400 block mb-1">Target Posts</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.quotas?.posts?.target ?? 20}
+                  onChange={(e) => setForm({
+                    ...form,
+                    quotas: {
+                      ...(form.quotas || {}),
+                      posts: { ...(form.quotas?.posts || { completed: 0, inProgress: 0 }), target: Number(e.target.value) }
+                    }
+                  })}
+                  className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Enrolled Services */}
           <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
             <label className="text-slate-800 dark:text-slate-300 font-bold block">
@@ -480,12 +556,13 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
 
 // 3. Task Modal (Full Edit & Add)
 export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
-  const { clients, saveTask, deleteTask, teamMembers, serviceCategories } = useAgency();
+  const { clients, saveTask, deleteTask, teamMembers, serviceCategories, DELIVERABLE_TYPES } = useAgency();
 
   const [form, setForm] = useState({
     title: '',
     clientId: 'client-1',
     clientName: 'IronCore Fitness',
+    deliverableType: 'Video Reel',
     service: 'video-editing',
     assignedTo: 'tm-6',
     scheduledDate: '2026-11-05',
@@ -500,12 +577,13 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
 
   useEffect(() => {
     if (taskToEdit) {
-      setForm(taskToEdit);
+      setForm({ ...taskToEdit, deliverableType: taskToEdit.deliverableType || 'Video Reel' });
     } else {
       setForm({
         title: '',
         clientId: clients[0]?.id || 'client-1',
         clientName: clients[0]?.name || 'Client',
+        deliverableType: 'Video Reel',
         service: 'video-editing',
         assignedTo: teamMembers.find(m => m.department === 'Video Editing')?.id || 'tm-6',
         scheduledDate: new Date().toISOString().split('T')[0],
@@ -568,7 +646,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Select Client</label>
               <select
@@ -582,6 +660,19 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
               >
                 {clients.slice(0, 60).map(c => (
                   <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Deliverable Type</label>
+              <select
+                value={form.deliverableType}
+                onChange={(e) => setForm({ ...form, deliverableType: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none font-semibold"
+              >
+                {(DELIVERABLE_TYPES || ['Video Reel', 'Long-Form Video', 'Social Graphic', 'Carousel Post', 'Script / Concept', 'Meta Ad Creative']).map(dt => (
+                  <option key={dt} value={dt}>{dt}</option>
                 ))}
               </select>
             </div>
