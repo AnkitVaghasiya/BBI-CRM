@@ -54,8 +54,21 @@ export const AgencyProvider = ({ children }) => {
 
   // Current active user/role view
   const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem('agency_current_user');
-    return saved ? JSON.parse(saved) : {
+    try {
+      const saved = localStorage.getItem('agency_current_user');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          return {
+            ...parsed,
+            role: parsed.role === 'admin' ? 'management' : (parsed.role || 'management'),
+            name: parsed.name || 'Neha Gupta (Admin)',
+            id: parsed.id || 'tm-1'
+          };
+        }
+      }
+    } catch (e) { console.error('Current user parse error:', e); }
+    return {
       role: 'management',
       name: 'Neha Gupta (Admin)',
       id: 'tm-1',
@@ -92,10 +105,13 @@ export const AgencyProvider = ({ children }) => {
   // LIVE SYNC & CONTINUOUS SNAPSHOT VAULT
   // ==========================================
   const [snapshots, setSnapshots] = useState(() => {
-    const saved = localStorage.getItem('agency_snapshots_vault_v3');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    try {
+      const saved = localStorage.getItem('agency_snapshots_vault_v3');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) { console.error('Snapshots parse error:', e); }
     return [];
   });
 
@@ -194,36 +210,49 @@ export const AgencyProvider = ({ children }) => {
 
   // Database States with LocalStorage fallback (v3 to incorporate full Quota & Revision schema)
   const [clients, setClients] = useState(() => {
-    const saved = localStorage.getItem('agency_clients_v3');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('agency_clients_v3');
+      if (saved) {
         const parsed = JSON.parse(saved);
-        return parsed.map((c, idx) => ({
-          ...c,
-          socialChannels: c.socialChannels || generateClientSocialChannels(c.name, c.brand, idx + 1),
-          aiPreferences: c.aiPreferences || generateClientAiPreferences(c.name, c.industry || 'Business', c.brand)
-        }));
-      } catch (e) { console.error(e); }
-    }
+        if (Array.isArray(parsed)) {
+          if (parsed.length === 0 && localStorage.getItem('agency_fresh_workspace') === 'true') {
+            return [];
+          }
+          return parsed.filter(Boolean).map((c, idx) => ({
+            ...c,
+            name: c.name || `Client ${idx + 1}`,
+            status: c.status || 'Active',
+            monthlyRetainer: Number(c.monthlyRetainer) || 0,
+            socialChannels: c.socialChannels || generateClientSocialChannels(c.name, c.brand, idx + 1),
+            aiPreferences: c.aiPreferences || generateClientAiPreferences(c.name, c.industry || 'Business', c.brand)
+          }));
+        }
+      }
+    } catch (e) { console.error('Clients parse error:', e); }
     return generateClients();
   });
 
   const [teamMembers, setTeamMembers] = useState(() => {
-    const saved = localStorage.getItem('agency_team_members_v3');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('agency_team_members_v3');
+      if (saved) {
         const parsed = JSON.parse(saved);
-        return parsed.map((m, idx) => ({
-          ...m,
-          currentDuties: m.currentDuties || 'Standard agency operations and deliverable production.',
-          assignedScope: m.assignedScope || 'Execute scheduled daily quota and resolve active revisions.',
-          toolstack: m.toolstack || ['Adobe Premiere Pro', 'CapCut Pro'],
-          assignedClientIds: m.assignedClientIds || ['client-1'],
-          lastUpdated: m.lastUpdated || '2026-11-08 11:30',
-          lastChangeReason: m.lastChangeReason || 'Initial System Onboarding'
-        }));
-      } catch (e) { console.error(e); }
-    }
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.filter(Boolean).map((m, idx) => ({
+            ...m,
+            name: m.name || `Specialist ${idx + 1}`,
+            role: m.role || 'Creative Specialist',
+            department: m.department || 'General Operations',
+            currentDuties: m.currentDuties || 'Standard agency operations and deliverable production.',
+            assignedScope: m.assignedScope || 'Execute scheduled daily quota and resolve active revisions.',
+            toolstack: Array.isArray(m.toolstack) ? m.toolstack : ['Adobe Premiere Pro', 'CapCut Pro'],
+            assignedClientIds: Array.isArray(m.assignedClientIds) ? m.assignedClientIds : ['client-1'],
+            lastUpdated: m.lastUpdated || '2026-11-08 11:30',
+            lastChangeReason: m.lastChangeReason || 'Initial System Onboarding'
+          }));
+        }
+      }
+    } catch (e) { console.error('Team members parse error:', e); }
     return TEAM_MEMBERS;
   });
 

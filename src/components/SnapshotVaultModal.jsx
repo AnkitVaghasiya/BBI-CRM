@@ -29,6 +29,8 @@ export const SnapshotVaultModal = ({ isOpen, onClose }) => {
   const [customLabel, setCustomLabel] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  const safeSnapshots = Array.isArray(snapshots) ? snapshots : [];
+
   if (!isOpen) return null;
 
   const handleCreateSnapshot = () => {
@@ -117,9 +119,9 @@ export const SnapshotVaultModal = ({ isOpen, onClose }) => {
 
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              Saved Snapshot History ({snapshots.length} Available)
+              Saved Snapshot History ({safeSnapshots.length} Available)
             </h3>
-            {snapshots.length > 0 && (
+            {safeSnapshots.length > 0 && (
               <button
                 onClick={clearAllSnapshots}
                 className="text-[11px] text-rose-600 hover:underline font-bold flex items-center gap-1"
@@ -130,7 +132,7 @@ export const SnapshotVaultModal = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          {snapshots.length === 0 ? (
+          {safeSnapshots.length === 0 ? (
             <div className="p-8 text-center rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 space-y-2">
               <HardDrive className="w-8 h-8 text-slate-400 mx-auto" />
               <p className="text-xs font-bold text-slate-600 dark:text-slate-400">No snapshots created yet</p>
@@ -138,7 +140,7 @@ export const SnapshotVaultModal = ({ isOpen, onClose }) => {
             </div>
           ) : (
             <div className="space-y-2.5">
-              {snapshots.map((snap) => (
+              {safeSnapshots.map((snap) => (
                 <div
                   key={snap.id}
                   className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between gap-3 hover:border-blue-400 dark:hover:border-blue-500/40 transition"

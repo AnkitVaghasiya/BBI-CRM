@@ -609,8 +609,9 @@ export const SOCIAL_PLATFORMS = [
   { id: 'linkedin', name: 'LinkedIn', icon: 'Linkedin', color: 'indigo', badge: 'LinkedIn Marketing API', desc: 'B2B Company page & Thought leadership' }
 ];
 
-export const generateClientSocialChannels = (clientName, brandName, i = 1) => {
-  const cleanSlug = (brandName || clientName).toLowerCase().replace(/[^a-z0-9]/g, '');
+export const generateClientSocialChannels = (clientName = 'Client', brandName = '', i = 1) => {
+  const raw = (brandName || clientName || `Brand_${i}`).toString();
+  const cleanSlug = raw.toLowerCase().replace(/[^a-z0-9]/g, '') || `brand_${i}`;
   const hasMeta = true;
   const hasIg = true;
   const hasYt = i % 2 === 0 || i <= 5;
@@ -674,11 +675,12 @@ export const generateClientSocialChannels = (clientName, brandName, i = 1) => {
   };
 };
 
-export const generateClientAiPreferences = (clientName, industry, brandName) => {
-  const isLuxury = industry.includes('Luxury') || industry.includes('Jewellery');
-  const isFitness = industry.includes('Fitness');
-  const isTech = industry.includes('Tech') || industry.includes('Finance');
-  const isClinic = industry.includes('Clinic') || industry.includes('Dentist');
+export const generateClientAiPreferences = (clientName = '', industry = 'Business', brandName = '') => {
+  const ind = (industry || 'Business').toString();
+  const isLuxury = ind.includes('Luxury') || ind.includes('Jewellery');
+  const isFitness = ind.includes('Fitness');
+  const isTech = ind.includes('Tech') || ind.includes('Finance');
+  const isClinic = ind.includes('Clinic') || ind.includes('Dentist');
 
   return {
     aiConnected: true,

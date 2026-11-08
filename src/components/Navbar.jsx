@@ -30,7 +30,10 @@ export const Navbar = ({
     snapshots
   } = useAgency();
 
-  const currentClient = clients.find(c => c.id === selectedClientId) || clients[0];
+  const safeClients = Array.isArray(clients) ? clients : [];
+  const safeSnapshots = Array.isArray(snapshots) ? snapshots : [];
+  const currentClient = safeClients.find(c => c && c.id === selectedClientId) || safeClients[0] || { id: 'client-1', name: 'Primary Client' };
+  const userRole = (!currentUser?.role || currentUser.role === 'admin') ? 'management' : currentUser.role;
 
   return (
     <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 backdrop-blur-md px-3 sm:px-6 flex items-center justify-between sticky top-0 z-40 transition-colors shadow-sm">
@@ -85,7 +88,7 @@ export const Navbar = ({
           <HardDrive className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
           <span className="hidden sm:inline">Snapshots</span>
           <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-600 text-white font-mono">
-            {snapshots.length}
+            {safeSnapshots.length}
           </span>
         </button>
 
@@ -115,7 +118,7 @@ export const Navbar = ({
         <div className="hidden sm:flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 shadow-inner">
           <span className="text-[11px] text-slate-500 dark:text-slate-400 hidden xl:inline font-medium">Act As:</span>
           <select 
-            value={currentUser.role === 'client' ? 'client' : currentUser.role}
+            value={userRole === 'client' ? 'client' : userRole}
             onChange={(e) => switchRole(e.target.value, currentClient)}
             aria-label="Select Role View"
             className="bg-transparent text-xs font-semibold text-slate-800 dark:text-white focus:outline-none cursor-pointer pr-1"
@@ -130,7 +133,7 @@ export const Navbar = ({
         </div>
 
         {/* If in Client View, select client */}
-        {currentUser.role === 'client' && clients.length > 0 && (
+        {userRole === 'client' && clients.length > 0 && (
           <div className="hidden md:flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 rounded-xl px-2 py-1.5">
             <span className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">Brand:</span>
             <select

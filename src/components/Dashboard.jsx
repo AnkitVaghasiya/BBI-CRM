@@ -19,11 +19,17 @@ import {
 export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
   const { clients, tasks, shoots, ads, setActiveTab, teamMembers } = useAgency();
 
-  const totalClients = clients.length;
-  const activeClients = clients.filter(c => c.status === 'Active').length;
-  const totalRevenue = clients.reduce((acc, c) => acc + (c.monthlyRetainer || 0), 0);
-  const pendingApprovals = tasks.filter(t => t.status === 'Client Approval Pending');
-  const revisionRequests = tasks.filter(t => t.status === 'Revision Requested');
+  const safeClients = Array.isArray(clients) ? clients : [];
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
+  const safeShoots = Array.isArray(shoots) ? shoots : [];
+  const safeAds = Array.isArray(ads) ? ads : [];
+  const safeTeam = Array.isArray(teamMembers) ? teamMembers : [];
+
+  const totalClients = safeClients.length;
+  const activeClients = safeClients.filter(c => c && c.status === 'Active').length;
+  const totalRevenue = safeClients.reduce((acc, c) => acc + (Number(c?.monthlyRetainer) || 0), 0);
+  const pendingApprovals = safeTasks.filter(t => t && t.status === 'Client Approval Pending');
+  const revisionRequests = safeTasks.filter(t => t && t.status === 'Revision Requested');
 
   const formatINR = (val) => {
     return '₹' + (val / 100000).toFixed(2) + ' L/mo';
@@ -38,7 +44,7 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
             Agency Operations Command Center
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Real-time tracking for <span className="text-blue-600 dark:text-blue-400 font-bold">{totalClients} Clients</span> and <span className="text-emerald-600 dark:text-emerald-400 font-bold">{teamMembers.length} Staff Members</span> across 5 active departments.
+            Real-time tracking for <span className="text-blue-600 dark:text-blue-400 font-bold">{totalClients} Clients</span> and <span className="text-emerald-600 dark:text-emerald-400 font-bold">{safeTeam.length} Staff Members</span> across 5 active departments.
           </p>
         </div>
 
@@ -133,10 +139,10 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-purple-600 dark:text-purple-300">{tasks.length}</span>
-            <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold">{shoots.length} Shoots Scheduled</span>
+            <span className="text-2xl font-black text-purple-600 dark:text-purple-300">{safeTasks.length}</span>
+            <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold">{safeShoots.length} Shoots Scheduled</span>
           </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{ads.length} Live Meta ad sets</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{safeAds.length} Live Meta ad sets</p>
         </div>
       </div>
 
@@ -222,7 +228,7 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
           </div>
 
           <div className="space-y-3">
-            {shoots.slice(0, 3).map(shoot => (
+            {safeShoots.slice(0, 3).map(shoot => (
               <div key={shoot.id} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-slate-900 dark:text-white">{shoot.title}</h3>

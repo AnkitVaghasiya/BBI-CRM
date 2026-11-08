@@ -83,16 +83,24 @@ export const EmployeeHRHub = () => {
     fileName: 'Employment_Contract_Signed.pdf'
   });
 
+  // Safe array guards
+  const safeAttendance = Array.isArray(attendance) ? attendance : [];
+  const safePayroll = Array.isArray(payroll) ? payroll : [];
+  const safeLeaves = Array.isArray(leaves) ? leaves : [];
+  const safeHrDocs = Array.isArray(hrDocuments) ? hrDocuments : [];
+  const safeTeam = Array.isArray(teamMembers) ? teamMembers : [];
+  const currentUserId = currentUser?.id || 'tm-1';
+
   // Today's attendance calculation
   const today = new Date().toISOString().split('T')[0];
-  const myTodayRecord = attendance.find(a => a.memberId === currentUser.id && a.date === today);
+  const myTodayRecord = safeAttendance.find(a => a && a.memberId === currentUserId && a.date === today);
   const isCheckedIn = !!myTodayRecord;
   const isCheckedOut = myTodayRecord && !!myTodayRecord.checkOutTime;
 
-  const presentCount = attendance.filter(a => a.date === today && (a.status === 'Present' || a.status === 'Late')).length;
-  const wfhCount = attendance.filter(a => a.date === today && a.status === 'Work From Home').length;
-  const onLeaveCount = attendance.filter(a => a.date === today && a.status === 'On Leave').length;
-  const lateCount = attendance.filter(a => a.date === today && a.status === 'Late').length;
+  const presentCount = safeAttendance.filter(a => a && a.date === today && (a.status === 'Present' || a.status === 'Late')).length;
+  const wfhCount = safeAttendance.filter(a => a && a.date === today && a.status === 'Work From Home').length;
+  const onLeaveCount = safeAttendance.filter(a => a && a.date === today && a.status === 'On Leave').length;
+  const lateCount = safeAttendance.filter(a => a && a.date === today && a.status === 'Late').length;
 
   const isAdmin = currentUser.role === 'management' || currentUser.role === 'admin';
 
@@ -106,7 +114,7 @@ export const EmployeeHRHub = () => {
               Agency HRMS & Staff Suite
             </span>
             <span className="text-xs text-blue-200">
-              {teamMembers.length} Employees Active
+              {safeTeam.length} Employees Active
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight">
@@ -151,9 +159,9 @@ export const EmployeeHRHub = () => {
       <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200 dark:border-slate-800">
         {[
           { id: 'attendance', label: 'Attendance & Timesheet', icon: Clock, count: `${presentCount + wfhCount} Active` },
-          { id: 'payroll', label: 'Payroll & Salary Slips', icon: DollarSign, count: `₹${payroll.reduce((s, p) => s + p.netPay, 0).toLocaleString()}` },
-          { id: 'leaves', label: 'Leave Management', icon: Calendar, count: `${leaves.filter(l => l.status === 'Pending').length} Pending` },
-          { id: 'documents', label: 'HR Documents Vault', icon: FileCheck, count: `${hrDocuments.length} Files` },
+          { id: 'payroll', label: 'Payroll & Salary Slips', icon: DollarSign, count: `₹${safePayroll.reduce((s, p) => s + (Number(p?.netPay) || 0), 0).toLocaleString()}` },
+          { id: 'leaves', label: 'Leave Management', icon: Calendar, count: `${safeLeaves.filter(l => l?.status === 'Pending').length} Pending` },
+          { id: 'documents', label: 'HR Documents Vault', icon: FileCheck, count: `${safeHrDocs.length} Files` },
           { id: 'policies', label: 'Working Policies & Holidays', icon: Briefcase, count: '12 Holidays' }
         ].map((tab) => {
           const Icon = tab.icon;
@@ -259,14 +267,14 @@ export const EmployeeHRHub = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                  {attendance.length === 0 ? (
+                  {safeAttendance.length === 0 ? (
                     <tr>
                       <td colSpan="8" className="py-8 text-center text-slate-400">
                         No attendance records recorded yet. Punch in above to record attendance.
                       </td>
                     </tr>
                   ) : (
-                    attendance.map((att) => (
+                    safeAttendance.map((att) => (
                       <tr key={att.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                         <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">
                           {att.memberName}
@@ -358,14 +366,14 @@ export const EmployeeHRHub = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                  {payroll.length === 0 ? (
+                  {safePayroll.length === 0 ? (
                     <tr>
                       <td colSpan="10" className="py-8 text-center text-slate-400">
                         No payroll records found. Click 'Add / Adjust Salary Record' to create one.
                       </td>
                     </tr>
                   ) : (
-                    payroll.map((pay) => (
+                    safePayroll.map((pay) => (
                       <tr key={pay.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                         <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">
                           {pay.memberName}
@@ -499,14 +507,14 @@ export const EmployeeHRHub = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                  {leaves.length === 0 ? (
+                  {safeLeaves.length === 0 ? (
                     <tr>
                       <td colSpan="8" className="py-8 text-center text-slate-400">
                         No leave applications submitted yet.
                       </td>
                     </tr>
                   ) : (
-                    leaves.map((lev) => (
+                    safeLeaves.map((lev) => (
                       <tr key={lev.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                         <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">
                           {lev.memberName}
@@ -594,7 +602,7 @@ export const EmployeeHRHub = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {hrDocuments.map((doc) => (
+            {safeHrDocs.map((doc) => (
               <div 
                 key={doc.id}
                 className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 hover:border-blue-500/40 transition"

@@ -35,7 +35,14 @@ export const Sidebar = ({ onOpenSettings, isMobileOpen, onCloseMobile, onOpenSec
     loadDemoData
   } = useAgency();
 
-  const pendingApprovalsCount = tasks.filter(t => t.status === 'Client Approval Pending').length;
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
+  const safeShoots = Array.isArray(shoots) ? shoots : [];
+  const safeAds = Array.isArray(ads) ? ads : [];
+  const safeClients = Array.isArray(clients) ? clients : [];
+  const safeTeam = Array.isArray(teamMembers) ? teamMembers : [];
+  const userRole = (!currentUser?.role || currentUser.role === 'admin') ? 'management' : currentUser.role;
+
+  const pendingApprovalsCount = safeTasks.filter(t => t && t.status === 'Client Approval Pending').length;
 
   const navItems = [
     {
@@ -66,7 +73,7 @@ export const Sidebar = ({ onOpenSettings, isMobileOpen, onCloseMobile, onOpenSec
       label: 'Client CRM & Services',
       icon: Users,
       roles: ['management', 'meta-ads'],
-      badge: `${clients.length}`
+      badge: `${safeClients.length}`
     },
     {
       id: 'channels',
@@ -81,7 +88,7 @@ export const Sidebar = ({ onOpenSettings, isMobileOpen, onCloseMobile, onOpenSec
       label: 'Master Production',
       icon: Film,
       roles: ['management', 'video-editing', 'ai-content'],
-      badge: `${tasks.length}`
+      badge: `${safeTasks.length}`
     },
     {
       id: 'ai-studio',
@@ -96,14 +103,14 @@ export const Sidebar = ({ onOpenSettings, isMobileOpen, onCloseMobile, onOpenSec
       label: 'Shooting Schedule',
       icon: Camera,
       roles: ['management', 'shooting-team'],
-      badge: `${shoots.length}`
+      badge: `${safeShoots.length}`
     },
     {
       id: 'ads',
       label: 'Meta Ads & Growth',
       icon: Target,
       roles: ['management', 'meta-ads'],
-      badge: `${ads.length}`
+      badge: `${safeAds.length}`
     },
     {
       id: 'calendar',
@@ -132,7 +139,7 @@ export const Sidebar = ({ onOpenSettings, isMobileOpen, onCloseMobile, onOpenSec
       label: 'Team & Partner Vendors',
       icon: Briefcase,
       roles: ['management'],
-      badge: `${teamMembers.length}`
+      badge: `${safeTeam.length}`
     },
     {
       id: 'integrations',
@@ -143,7 +150,7 @@ export const Sidebar = ({ onOpenSettings, isMobileOpen, onCloseMobile, onOpenSec
     }
   ];
 
-  const visibleNav = navItems.filter(item => item.roles.includes(currentUser.role));
+  const visibleNav = navItems.filter(item => item.roles.includes(userRole));
 
   const handleNavClick = (tabId) => {
     setActiveTab(tabId);
@@ -167,7 +174,7 @@ export const Sidebar = ({ onOpenSettings, isMobileOpen, onCloseMobile, onOpenSec
         </div>
 
         {/* Role banner if client */}
-        {currentUser.role === 'client' && (
+        {userRole === 'client' && (
           <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs">
             <p className="font-bold">🏢 Client Portal Active</p>
             <p className="text-[11px] text-emerald-700 dark:text-emerald-400/80 mt-0.5">
