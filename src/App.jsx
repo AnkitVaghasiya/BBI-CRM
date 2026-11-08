@@ -18,6 +18,8 @@ import { ClientChannelsHub } from './components/ClientChannelsHub';
 import { EmployeeHRHub } from './components/EmployeeHRHub';
 import { SecurityAuditModal } from './components/SecurityAuditModal';
 import { AuthModal } from './components/AuthModal';
+import { SnapshotVaultModal } from './components/SnapshotVaultModal';
+import { LiveNotificationToast } from './components/LiveNotificationToast';
 import { BackupSettingsModal } from './components/BackupSettingsModal';
 import { ClientModal, TaskModal, ShootModal, AdModal, TeamMemberModal } from './components/ActionModals';
 import { 
@@ -35,6 +37,7 @@ const MainApp = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isSnapshotVaultOpen, setIsSnapshotVaultOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Client Modal
@@ -188,6 +191,7 @@ const MainApp = () => {
         onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
         onOpenSecurity={() => setIsSecurityOpen(true)}
         onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenSnapshotVault={() => setIsSnapshotVaultOpen(true)}
       />
 
       {/* Main Workspace */}
@@ -259,6 +263,15 @@ const MainApp = () => {
           <span>Account</span>
         </button>
       </nav>
+
+      {/* Live Sync Notification Toast */}
+      <LiveNotificationToast />
+
+      {/* Snapshot Rollback Vault Modal */}
+      <SnapshotVaultModal 
+        isOpen={isSnapshotVaultOpen}
+        onClose={() => setIsSnapshotVaultOpen(false)}
+      />
 
       {/* Security Diagnostics Modal */}
       <SecurityAuditModal 

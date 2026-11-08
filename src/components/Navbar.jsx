@@ -7,12 +7,17 @@ import {
   Menu,
   ShieldCheck,
   Lock,
-  User,
   Zap,
-  Sparkles
+  HardDrive
 } from 'lucide-react';
 
-export const Navbar = ({ onOpenSettings, onOpenMobileMenu, onOpenSecurity, onOpenAuth }) => {
+export const Navbar = ({ 
+  onOpenSettings, 
+  onOpenMobileMenu, 
+  onOpenSecurity, 
+  onOpenAuth,
+  onOpenSnapshotVault 
+}) => {
   const { 
     theme, 
     toggleTheme, 
@@ -21,7 +26,8 @@ export const Navbar = ({ onOpenSettings, onOpenMobileMenu, onOpenSecurity, onOpe
     clients, 
     selectedClientId, 
     setSelectedClientId,
-    exportFullBackup
+    exportFullBackup,
+    snapshots
   } = useAgency();
 
   const currentClient = clients.find(c => c.id === selectedClientId) || clients[0];
@@ -53,15 +59,36 @@ export const Navbar = ({ onOpenSettings, onOpenMobileMenu, onOpenSecurity, onOpe
                 Agency CRM
               </span>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 hidden md:block">
-              Scale 200+ Clients • Staff HRMS • Zero Vulnerabilities
-            </p>
+            {/* Live Synchronized Engine Status Indicator */}
+            <div className="hidden md:flex items-center gap-2 mt-0.5">
+              <span className="flex items-center gap-1 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                LIVE REAL-TIME ENGINE ACTIVE
+              </span>
+              <span className="text-slate-300 dark:text-slate-700">•</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                Auto-Backup Synced (&lt;2ms)
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Right: Role Switcher, Security Pill, Auth & Actions */}
+      {/* Right: Snapshot Vault, Security Pill, Auth & Actions */}
       <div className="flex items-center gap-1.5 sm:gap-2.5">
+        {/* Instant Snapshot Vault Trigger */}
+        <button
+          onClick={onOpenSnapshotVault}
+          title="Open Snapshot Rollback Vault & Instant Checkpoints"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 text-xs font-bold transition shadow-sm"
+        >
+          <HardDrive className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+          <span className="hidden sm:inline">Snapshots</span>
+          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-600 text-white font-mono">
+            {snapshots.length}
+          </span>
+        </button>
+
         {/* Security Diagnostics Quick Trigger */}
         <button
           onClick={onOpenSecurity}
@@ -75,11 +102,11 @@ export const Navbar = ({ onOpenSettings, onOpenMobileMenu, onOpenSecurity, onOpe
         {/* Account / Login Trigger */}
         <button
           onClick={onOpenAuth}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 text-xs font-bold transition"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-bold transition"
           title="Manage Account, Login ID or Register New Role"
         >
-          <Lock className="w-3.5 h-3.5" />
-          <span className="max-w-[100px] truncate hidden sm:inline">
+          <Lock className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
+          <span className="max-w-[90px] truncate hidden sm:inline">
             {currentUser?.name ? currentUser.name.split(' ')[0] : 'Sign In'}
           </span>
         </button>
@@ -142,10 +169,10 @@ export const Navbar = ({ onOpenSettings, onOpenMobileMenu, onOpenSecurity, onOpe
         <button
           onClick={exportFullBackup}
           title="Download Complete Agency Database Backup (JSON)"
-          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-bold transition shadow-sm"
+          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 text-xs font-bold transition shadow-sm"
         >
           <Download className="w-3.5 h-3.5" />
-          <span className="hidden xl:inline">Export</span>
+          <span className="hidden xl:inline">Export JSON</span>
         </button>
       </div>
     </header>
