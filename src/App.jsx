@@ -15,14 +15,27 @@ import { IntegrationsHub } from './components/IntegrationsHub';
 import { AIStudio } from './components/AIStudio';
 import { DepartmentDashboards } from './components/DepartmentDashboards';
 import { ClientChannelsHub } from './components/ClientChannelsHub';
+import { EmployeeHRHub } from './components/EmployeeHRHub';
+import { SecurityAuditModal } from './components/SecurityAuditModal';
+import { AuthModal } from './components/AuthModal';
 import { BackupSettingsModal } from './components/BackupSettingsModal';
 import { ClientModal, TaskModal, ShootModal, AdModal, TeamMemberModal } from './components/ActionModals';
+import { 
+  LayoutDashboard, 
+  Film, 
+  Clock, 
+  CheckCircle2, 
+  Lock 
+} from 'lucide-react';
 
 const MainApp = () => {
-  const { activeTab, currentUser } = useAgency();
+  const { activeTab, setActiveTab, currentUser } = useAgency();
 
   // Modals state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSecurityOpen, setIsSecurityOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Client Modal
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
@@ -107,6 +120,8 @@ const MainApp = () => {
         );
       case 'departments':
         return <DepartmentDashboards />;
+      case 'hrms':
+        return <EmployeeHRHub />;
       case 'clients':
         return (
           <ClientsView 
@@ -168,20 +183,94 @@ const MainApp = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white transition-colors">
       {/* Top Navbar */}
-      <Navbar onOpenSettings={() => setIsSettingsOpen(true)} />
+      <Navbar 
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+        onOpenSecurity={() => setIsSecurityOpen(true)}
+        onOpenAuth={() => setIsAuthOpen(true)}
+      />
 
       {/* Main Workspace */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar */}
-        <Sidebar onOpenSettings={() => setIsSettingsOpen(true)} />
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Left Sidebar (Desktop & Mobile Drawer) */}
+        <Sidebar 
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          isMobileOpen={isMobileMenuOpen}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
+          onOpenSecurity={() => setIsSecurityOpen(true)}
+          onOpenAuth={() => setIsAuthOpen(true)}
+        />
 
         {/* Dynamic Content View */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-950/95 transition-colors">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 pb-20 sm:pb-8 bg-slate-50 dark:bg-slate-950/95 transition-colors">
           <div className="max-w-7xl mx-auto">
             {renderActiveView()}
           </div>
         </main>
       </div>
+
+      {/* Bottom Navigation Bar for Mobile Phones (Thumb-friendly navigation) */}
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-2 py-1.5 flex items-center justify-around shadow-lg">
+        <button
+          onClick={() => setActiveTab('dashboard')}
+          className={`flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-bold ${
+            activeTab === 'dashboard' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500'
+          }`}
+        >
+          <LayoutDashboard className="w-4 h-4 mb-0.5" />
+          <span>Home</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('production')}
+          className={`flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-bold ${
+            activeTab === 'production' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500'
+          }`}
+        >
+          <Film className="w-4 h-4 mb-0.5" />
+          <span>Tasks</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('hrms')}
+          className={`flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-bold ${
+            activeTab === 'hrms' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500'
+          }`}
+        >
+          <Clock className="w-4 h-4 mb-0.5" />
+          <span>Punch/HR</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('approvals')}
+          className={`flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-bold ${
+            activeTab === 'approvals' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500'
+          }`}
+        >
+          <CheckCircle2 className="w-4 h-4 mb-0.5" />
+          <span>Approvals</span>
+        </button>
+
+        <button
+          onClick={() => setIsAuthOpen(true)}
+          className="flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-bold text-slate-500"
+        >
+          <Lock className="w-4 h-4 mb-0.5" />
+          <span>Account</span>
+        </button>
+      </nav>
+
+      {/* Security Diagnostics Modal */}
+      <SecurityAuditModal 
+        isOpen={isSecurityOpen}
+        onClose={() => setIsSecurityOpen(false)}
+      />
+
+      {/* Authentication & Multi-Role Register/Login Modal */}
+      <AuthModal 
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+      />
 
       {/* Action Modals */}
       <BackupSettingsModal 

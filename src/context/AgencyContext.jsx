@@ -17,6 +17,17 @@ import {
   generateClientSocialChannels,
   generateClientAiPreferences
 } from '../data/seedData';
+import {
+  hashPassword,
+  sanitizeInput,
+  generateSecureToken,
+  validatePasswordStrength,
+  checkRateLimit,
+  recordFailedLogin,
+  recordSuccessfulLogin,
+  runSecurityAudit
+} from '../utils/security';
+
 
 const AgencyContext = createContext();
 
@@ -51,6 +62,82 @@ export const AgencyProvider = ({ children }) => {
       clientId: null
     };
   });
+
+
+  // ==========================================
+  // USERS & CREDENTIALS STATE (Encrypted Passwords)
+  // ==========================================
+  const [users, setUsers] = useState(() => {
+    const saved = localStorage.getItem('agency_users_v3');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_USERS;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('agency_users_v3', JSON.stringify(users));
+  }, [users]);
+
+  // Is Fresh Workspace Flag (clean slate without dummy records)
+  const [isFreshWorkspace, setIsFreshWorkspace] = useState(() => {
+    return localStorage.getItem('agency_fresh_workspace') === 'true';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('agency_fresh_workspace', isFreshWorkspace.toString());
+  }, [isFreshWorkspace]);
+
+  // ==========================================
+  // HRMS STATES: Attendance, Payroll, Leaves, Documents
+  // ==========================================
+  const [attendance, setAttendance] = useState(() => {
+    const saved = localStorage.getItem('agency_attendance_v3');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_ATTENDANCE;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('agency_attendance_v3', JSON.stringify(attendance));
+  }, [attendance]);
+
+  const [payroll, setPayroll] = useState(() => {
+    const saved = localStorage.getItem('agency_payroll_v3');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_PAYROLL;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('agency_payroll_v3', JSON.stringify(payroll));
+  }, [payroll]);
+
+  const [leaves, setLeaves] = useState(() => {
+    const saved = localStorage.getItem('agency_leaves_v3');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_LEAVES;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('agency_leaves_v3', JSON.stringify(leaves));
+  }, [leaves]);
+
+  const [hrDocuments, setHrDocuments] = useState(() => {
+    const saved = localStorage.getItem('agency_hr_documents_v3');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return INITIAL_HR_DOCUMENTS;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('agency_hr_documents_v3', JSON.stringify(hrDocuments));
+  }, [hrDocuments]);
 
   // Database States with LocalStorage fallback (v3 to incorporate full Quota & Revision schema)
   const [clients, setClients] = useState(() => {
@@ -828,6 +915,352 @@ export const AgencyProvider = ({ children }) => {
     });
   };
 
+
+  // ==========================================
+  // AUTHENTICATION & LOGIN LOGIC
+  // ==========================================
+  const loginUser = async (usernameOrEmail, password) => {
+    const cleanId = sanitizeInput(usernameOrEmail.trim().toLowerCase());
+    
+    // Check Brute-Force Rate Limiting
+    const limitCheck = checkRateLimit(cleanId);
+    if (!limitCheck.allowed) {
+      return { success: false, error: limitCheck.message };
+    }
+
+    const matchedUser = users.find(u => 
+      u.username.toLowerCase() === cleanId || u.email.toLowerCase() === cleanId
+    );
+
+    if (!matchedUser) {
+      recordFailedLogin(cleanId);
+      return { success: false, error: 'User account not found. Please check your username or register.' };
+    }
+
+    const salt = matchedUser.salt || 'bbi_agency_salt_v3';
+    const computedHash = await hashPassword(password, salt);
+
+    if (computedHash !== matchedUser.passwordHash) {
+      recordFailedLogin(cleanId);
+      return { success: false, error: 'Incorrect password. Please verify and try again.' };
+    }
+
+    // Login Successful
+    recordSuccessfulLogin(cleanId);
+    const sessionToken = generateSecureToken();
+    const updatedUser = {
+      ...matchedUser,
+      token: sessionToken,
+      lastLogin: new Date().toISOString()
+    };
+
+    setCurrentUser(updatedUser);
+    localStorage.setItem('agency_current_user', JSON.stringify(updatedUser));
+
+    // If client user, automatically select their client ID
+    if (updatedUser.clientId) {
+      setSelectedClientId(updatedUser.clientId);
+    }
+
+    addAuditLog(
+      'Security',
+      updatedUser.id,
+      updatedUser.name,
+      'USER_LOGIN',
+      'Security & Access',
+      `User ${updatedUser.username} successfully authenticated via secure token.`,
+      updatedUser.name
+    );
+
+    return { success: true, user: updatedUser };
+  };
+
+  const registerUser = async ({ username, email, name, role, department, password, clientId, partnerAgencyId, memberId }) => {
+    const cleanUsername = sanitizeInput(username.trim().toLowerCase());
+    const cleanEmail = sanitizeInput(email.trim().toLowerCase());
+    const cleanName = sanitizeInput(name.trim());
+
+    // Password validation
+    const passCheck = validatePasswordStrength(password);
+    if (!passCheck.isValid) {
+      return { success: false, error: passCheck.message };
+    }
+
+    // Check duplicate
+    const exists = users.some(u => 
+      u.username.toLowerCase() === cleanUsername || u.email.toLowerCase() === cleanEmail
+    );
+    if (exists) {
+      return { success: false, error: 'An account with this username or email already exists.' };
+    }
+
+    const salt = 'salt_' + Date.now().toString(36);
+    const passwordHash = await hashPassword(password, salt);
+
+    const newUser = {
+      id: `usr-${Date.now()}`,
+      username: cleanUsername,
+      email: cleanEmail,
+      name: cleanName,
+      role: role || 'employee',
+      department: department || 'General Operations',
+      passwordHash,
+      salt,
+      clientId: clientId || null,
+      partnerAgencyId: partnerAgencyId || null,
+      memberId: memberId || null,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+
+    setUsers(prev => [newUser, ...prev]);
+
+    addAuditLog(
+      'Security',
+      newUser.id,
+      newUser.name,
+      'USER_REGISTERED',
+      'Role & Account Onboarding',
+      `New user account registered for ${cleanName} with role '${role}'.`,
+      currentUser.name
+    );
+
+    return { success: true, user: newUser };
+  };
+
+  const logoutUser = () => {
+    const guestUser = {
+      role: 'management',
+      name: 'Neha Gupta (Admin)',
+      id: 'tm-1',
+      clientId: null
+    };
+    setCurrentUser(guestUser);
+    localStorage.setItem('agency_current_user', JSON.stringify(guestUser));
+  };
+
+  // ==========================================
+  // HRMS ACTIONS: Attendance, Payroll, Leaves, Docs
+  // ==========================================
+  const markAttendance = (status = 'Present', workLocation = 'Office', notes = '') => {
+    const today = new Date().toISOString().split('T')[0];
+    const nowTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    
+    setAttendance(prev => {
+      const existing = prev.find(a => a.memberId === currentUser.id && a.date === today);
+      if (existing) {
+        // If already checked in, perform check-out
+        return prev.map(a => {
+          if (a.id === existing.id) {
+            return {
+              ...a,
+              checkOutTime: nowTime,
+              hoursWorked: 8.5,
+              notes: notes || a.notes
+            };
+          }
+          return a;
+        });
+      } else {
+        // Check in
+        const newRecord = {
+          id: `att-${Date.now()}`,
+          memberId: currentUser.id,
+          memberName: currentUser.name,
+          department: currentUser.department || 'General Operations',
+          date: today,
+          checkInTime: nowTime,
+          checkOutTime: null,
+          status,
+          workLocation,
+          hoursWorked: 0,
+          notes: sanitizeInput(notes)
+        };
+        return [newRecord, ...prev];
+      }
+    });
+
+    addAuditLog(
+      'HRMS',
+      currentUser.id,
+      currentUser.name,
+      'ATTENDANCE_PUNCH',
+      'Daily Operations',
+      `Attendance marked as '${status}' (${workLocation}) at ${nowTime}`,
+      currentUser.name
+    );
+  };
+
+  const savePayrollRecord = (payrollData) => {
+    const base = Number(payrollData.baseSalary) || 0;
+    const allowances = Number(payrollData.allowances) || 0;
+    const bonus = Number(payrollData.bonus) || 0;
+    const deductions = Number(payrollData.deductions) || 0;
+    const netPay = base + allowances + bonus - deductions;
+
+    const record = {
+      ...payrollData,
+      id: payrollData.id || `pay-${Date.now()}`,
+      baseSalary: base,
+      allowances,
+      bonus,
+      deductions,
+      netPay
+    };
+
+    setPayroll(prev => {
+      const index = prev.findIndex(p => p.id === record.id);
+      if (index >= 0) {
+        const copy = [...prev];
+        copy[index] = record;
+        return copy;
+      }
+      return [record, ...prev];
+    });
+
+    addAuditLog(
+      'Payroll',
+      record.id,
+      record.memberName,
+      payrollData.id ? 'UPDATE' : 'CREATE',
+      'Compensation & Payroll',
+      `Salary record updated for ${record.memberName} (Net: ₹${netPay.toLocaleString()})`,
+      currentUser.name
+    );
+  };
+
+  const applyLeave = ({ leaveType, startDate, endDate, daysCount, reason }) => {
+    const newLeave = {
+      id: `lev-${Date.now()}`,
+      memberId: currentUser.id,
+      memberName: currentUser.name,
+      department: currentUser.department || 'General Operations',
+      leaveType,
+      startDate,
+      endDate,
+      daysCount: Number(daysCount) || 1,
+      reason: sanitizeInput(reason),
+      status: 'Pending',
+      approvedBy: null,
+      appliedOn: new Date().toISOString().split('T')[0]
+    };
+
+    setLeaves(prev => [newLeave, ...prev]);
+
+    addAuditLog(
+      'HRMS',
+      newLeave.id,
+      newLeave.memberName,
+      'LEAVE_APPLICATION',
+      'Leave Management',
+      `Applied for ${newLeave.leaveType} (${startDate} to ${endDate})`,
+      currentUser.name
+    );
+  };
+
+  const reviewLeave = (leaveId, newStatus, remarks = '') => {
+    setLeaves(prev => prev.map(l => {
+      if (l.id === leaveId) {
+        return {
+          ...l,
+          status: newStatus,
+          approvedBy: currentUser.name,
+          reviewRemarks: sanitizeInput(remarks)
+        };
+      }
+      return l;
+    }));
+
+    addAuditLog(
+      'HRMS',
+      leaveId,
+      'Leave Request',
+      'LEAVE_REVIEW',
+      'Leave Management',
+      `Leave marked as ${newStatus} by ${currentUser.name}. Note: ${remarks}`,
+      currentUser.name
+    );
+  };
+
+  const uploadHrDocument = (docData) => {
+    const newDoc = {
+      id: `doc-${Date.now()}`,
+      memberId: docData.memberId || currentUser.id,
+      memberName: docData.memberName || currentUser.name,
+      title: sanitizeInput(docData.title),
+      docType: docData.docType || 'Contract',
+      fileName: sanitizeInput(docData.fileName || 'document.pdf'),
+      fileSize: docData.fileSize || '1.5 MB',
+      uploadedOn: new Date().toISOString().split('T')[0],
+      status: 'Verified',
+      verifiedBy: currentUser.name
+    };
+
+    setHrDocuments(prev => [newDoc, ...prev]);
+
+    addAuditLog(
+      'HRMS',
+      newDoc.id,
+      newDoc.title,
+      'DOCUMENT_UPLOAD',
+      'HR Compliance',
+      `Uploaded document '${newDoc.title}' for ${newDoc.memberName}`,
+      currentUser.name
+    );
+  };
+
+  // ==========================================
+  // FRESH WORKSPACE PURGE & DEMO RESTORE
+  // ==========================================
+  const clearAllDummyData = () => {
+    if (window.confirm('Are you sure you want to PURGE ALL dummy data?\n\nThis will remove all demo clients, tasks, shoots, and dummy logs to give you a 100% clean, fresh production system. You can start adding your real clients and staff right away.')) {
+      setClients([]);
+      setTasks([]);
+      setShoots([]);
+      setAds([]);
+      setDailyLogs([]);
+      setChats([]);
+      setAttendance([]);
+      setPayroll([]);
+      setLeaves([]);
+      setHrDocuments([]);
+      // Keep only admin team member
+      setTeamMembers(prev => prev.slice(0, 1));
+      setPartnerAgencies([]);
+      setIsFreshWorkspace(true);
+
+      addAuditLog(
+        'System',
+        'sys-purge',
+        'Database Engine',
+        'WORKSPACE_PURGE',
+        'System Initialization',
+        'User executed Clean Slate Purge. All dummy records cleared for fresh operations.',
+        currentUser.name
+      );
+
+      alert('Clean Slate Activated! All dummy data has been removed. You now have a fresh, production-ready system.');
+    }
+  };
+
+  const loadDemoData = () => {
+    if (window.confirm('Restore complete BrainBinary sample dataset with 50 clients, 25 team members, and demo production tasks?')) {
+      setClients(generateClients());
+      setTeamMembers(TEAM_MEMBERS);
+      setTasks(INITIAL_TASKS);
+      setDailyLogs(INITIAL_DAILY_LOGS);
+      setShoots(INITIAL_SHOOTS);
+      setAds(INITIAL_ADS);
+      setChats(INITIAL_CHATS);
+      setAttendance(INITIAL_ATTENDANCE);
+      setPayroll(INITIAL_PAYROLL);
+      setLeaves(INITIAL_LEAVES);
+      setHrDocuments(INITIAL_HR_DOCUMENTS);
+      setPartnerAgencies(INITIAL_PARTNER_AGENCIES);
+      setIsFreshWorkspace(false);
+      window.location.reload();
+    }
+  };
+
   // Backup: Export Full JSON
   const exportFullBackup = () => {
     const fullData = {
@@ -939,7 +1372,28 @@ export const AgencyProvider = ({ children }) => {
         resetToFactoryState,
         firebaseConfig,
         setFirebaseConfig,
-        getCurrentTimestamp
+        getCurrentTimestamp,
+        // Auth & RBAC
+        users,
+        loginUser,
+        registerUser,
+        logoutUser,
+        // HRMS System
+        attendance,
+        markAttendance,
+        payroll,
+        savePayrollRecord,
+        leaves,
+        applyLeave,
+        reviewLeave,
+        hrDocuments,
+        uploadHrDocument,
+        hrPolicies: HR_POLICIES,
+        // Workspace Cleansing
+        isFreshWorkspace,
+        clearAllDummyData,
+        loadDemoData,
+        runSecurityAudit
       }}
     >
       {children}

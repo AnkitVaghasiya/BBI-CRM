@@ -9,7 +9,10 @@ import {
   Cloud, 
   ShieldAlert, 
   Copy,
-  Check
+  Check,
+  ShieldCheck,
+  Sparkles,
+  RefreshCw
 } from 'lucide-react';
 
 export const BackupSettingsModal = ({ isOpen, onClose }) => {
@@ -18,7 +21,10 @@ export const BackupSettingsModal = ({ isOpen, onClose }) => {
     importBackup, 
     resetToFactoryState, 
     firebaseConfig, 
-    setFirebaseConfig 
+    setFirebaseConfig,
+    clearAllDummyData,
+    loadDemoData,
+    isFreshWorkspace
   } = useAgency();
 
   const [activeTab, setActiveTab] = useState('backup');
@@ -42,7 +48,7 @@ export const BackupSettingsModal = ({ isOpen, onClose }) => {
           } else {
             setImportStatus('Restore failed: ' + result.error);
           }
-        } catch (err) {
+        } catch {
           setImportStatus('Invalid JSON file format.');
         }
       };
@@ -58,11 +64,11 @@ export const BackupSettingsModal = ({ isOpen, onClose }) => {
   const gitCommands = `# 1. Push latest updates to GitHub:
 cd "C:\\Users\\Label Sync\\.gemini\\antigravity\\scratch\\agency-crm"
 git add .
-git commit -m "Update BBI CRM with complete English UI & Integrations Hub"
+git commit -m "feat: complete fresh system purge, RBAC login IDs, staff HRMS suite, and mobile responsive layout"
 git push -u origin main
 
 # 2. Deploy to Vercel in 1 click:
-# Visit https://vercel.com/new, import AnkitVaghasiya/BBI-CRM and click Deploy!`;
+# Visit https://vercel.com/new, import your repository and click Deploy!`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(gitCommands);
@@ -80,8 +86,8 @@ git push -u origin main
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-white">System Backups, Cloud & Sync</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Download agency JSON snapshots, sync with Firebase, or deploy to Vercel.</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">System Data, Cloud & Deployment</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Purge dummy records, export JSON snapshots, sync with Firebase, or deploy to Vercel.</p>
             </div>
           </div>
           <button 
@@ -100,10 +106,9 @@ git push -u origin main
               activeTab === 'backup' ? 'border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
             }`}
           >
-            <Download className="w-4 h-4" />
-            <span>Local Database Backup</span>
+            <Database className="w-4 h-4" />
+            <span>Data Operations & Purge</span>
           </button>
-
           <button
             onClick={() => setActiveTab('firebase')}
             className={`pb-3 border-b-2 flex items-center gap-1.5 transition ${
@@ -111,9 +116,8 @@ git push -u origin main
             }`}
           >
             <Cloud className="w-4 h-4" />
-            <span>Firebase Cloud Sync</span>
+            <span>Firebase Sync</span>
           </button>
-
           <button
             onClick={() => setActiveTab('github')}
             className={`pb-3 border-b-2 flex items-center gap-1.5 transition ${
@@ -121,32 +125,64 @@ git push -u origin main
             }`}
           >
             <FolderGit2 className="w-4 h-4" />
-            <span>GitHub & Deployment</span>
+            <span>Server Deployment</span>
           </button>
         </div>
 
-        {/* Tab Content */}
+        {/* Content Area */}
         <div className="p-6">
-          {/* 1. Local Backup */}
+          {/* 1. Backup & Data Operations */}
           {activeTab === 'backup' && (
             <div className="space-y-4">
+              {/* Fresh System Purge Card */}
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-500/20 space-y-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    <span>Fresh Workspace Mode (Clean Slate)</span>
+                  </h3>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-200 dark:bg-amber-500/20 text-amber-900 dark:text-amber-200">
+                    {isFreshWorkspace ? 'Clean Slate Active' : 'Demo Data Loaded'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-amber-800 dark:text-amber-300/80">
+                  Wipe all dummy clients, tasks, and test logs to start with a pristine agency slate.
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <button
+                    onClick={() => { clearAllDummyData(); onClose(); }}
+                    className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-sm"
+                  >
+                    Purge All Dummy Data (Start Fresh)
+                  </button>
+                  <button
+                    onClick={() => { loadDemoData(); onClose(); }}
+                    className="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white text-xs font-bold transition"
+                  >
+                    Restore Full Demo Dataset
+                  </button>
+                </div>
+              </div>
+
+              {/* JSON Backup Export */}
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 space-y-2">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Download className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <span>1-Click Full Agency Backup Export</span>
+                  <span>Download Complete JSON Backup</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Export complete records of all 200+ clients, 25 team members, deliverables, shoots, and timestamped chats into a JSON archive.
+                  Exports clients, deliverables, attendance timesheets, payroll, shoots, and credentials in a single portable JSON file.
                 </p>
                 <button
                   onClick={exportFullBackup}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-sm"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-500/20 transition flex items-center gap-1.5"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Download Backup (.json)</span>
+                  <span>Export Database JSON</span>
                 </button>
               </div>
 
+              {/* Restore */}
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 space-y-2">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Upload className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -164,22 +200,6 @@ git push -u origin main
                 {importStatus && (
                   <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{importStatus}</p>
                 )}
-              </div>
-
-              <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-500/20 space-y-2">
-                <h4 className="text-xs font-bold text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
-                  <ShieldAlert className="w-4 h-4" />
-                  <span>Factory Reset</span>
-                </h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Reset local state to default verified agency seed fixtures.
-                </p>
-                <button
-                  onClick={resetToFactoryState}
-                  className="px-3 py-1 bg-rose-100 hover:bg-rose-200 dark:bg-rose-600/20 dark:hover:bg-rose-600/30 text-rose-700 dark:text-rose-300 text-xs font-semibold rounded-lg border border-rose-300 dark:border-rose-500/30 transition"
-                >
-                  Reset All Agency Data
-                </button>
               </div>
             </div>
           )}
@@ -235,27 +255,29 @@ git push -u origin main
             </form>
           )}
 
-          {/* 3. GitHub */}
+          {/* 3. Server Deployment */}
           {activeTab === 'github' && (
             <div className="space-y-4">
-              <div className="p-3 bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-500/30 rounded-xl text-xs text-purple-800 dark:text-purple-200">
-                <p className="font-bold">GitHub Repository Connected:</p>
-                <p className="text-[11px] mt-0.5">
-                  Remote: <a href="https://github.com/AnkitVaghasiya/BBI-CRM" target="_blank" rel="noreferrer" className="underline font-bold">https://github.com/AnkitVaghasiya/BBI-CRM</a>
+              <div className="p-4 rounded-xl bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-500/20 space-y-2">
+                <h3 className="text-xs font-bold text-purple-900 dark:text-purple-300 flex items-center gap-2">
+                  <FolderGit2 className="w-4 h-4 text-purple-600" />
+                  <span>1-Click Production Server Deployment</span>
+                </h3>
+                <p className="text-[11px] text-purple-800 dark:text-purple-300/80">
+                  Deploy to Vercel, Netlify, Cloudflare Pages, or Docker with zero configuration:
                 </p>
-              </div>
-
-              <div className="relative">
-                <pre className="p-4 bg-slate-900 text-slate-200 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed">
-                  {gitCommands}
-                </pre>
-                <button
-                  onClick={copyToClipboard}
-                  className="absolute top-3 right-3 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg border border-slate-700 flex items-center gap-1.5 transition"
-                >
-                  {copiedCmd ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedCmd ? 'Copied!' : 'Copy Script'}</span>
-                </button>
+                <div className="relative">
+                  <pre className="p-3 bg-slate-900 text-slate-100 rounded-xl text-[10px] font-mono overflow-x-auto">
+                    {gitCommands}
+                  </pre>
+                  <button
+                    onClick={copyToClipboard}
+                    className="absolute top-2 right-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 transition"
+                  >
+                    {copiedCmd ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedCmd ? 'Copied!' : 'Copy'}</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}

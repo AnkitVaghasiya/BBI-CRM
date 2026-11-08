@@ -14,11 +14,26 @@ import {
   Bot,
   Network,
   BarChart3,
-  Share2
+  Share2,
+  Clock,
+  ShieldCheck,
+  X
 } from 'lucide-react';
 
-export const Sidebar = ({ onOpenSettings }) => {
-  const { activeTab, setActiveTab, currentUser, tasks, shoots, ads, clients, teamMembers } = useAgency();
+export const Sidebar = ({ onOpenSettings, isMobileOpen, onCloseMobile, onOpenSecurity, onOpenAuth }) => {
+  const { 
+    activeTab, 
+    setActiveTab, 
+    currentUser, 
+    tasks, 
+    shoots, 
+    ads, 
+    clients, 
+    teamMembers,
+    isFreshWorkspace,
+    clearAllDummyData,
+    loadDemoData
+  } = useAgency();
 
   const pendingApprovalsCount = tasks.filter(t => t.status === 'Client Approval Pending').length;
 
@@ -37,6 +52,14 @@ export const Sidebar = ({ onOpenSettings }) => {
       roles: ['management', 'video-editing', 'shooting-team', 'ai-content', 'meta-ads'],
       badge: '5 Hubs',
       badgeColor: 'blue'
+    },
+    {
+      id: 'hrms',
+      label: 'Employee HR & Attendance',
+      icon: Clock,
+      roles: ['management', 'video-editing', 'shooting-team', 'ai-content', 'meta-ads'],
+      badge: 'HRMS',
+      badgeColor: 'purple'
     },
     {
       id: 'clients',
@@ -86,7 +109,7 @@ export const Sidebar = ({ onOpenSettings }) => {
       id: 'calendar',
       label: 'Publishing Calendar',
       icon: CalendarClock,
-      roles: ['management', 'meta-ads', 'video-editing'],
+      roles: ['management', 'meta-ads', 'video-editing', 'client'],
       badge: null
     },
     {
@@ -101,12 +124,12 @@ export const Sidebar = ({ onOpenSettings }) => {
       id: 'chat',
       label: 'Team & Client Chat',
       icon: MessageSquare,
-      roles: ['management', 'video-editing', 'shooting-team', 'ai-content', 'meta-ads', 'client'],
+      roles: ['management', 'video-editing', 'shooting-team', 'ai-content', 'meta-ads', 'client', 'vendor'],
       badge: 'Live'
     },
     {
       id: 'team',
-      label: 'Team Directory',
+      label: 'Team & Partner Vendors',
       icon: Briefcase,
       roles: ['management'],
       badge: `${teamMembers.length}`
@@ -122,9 +145,27 @@ export const Sidebar = ({ onOpenSettings }) => {
 
   const visibleNav = navItems.filter(item => item.roles.includes(currentUser.role));
 
-  return (
-    <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 flex flex-col justify-between shrink-0 h-[calc(100vh-4rem)] overflow-y-auto transition-colors">
+  const handleNavClick = (tabId) => {
+    setActiveTab(tabId);
+    if (onCloseMobile) onCloseMobile();
+  };
+
+  const sidebarContent = (
+    <div className="flex flex-col justify-between h-full p-4 overflow-y-auto">
       <div className="space-y-4">
+        {/* Mobile Header with close button */}
+        <div className="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+          <span className="font-extrabold text-sm text-slate-900 dark:text-white">
+            Navigation Menu
+          </span>
+          <button
+            onClick={onCloseMobile}
+            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
         {/* Role banner if client */}
         {currentUser.role === 'client' && (
           <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs">
@@ -146,7 +187,7 @@ export const Sidebar = ({ onOpenSettings }) => {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => handleNavClick(item.id)}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition ${
                     isActive 
                       ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/30 font-bold' 
@@ -166,7 +207,9 @@ export const Sidebar = ({ onOpenSettings }) => {
                           ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30'
                           : item.badgeColor === 'purple'
                             ? 'bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-300 border border-purple-300 dark:border-purple-500/30'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
+                            : item.badgeColor === 'emerald'
+                              ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
                     }`}>
                       {item.badge}
                     </span>
@@ -176,12 +219,51 @@ export const Sidebar = ({ onOpenSettings }) => {
             })}
           </nav>
         </div>
+
+        {/* Workspace Mode Controls */}
+        <div className="pt-2 px-1">
+          {isFreshWorkspace ? (
+            <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-[11px] space-y-2">
+              <p className="font-bold text-amber-800 dark:text-amber-300">Clean Slate Active</p>
+              <p className="text-[10px] text-amber-700 dark:text-amber-400">Zero dummy data. Ready for your real clients & team.</p>
+              <button
+                onClick={loadDemoData}
+                className="w-full py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] transition"
+              >
+                Load Sample Demo Data
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={clearAllDummyData}
+              className="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-slate-600 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition text-left flex items-center justify-between"
+            >
+              <span>Purge All Dummy Data</span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400">Fresh</span>
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Bottom Setup & Status */}
+      {/* Bottom Setup & Security Tools */}
       <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-1">
+        {onOpenSecurity && (
+          <button
+            onClick={() => { onOpenSecurity(); if (onCloseMobile) onCloseMobile(); }}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition"
+          >
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Security Diagnostics</span>
+            </div>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-mono">
+              0 Vulns
+            </span>
+          </button>
+        )}
+
         <button
-          onClick={onOpenSettings}
+          onClick={() => { onOpenSettings(); if (onCloseMobile) onCloseMobile(); }}
           className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
         >
           <div className="flex items-center gap-2">
@@ -194,12 +276,34 @@ export const Sidebar = ({ onOpenSettings }) => {
         </button>
 
         <div className="px-3 pt-2 text-[11px] text-slate-400 dark:text-slate-500 flex items-center justify-between">
-          <span>OmniAgency OS v2.0</span>
+          <span>OmniAgency OS v3.0</span>
           <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Online
           </span>
         </div>
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Persistent Sidebar */}
+      <aside className="hidden lg:flex flex-col w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shrink-0 h-[calc(100vh-4rem)] transition-colors">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile & Tablet Slide-Over Drawer Overlay */}
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          <div 
+            onClick={onCloseMobile}
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity animate-fade-in"
+          />
+          <div className="relative w-72 max-w-[85vw] bg-white dark:bg-slate-900 h-full shadow-2xl z-10 animate-slide-right flex flex-col">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
   );
 };

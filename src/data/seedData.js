@@ -1311,3 +1311,465 @@ export const INITIAL_CHATS = [
     ]
   }
 ];
+
+
+// ==========================================
+// AUTHENTICATION & MULTI-ROLE USERS SEED
+// ==========================================
+export const INITIAL_USERS = [
+  {
+    id: 'usr-admin',
+    username: 'admin',
+    email: 'admin@brainbinary.com',
+    name: 'Neha Gupta',
+    role: 'management',
+    department: 'Management & Strategy',
+    passwordHash: 'c7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', // 'admin123'
+    salt: 'bbi_agency_salt_v3',
+    memberId: 'tm-1',
+    createdAt: '2026-01-01'
+  },
+  {
+    id: 'usr-editor',
+    username: 'vicky.editor',
+    email: 'vicky.das@brainbinary.com',
+    name: 'Vicky Das',
+    role: 'video-editing',
+    department: 'Video Editing & VFX',
+    passwordHash: 'c7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec',
+    salt: 'bbi_agency_salt_v3',
+    memberId: 'tm-7',
+    createdAt: '2026-01-10'
+  },
+  {
+    id: 'usr-dop',
+    username: 'kabir.shoot',
+    email: 'kabir.khan@brainbinary.com',
+    name: 'Kabir Khan',
+    role: 'shooting-team',
+    department: 'Cinematography & Shoots',
+    passwordHash: 'c7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec',
+    salt: 'bbi_agency_salt_v3',
+    memberId: 'tm-23',
+    createdAt: '2026-01-10'
+  },
+  {
+    id: 'usr-ai',
+    username: 'sneha.ai',
+    email: 'sneha.rao@brainbinary.com',
+    name: 'Sneha Rao',
+    role: 'ai-content',
+    department: 'AI Prompt & Copywriting',
+    passwordHash: 'c7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec',
+    salt: 'bbi_agency_salt_v3',
+    memberId: 'tm-11',
+    createdAt: '2026-01-12'
+  },
+  {
+    id: 'usr-ads',
+    username: 'aryan.ads',
+    email: 'aryan.malhotra@brainbinary.com',
+    name: 'Aryan Malhotra',
+    role: 'meta-ads',
+    department: 'Performance Marketing & Ads',
+    passwordHash: 'c7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec',
+    salt: 'bbi_agency_salt_v3',
+    memberId: 'tm-16',
+    createdAt: '2026-01-15'
+  },
+  {
+    id: 'usr-client1',
+    username: 'ankit.ambika',
+    email: 'theankitvaghasiya@gmail.com',
+    name: 'Ankit Vaghasiya (Ambika Watches)',
+    role: 'client',
+    clientId: 'client-1',
+    passwordHash: 'c7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec',
+    salt: 'bbi_agency_salt_v3',
+    createdAt: '2026-01-15'
+  },
+  {
+    id: 'usr-vendor1',
+    username: 'vfx.prodigy',
+    email: 'contact@vfxprodigy.studio',
+    name: 'VFX Prodigy Studio Lead',
+    role: 'vendor',
+    partnerAgencyId: 'agency-vendor-1',
+    passwordHash: 'c7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec',
+    salt: 'bbi_agency_salt_v3',
+    createdAt: '2026-02-01'
+  }
+];
+
+// ==========================================
+// HRMS: ATTENDANCE SEED DATA
+// ==========================================
+export const INITIAL_ATTENDANCE = [
+  {
+    id: 'att-1',
+    memberId: 'tm-1',
+    memberName: 'Neha Gupta',
+    department: 'Management & Strategy',
+    date: '2026-11-08',
+    checkInTime: '09:45 AM',
+    checkOutTime: '06:30 PM',
+    status: 'Present',
+    workLocation: 'Office',
+    hoursWorked: 8.75,
+    notes: 'Management strategy meeting & client reviews'
+  },
+  {
+    id: 'att-2',
+    memberId: 'tm-7',
+    memberName: 'Vicky Das',
+    department: 'Video Editing & VFX',
+    date: '2026-11-08',
+    checkInTime: '10:05 AM',
+    checkOutTime: '07:15 PM',
+    status: 'Present',
+    workLocation: 'Office',
+    hoursWorked: 9.1,
+    notes: 'Completed 3 Fastrack reel revisions'
+  },
+  {
+    id: 'att-3',
+    memberId: 'tm-8',
+    memberName: 'Pooja Verma',
+    department: 'Video Editing & VFX',
+    date: '2026-11-08',
+    checkInTime: '10:00 AM',
+    checkOutTime: '06:45 PM',
+    status: 'Work From Home',
+    workLocation: 'WFH',
+    hoursWorked: 8.75,
+    notes: 'Editing long-form YouTube documentary podcast'
+  },
+  {
+    id: 'att-4',
+    memberId: 'tm-23',
+    memberName: 'Kabir Khan',
+    department: 'Cinematography & Shoots',
+    date: '2026-11-08',
+    checkInTime: '08:30 AM',
+    checkOutTime: '05:45 PM',
+    status: 'Present',
+    workLocation: 'On-Location Shoot',
+    hoursWorked: 9.25,
+    notes: 'Ambika Watches Showroom B-Roll production'
+  },
+  {
+    id: 'att-5',
+    memberId: 'tm-16',
+    memberName: 'Aryan Malhotra',
+    department: 'Performance Marketing & Ads',
+    date: '2026-11-08',
+    checkInTime: '10:15 AM',
+    checkOutTime: '07:00 PM',
+    status: 'Present',
+    workLocation: 'Office',
+    hoursWorked: 8.75,
+    notes: 'Meta ad sets scaling and creative testing'
+  },
+  {
+    id: 'att-6',
+    memberId: 'tm-11',
+    memberName: 'Sneha Rao',
+    department: 'AI Prompt & Copywriting',
+    date: '2026-11-08',
+    checkInTime: '09:50 AM',
+    checkOutTime: '06:50 PM',
+    status: 'Present',
+    workLocation: 'Office',
+    hoursWorked: 9.0,
+    notes: 'Generated 25 viral hook scripts via Gemini Studio'
+  },
+  {
+    id: 'att-7',
+    memberId: 'tm-14',
+    memberName: 'Rohan Sharma',
+    department: 'Graphic Design & Thumbnails',
+    date: '2026-11-08',
+    checkInTime: '10:45 AM',
+    checkOutTime: '07:30 PM',
+    status: 'Late',
+    workLocation: 'Office',
+    hoursWorked: 8.75,
+    notes: 'Metro transit delay, worked extra evening hour'
+  },
+  {
+    id: 'att-8',
+    memberId: 'tm-18',
+    memberName: 'Sameer Joshi',
+    department: 'Social Media Management',
+    date: '2026-11-08',
+    checkInTime: null,
+    checkOutTime: null,
+    status: 'On Leave',
+    workLocation: 'None',
+    hoursWorked: 0,
+    notes: 'Approved Casual Leave'
+  }
+];
+
+// ==========================================
+// HRMS: PAYROLL & SALARY SEED DATA
+// ==========================================
+export const INITIAL_PAYROLL = [
+  {
+    id: 'pay-1',
+    memberId: 'tm-1',
+    memberName: 'Neha Gupta',
+    designation: 'Executive Director & Founder',
+    department: 'Management & Strategy',
+    month: 'October 2026',
+    baseSalary: 120000,
+    allowances: 25000,
+    bonus: 20000,
+    deductions: 12000,
+    netPay: 153000,
+    paymentStatus: 'Paid',
+    paidOn: '2026-11-01',
+    paymentMode: 'Bank Transfer (IMPS)',
+    transactionRef: 'BBI-PAY-20261101-01',
+    accountNumber: '••••••••8492'
+  },
+  {
+    id: 'pay-2',
+    memberId: 'tm-7',
+    memberName: 'Vicky Das',
+    designation: 'Senior Video Editor',
+    department: 'Video Editing & VFX',
+    month: 'October 2026',
+    baseSalary: 55000,
+    allowances: 10000,
+    bonus: 8000,
+    deductions: 4500,
+    netPay: 68500,
+    paymentStatus: 'Paid',
+    paidOn: '2026-11-01',
+    paymentMode: 'Bank Transfer (NEFT)',
+    transactionRef: 'BBI-PAY-20261101-07',
+    accountNumber: '••••••••3129'
+  },
+  {
+    id: 'pay-3',
+    memberId: 'tm-8',
+    memberName: 'Pooja Verma',
+    designation: 'Motion Graphics Artist',
+    department: 'Video Editing & VFX',
+    month: 'October 2026',
+    baseSalary: 48000,
+    allowances: 8000,
+    bonus: 5000,
+    deductions: 3800,
+    netPay: 57200,
+    paymentStatus: 'Paid',
+    paidOn: '2026-11-01',
+    paymentMode: 'Bank Transfer (NEFT)',
+    transactionRef: 'BBI-PAY-20261101-08',
+    accountNumber: '••••••••7721'
+  },
+  {
+    id: 'pay-4',
+    memberId: 'tm-23',
+    memberName: 'Kabir Khan',
+    designation: 'Director of Photography (DoP)',
+    department: 'Cinematography & Shoots',
+    month: 'October 2026',
+    baseSalary: 65000,
+    allowances: 12000,
+    bonus: 10000,
+    deductions: 5500,
+    netPay: 81500,
+    paymentStatus: 'Paid',
+    paidOn: '2026-11-01',
+    paymentMode: 'Bank Transfer (IMPS)',
+    transactionRef: 'BBI-PAY-20261101-23',
+    accountNumber: '••••••••6501'
+  },
+  {
+    id: 'pay-5',
+    memberId: 'tm-16',
+    memberName: 'Aryan Malhotra',
+    designation: 'Meta Ads & Media Buyer Lead',
+    department: 'Performance Marketing & Ads',
+    month: 'October 2026',
+    baseSalary: 60000,
+    allowances: 10000,
+    bonus: 15000,
+    deductions: 5000,
+    netPay: 80000,
+    paymentStatus: 'Paid',
+    paidOn: '2026-11-01',
+    paymentMode: 'Bank Transfer (IMPS)',
+    transactionRef: 'BBI-PAY-20261101-16',
+    accountNumber: '••••••••9014'
+  },
+  {
+    id: 'pay-6',
+    memberId: 'tm-11',
+    memberName: 'Sneha Rao',
+    designation: 'AI Prompt Engineer & Copy Lead',
+    department: 'AI Prompt & Copywriting',
+    month: 'October 2026',
+    baseSalary: 50000,
+    allowances: 8000,
+    bonus: 6000,
+    deductions: 4000,
+    netPay: 60000,
+    paymentStatus: 'Paid',
+    paidOn: '2026-11-01',
+    paymentMode: 'Bank Transfer (NEFT)',
+    transactionRef: 'BBI-PAY-20261101-11',
+    accountNumber: '••••••••4810'
+  },
+  {
+    id: 'pay-7',
+    memberId: 'tm-14',
+    memberName: 'Rohan Sharma',
+    designation: 'Graphic Designer & Visual Artist',
+    department: 'Graphic Design & Thumbnails',
+    month: 'October 2026',
+    baseSalary: 42000,
+    allowances: 7000,
+    bonus: 4000,
+    deductions: 3200,
+    netPay: 49800,
+    paymentStatus: 'Paid',
+    paidOn: '2026-11-01',
+    paymentMode: 'Bank Transfer (NEFT)',
+    transactionRef: 'BBI-PAY-20261101-14',
+    accountNumber: '••••••••2231'
+  }
+];
+
+// ==========================================
+// HRMS: LEAVE MANAGEMENT SEED DATA
+// ==========================================
+export const INITIAL_LEAVES = [
+  {
+    id: 'lev-1',
+    memberId: 'tm-18',
+    memberName: 'Sameer Joshi',
+    department: 'Social Media Management',
+    leaveType: 'Casual Leave',
+    startDate: '2026-11-08',
+    endDate: '2026-11-08',
+    daysCount: 1,
+    reason: 'Family urgent personal obligation in hometown',
+    status: 'Approved',
+    approvedBy: 'Neha Gupta (Admin)',
+    appliedOn: '2026-11-06'
+  },
+  {
+    id: 'lev-2',
+    memberId: 'tm-9',
+    memberName: 'Deepak Rao',
+    department: 'Video Editing & VFX',
+    leaveType: 'Sick Leave',
+    startDate: '2026-11-12',
+    endDate: '2026-11-13',
+    daysCount: 2,
+    reason: 'Medical dental procedure and recovery period',
+    status: 'Pending',
+    approvedBy: null,
+    appliedOn: '2026-11-07'
+  },
+  {
+    id: 'lev-3',
+    memberId: 'tm-15',
+    memberName: 'Kritika Menon',
+    department: 'Graphic Design & Thumbnails',
+    leaveType: 'Earned Leave',
+    startDate: '2026-11-20',
+    endDate: '2026-11-24',
+    daysCount: 5,
+    reason: 'Annual pre-scheduled family vacation',
+    status: 'Approved',
+    approvedBy: 'Neha Gupta (Admin)',
+    appliedOn: '2026-11-01'
+  }
+];
+
+// ==========================================
+// HRMS: EMPLOYEE DOCUMENTS REPOSITORY
+// ==========================================
+export const INITIAL_HR_DOCUMENTS = [
+  {
+    id: 'doc-1',
+    memberId: 'tm-7',
+    memberName: 'Vicky Das',
+    title: 'Employment Agreement & Non-Disclosure (NDA)',
+    docType: 'Contract',
+    fileName: 'Vicky_Das_Signed_NDA_Agreement_2026.pdf',
+    fileSize: '2.4 MB',
+    uploadedOn: '2026-01-10',
+    status: 'Verified',
+    verifiedBy: 'HR Management'
+  },
+  {
+    id: 'doc-2',
+    memberId: 'tm-7',
+    memberName: 'Vicky Das',
+    title: 'Government National Identity & Address Proof',
+    docType: 'KYC Proof',
+    fileName: 'Vicky_Das_Aadhaar_PAN_KYC.pdf',
+    fileSize: '1.8 MB',
+    uploadedOn: '2026-01-10',
+    status: 'Verified',
+    verifiedBy: 'HR Management'
+  },
+  {
+    id: 'doc-3',
+    memberId: 'tm-23',
+    memberName: 'Kabir Khan',
+    title: 'Official Offer & Compensation Letter',
+    docType: 'Offer Letter',
+    fileName: 'Kabir_Khan_Offer_Letter_Signed.pdf',
+    fileSize: '1.5 MB',
+    uploadedOn: '2026-01-15',
+    status: 'Verified',
+    verifiedBy: 'HR Management'
+  },
+  {
+    id: 'doc-4',
+    memberId: 'tm-16',
+    memberName: 'Aryan Malhotra',
+    title: 'Academic Degree & Professional Meta Certifications',
+    docType: 'Certifications',
+    fileName: 'Aryan_Meta_Certified_Media_Buyer.pdf',
+    fileSize: '3.1 MB',
+    uploadedOn: '2026-01-15',
+    status: 'Verified',
+    verifiedBy: 'HR Management'
+  }
+];
+
+// ==========================================
+// HRMS: AGENCY POLICIES & WORKING HOURS
+// ==========================================
+export const HR_POLICIES = {
+  workingHours: '10:00 AM – 07:00 PM (Monday to Saturday)',
+  halfDayTiming: '10:00 AM – 02:30 PM (or 02:30 PM – 07:00 PM)',
+  gracePeriodMinutes: 15, // Up to 10:15 AM
+  overtimeEligible: true,
+  leaveAllowances: {
+    casual: 12, // per year
+    sick: 8,    // per year
+    earned: 15  // per year
+  },
+  holidays: [
+    { date: '2026-01-26', name: 'Republic Day', day: 'Monday' },
+    { date: '2026-03-04', name: 'Holi Festival', day: 'Wednesday' },
+    { date: '2026-04-14', name: 'Ambedkar Jayanti', day: 'Tuesday' },
+    { date: '2026-05-01', name: 'Maharashtra / Labor Day', day: 'Friday' },
+    { date: '2026-08-15', name: 'Independence Day', day: 'Saturday' },
+    { date: '2026-09-04', name: 'Ganesh Chaturthi', day: 'Friday' },
+    { date: '2026-10-02', name: 'Gandhi Jayanti', day: 'Friday' },
+    { date: '2026-10-20', name: 'Dussehra', day: 'Tuesday' },
+    { date: '2026-11-09', name: 'Diwali Laxmi Pujan', day: 'Monday' },
+    { date: '2026-11-10', name: 'Diwali Balipratipada / New Year', day: 'Tuesday' },
+    { date: '2026-11-12', name: 'Bhai Dooj', day: 'Thursday' },
+    { date: '2026-12-25', name: 'Christmas', day: 'Friday' }
+  ]
+};
