@@ -11,6 +11,8 @@ import { CalendarView } from './components/CalendarView';
 import { ApprovalsCenter } from './components/ApprovalsCenter';
 import { ChatSystem } from './components/ChatSystem';
 import { TeamDirectory } from './components/TeamDirectory';
+import { IntegrationsHub } from './components/IntegrationsHub';
+import { AIStudio } from './components/AIStudio';
 import { BackupSettingsModal } from './components/BackupSettingsModal';
 import { ClientModal, TaskModal, ShootModal, AdModal, TeamMemberModal } from './components/ActionModals';
 
@@ -115,6 +117,8 @@ const MainApp = () => {
             onEditTask={handleEditTask}
           />
         );
+      case 'ai-studio':
+        return <AIStudio />;
       case 'shoots':
         return (
           <ShootingTracker 
@@ -142,6 +146,8 @@ const MainApp = () => {
             onEditMember={handleEditMember}
           />
         );
+      case 'integrations':
+        return <IntegrationsHub />;
       default:
         return (
           <Dashboard 

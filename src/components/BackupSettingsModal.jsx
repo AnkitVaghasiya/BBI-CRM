@@ -8,7 +8,8 @@ import {
   FolderGit2, 
   Cloud, 
   ShieldAlert, 
-  Copy
+  Copy,
+  Check
 } from 'lucide-react';
 
 export const BackupSettingsModal = ({ isOpen, onClose }) => {
@@ -36,13 +37,13 @@ export const BackupSettingsModal = ({ isOpen, onClose }) => {
           const parsed = JSON.parse(event.target.result);
           const result = importBackup(parsed);
           if (result.success) {
-            setImportStatus('डेटा सफलतापूर्वक रीस्टोर हो गया!');
+            setImportStatus('Agency database successfully restored from JSON backup!');
             setTimeout(() => setImportStatus(''), 4000);
           } else {
-            setImportStatus('रीस्टोर नहीं हो सका: ' + result.error);
+            setImportStatus('Restore failed: ' + result.error);
           }
         } catch (err) {
-          setImportStatus('अमान्य JSON फाइल।');
+          setImportStatus('Invalid JSON file format.');
         }
       };
     }
@@ -51,17 +52,17 @@ export const BackupSettingsModal = ({ isOpen, onClose }) => {
   const saveFirebaseSettings = (e) => {
     e.preventDefault();
     setFirebaseConfig(fbForm);
-    alert('Firebase सेटिंग्स सेव हो गई!');
+    alert('Firebase Cloud Firestore configuration saved!');
   };
 
-  const gitCommands = `# 1. GitHub पर बदलाव पुश करने के लिए:
+  const gitCommands = `# 1. Push latest updates to GitHub:
 cd "C:\\Users\\Label Sync\\.gemini\\antigravity\\scratch\\agency-crm"
 git add .
-git commit -m "Update BBI CRM"
+git commit -m "Update BBI CRM with complete English UI & Integrations Hub"
 git push -u origin main
 
-# 2. Vercel पर 1-क्लिक में लाइव करें:
-# https://vercel.com/new पर जाएं, BBI-CRM रिपॉजिटरी चुनें और Deploy दबाएं!`;
+# 2. Deploy to Vercel in 1 click:
+# Visit https://vercel.com/new, import AnkitVaghasiya/BBI-CRM and click Deploy!`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(gitCommands);
@@ -79,8 +80,8 @@ git push -u origin main
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-white">डेटा बैकअप, सेटिंग्स व क्लाउड</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">अपने डेटा का बैकअप लें या GitHub व Firebase से सिंक करें।</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">System Backups, Cloud & Sync</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Download agency JSON snapshots, sync with Firebase, or deploy to Vercel.</p>
             </div>
           </div>
           <button 
@@ -100,7 +101,7 @@ git push -u origin main
             }`}
           >
             <Download className="w-4 h-4" />
-            <span>लोकल बैकअप (Local Backup)</span>
+            <span>Local Database Backup</span>
           </button>
 
           <button
@@ -110,7 +111,7 @@ git push -u origin main
             }`}
           >
             <Cloud className="w-4 h-4" />
-            <span>Firebase क्लाउड सिंक</span>
+            <span>Firebase Cloud Sync</span>
           </button>
 
           <button
@@ -120,7 +121,7 @@ git push -u origin main
             }`}
           >
             <FolderGit2 className="w-4 h-4" />
-            <span>GitHub लिंक व डिप्लॉयमेंट</span>
+            <span>GitHub & Deployment</span>
           </button>
         </div>
 
@@ -132,27 +133,27 @@ git push -u origin main
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 space-y-2">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Download className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <span>1-क्लिक पूरा डेटाबेस बैकअप डाउनलोड करें</span>
+                  <span>1-Click Full Agency Backup Export</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  सभी 200+ क्लाइंट्स, 25 टीम मेंबर्स, टास्क, वीडियो शूट्स और चैट्स की पूरी JSON फाइल डाउनलोड हो जाएगी।
+                  Export complete records of all 200+ clients, 25 team members, deliverables, shoots, and timestamped chats into a JSON archive.
                 </p>
                 <button
                   onClick={exportFullBackup}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-sm"
                 >
                   <Download className="w-4 h-4" />
-                  <span>पूरा बैकअप डाउनलोड करें (.json)</span>
+                  <span>Download Backup (.json)</span>
                 </button>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 space-y-2">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Upload className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>बैकअप फाइल से रीस्टोर करें</span>
+                  <span>Restore from Backup File</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  अपनी पहले डाउनलोड की हुई JSON बैकअप फाइल को यहाँ अपलोड करके पूरा डेटा वापस लाएं।
+                  Select a previously downloaded JSON backup file to instantly restore all agency state.
                 </p>
                 <input
                   type="file"
@@ -168,16 +169,16 @@ git push -u origin main
               <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-500/20 space-y-2">
                 <h4 className="text-xs font-bold text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
                   <ShieldAlert className="w-4 h-4" />
-                  <span>डेटा रीसेट (Factory Reset)</span>
+                  <span>Factory Reset</span>
                 </h4>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  डिफ़ॉल्ट डेमो डेटा पर वापस सेट करें।
+                  Reset local state to default verified agency seed fixtures.
                 </p>
                 <button
                   onClick={resetToFactoryState}
                   className="px-3 py-1 bg-rose-100 hover:bg-rose-200 dark:bg-rose-600/20 dark:hover:bg-rose-600/30 text-rose-700 dark:text-rose-300 text-xs font-semibold rounded-lg border border-rose-300 dark:border-rose-500/30 transition"
                 >
-                  डेटा रीसेट करें
+                  Reset All Agency Data
                 </button>
               </div>
             </div>
@@ -188,7 +189,7 @@ git push -u origin main
             <form onSubmit={saveFirebaseSettings} className="space-y-4 text-xs">
               <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/30 rounded-xl text-amber-800 dark:text-amber-200">
                 <p className="font-bold">Google Firebase Cloud Firestore:</p>
-                <p className="text-[11px] mt-0.5">console.firebase.google.com से अपने प्रोजेक्ट की keys यहाँ डालें।</p>
+                <p className="text-[11px] mt-0.5">Enter your Firebase Web App configuration keys from console.firebase.google.com.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -221,7 +222,7 @@ git push -u origin main
                   className="rounded text-blue-600 cursor-pointer"
                 />
                 <label htmlFor="enableFb" className="text-xs font-bold text-slate-800 dark:text-white cursor-pointer">
-                  Firebase क्लाउड सिंक सक्षम करें (Enable Cloud Sync)
+                  Enable Cloud Firestore Sync
                 </label>
               </div>
 
@@ -229,7 +230,7 @@ git push -u origin main
                 type="submit"
                 className="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl transition"
               >
-                सेटिंग्स सेव करें
+                Save Firebase Config
               </button>
             </form>
           )}
@@ -240,7 +241,7 @@ git push -u origin main
               <div className="p-3 bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-500/30 rounded-xl text-xs text-purple-800 dark:text-purple-200">
                 <p className="font-bold">GitHub Repository Connected:</p>
                 <p className="text-[11px] mt-0.5">
-                  आपकी रिपॉजिटरी: <a href="https://github.com/AnkitVaghasiya/BBI-CRM" target="_blank" rel="noreferrer" className="underline font-bold">https://github.com/AnkitVaghasiya/BBI-CRM</a>
+                  Remote: <a href="https://github.com/AnkitVaghasiya/BBI-CRM" target="_blank" rel="noreferrer" className="underline font-bold">https://github.com/AnkitVaghasiya/BBI-CRM</a>
                 </p>
               </div>
 
@@ -252,8 +253,8 @@ git push -u origin main
                   onClick={copyToClipboard}
                   className="absolute top-3 right-3 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg border border-slate-700 flex items-center gap-1.5 transition"
                 >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>{copiedCmd ? 'कॉपी हो गया!' : 'कमांड कॉपी करें'}</span>
+                  {copiedCmd ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedCmd ? 'Copied!' : 'Copy Script'}</span>
                 </button>
               </div>
             </div>

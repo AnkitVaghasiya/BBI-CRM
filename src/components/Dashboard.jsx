@@ -11,7 +11,9 @@ import {
   ArrowUpRight,
   TrendingUp,
   Plus,
-  HelpCircle
+  HelpCircle,
+  Network,
+  Bot
 } from 'lucide-react';
 
 export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
@@ -24,7 +26,7 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
   const revisionRequests = tasks.filter(t => t.status === 'Revision Requested');
 
   const formatINR = (val) => {
-    return '₹' + (val / 100000).toFixed(2) + ' लाख/माह';
+    return '₹' + (val / 100000).toFixed(2) + ' L/mo';
   };
 
   return (
@@ -33,10 +35,10 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm transition-colors">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-            एजेंसी ऑपरेशन्स डैशबोर्ड (Overview)
+            Agency Operations Command Center
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            कुल <span className="text-blue-600 dark:text-blue-400 font-bold">{totalClients} क्लाइंट्स</span> और <span className="text-emerald-600 dark:text-emerald-400 font-bold">{teamMembers.length} स्टाफ मेंबर्स</span> की सभी गतिविधियों का आसान दृश्य।
+            Real-time tracking for <span className="text-blue-600 dark:text-blue-400 font-bold">{totalClients} Clients</span> and <span className="text-emerald-600 dark:text-emerald-400 font-bold">{teamMembers.length} Staff Members</span> across 5 active departments.
           </p>
         </div>
 
@@ -46,21 +48,21 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
             className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-sm shadow-blue-500/20 transition"
           >
             <Plus className="w-4 h-4" />
-            <span>नया क्लाइंट जोड़ें</span>
+            <span>Onboard Client</span>
           </button>
           <button
             onClick={onNewTask}
             className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 transition"
           >
             <Film className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span>नया वीडियो / रील टास्क</span>
+            <span>New Video Task</span>
           </button>
           <button
             onClick={onNewShoot}
             className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 transition"
           >
             <Camera className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            <span>शूट शेड्यूल करें</span>
+            <span>Schedule Shoot</span>
           </button>
         </div>
       </div>
@@ -73,7 +75,7 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
           className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 cursor-pointer transition shadow-sm group"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">कुल क्लाइंट्स (Clients)</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Clients CRM</span>
             <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition">
               <Users className="w-5 h-5" />
             </div>
@@ -81,16 +83,16 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-2xl font-black text-slate-900 dark:text-white">{totalClients}</span>
             <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-              {activeClients} एक्टिव
+              {activeClients} Active
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">200+ क्लाइंट्स क्षमता</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">200+ accounts ready</p>
         </div>
 
         {/* Retainer MRR */}
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">मासिक रेवेन्यू (Retainer)</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monthly Retainer MRR</span>
             <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
               <TrendingUp className="w-5 h-5" />
             </div>
@@ -98,7 +100,7 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{formatINR(totalRevenue)}</span>
           </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">एक्टिव रिटेनर कॉन्ट्रैक्ट्स</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Active billing contracts</p>
         </div>
 
         {/* Pending Client Approvals */}
@@ -107,16 +109,16 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
           className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 cursor-pointer transition shadow-sm group"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">क्लाइंट अप्रूवल (Approvals)</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Client Approvals</span>
             <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-2xl font-black text-amber-600 dark:text-amber-400">{pendingApprovals.length}</span>
-            <span className="text-xs text-amber-700 dark:text-amber-300 font-semibold">हस्ताक्षर बाकी</span>
+            <span className="text-xs text-amber-700 dark:text-amber-300 font-semibold">Review Pending</span>
           </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{revisionRequests.length} रिविज़न्स माँगे गए</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{revisionRequests.length} Revisions requested</p>
         </div>
 
         {/* Active Production Queue */}
@@ -125,16 +127,16 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
           className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-purple-500/50 cursor-pointer transition shadow-sm group"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">पाइपलाइन में काम (Tasks)</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Tasks</span>
             <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition">
               <Film className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-2xl font-black text-purple-600 dark:text-purple-300">{tasks.length}</span>
-            <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold">{shoots.length} शूट्स शेड्यूल्ड</span>
+            <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold">{shoots.length} Shoots Scheduled</span>
           </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{ads.length} एक्टिव मेटा ऐड्स</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{ads.length} Live Meta ad sets</p>
         </div>
       </div>
 
@@ -146,14 +148,14 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-500" />
               <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                तुरंत ध्यान देने योग्य (Pending Approvals)
+                Action Items & Pending Approvals
               </h2>
             </div>
             <button 
               onClick={() => setActiveTab('approvals')}
               className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold flex items-center gap-1"
             >
-              सभी देखें <ArrowUpRight className="w-3.5 h-3.5" />
+              View All <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
@@ -174,7 +176,7 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      क्लाइंट: <span className="text-slate-800 dark:text-slate-200 font-medium">{task.clientName}</span> • लक्ष्य: {task.scheduledDate} ({task.scheduledTime})
+                      Client: <span className="text-slate-800 dark:text-slate-200 font-medium">{task.clientName}</span> • Target: {task.scheduledDate} ({task.scheduledTime})
                     </p>
                     {task.clientFeedback && (
                       <p className="text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900/70 p-2 rounded-lg border border-slate-200 dark:border-slate-800 italic mt-1">
@@ -188,14 +190,16 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
                     rel="noreferrer"
                     className="shrink-0 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-600/20 dark:hover:bg-blue-600/30 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg border border-blue-200 dark:border-blue-500/30 transition"
                   >
-                    लिंक खोलें ↗
+                    Open Link ↗
                   </a>
                 </div>
               );
             })}
 
             {[...pendingApprovals, ...revisionRequests].length === 0 && (
-              <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-6">सब कुछ क्लियर है! कोई पेंडिंग अप्रूवल नहीं है।</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-6">
+                All caught up! Zero deliverables waiting for sign-off.
+              </p>
             )}
           </div>
         </div>
@@ -206,14 +210,14 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
             <div className="flex items-center gap-2">
               <Camera className="w-4 h-4 text-amber-500" />
               <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                आगामी वीडियो शूट्स (Upcoming Shoots)
+                Upcoming Video Shoots
               </h2>
             </div>
             <button 
               onClick={() => setActiveTab('shoots')}
               className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold flex items-center gap-1"
             >
-              कैलेंडर <ArrowUpRight className="w-3.5 h-3.5" />
+              Full Schedule <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
@@ -227,8 +231,8 @@ export const Dashboard = ({ onNewClient, onNewTask, onNewShoot }) => {
                   </span>
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <p>क्लाइंट: <span className="text-slate-800 dark:text-slate-200 font-medium">{shoot.clientName}</span></p>
-                  <p>📅 <span className="text-amber-700 dark:text-amber-300 font-semibold">{shoot.shootDate}</span> • कॉल: {shoot.callTime} - रैप: {shoot.wrapTime}</p>
+                  <p>Client: <span className="text-slate-800 dark:text-slate-200 font-medium">{shoot.clientName}</span></p>
+                  <p>📅 <span className="text-amber-700 dark:text-amber-300 font-semibold">{shoot.shootDate}</span> • Call: {shoot.callTime} - Wrap: {shoot.wrapTime}</p>
                   <p className="truncate">📍 {shoot.location}</p>
                 </div>
               </div>

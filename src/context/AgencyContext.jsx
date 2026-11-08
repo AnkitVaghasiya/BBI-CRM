@@ -37,7 +37,7 @@ export const AgencyProvider = ({ children }) => {
 
   // Database States with LocalStorage fallback
   const [clients, setClients] = useState(() => {
-    const saved = localStorage.getItem('agency_clients_v1');
+    const saved = localStorage.getItem('agency_clients_v2');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -45,7 +45,7 @@ export const AgencyProvider = ({ children }) => {
   });
 
   const [teamMembers, setTeamMembers] = useState(() => {
-    const saved = localStorage.getItem('agency_team_members_v1');
+    const saved = localStorage.getItem('agency_team_members_v2');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -53,7 +53,7 @@ export const AgencyProvider = ({ children }) => {
   });
 
   const [tasks, setTasks] = useState(() => {
-    const saved = localStorage.getItem('agency_tasks_v1');
+    const saved = localStorage.getItem('agency_tasks_v2');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -61,7 +61,7 @@ export const AgencyProvider = ({ children }) => {
   });
 
   const [shoots, setShoots] = useState(() => {
-    const saved = localStorage.getItem('agency_shoots_v1');
+    const saved = localStorage.getItem('agency_shoots_v2');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -69,7 +69,7 @@ export const AgencyProvider = ({ children }) => {
   });
 
   const [ads, setAds] = useState(() => {
-    const saved = localStorage.getItem('agency_ads_v1');
+    const saved = localStorage.getItem('agency_ads_v2');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -77,7 +77,7 @@ export const AgencyProvider = ({ children }) => {
   });
 
   const [chats, setChats] = useState(() => {
-    const saved = localStorage.getItem('agency_chats_v1');
+    const saved = localStorage.getItem('agency_chats_v2');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
@@ -87,6 +87,64 @@ export const AgencyProvider = ({ children }) => {
   // Active view navigation
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedClientId, setSelectedClientId] = useState('client-1');
+
+  // Integrations Hub state (Meta, AI, WhatsApp, Google, BrightBean, Grafana)
+  const [integrations, setIntegrations] = useState(() => {
+    const saved = localStorage.getItem('agency_integrations');
+    return saved ? JSON.parse(saved) : {
+      meta: {
+        appId: '396533460853002',
+        appSecret: '••••••••••••••••••••••••••••••••',
+        adAccountId: 'act_1606985407825083',
+        accessToken: 'EAAG...[Meta Verified System User Token]',
+        status: 'Connected',
+        lastSync: 'Just now'
+      },
+      ai: {
+        provider: 'gemini',
+        model: 'gemini-2.0-flash',
+        apiKey: 'System Antigravity AI Engine (Active)',
+        status: 'Ready'
+      },
+      whatsapp: {
+        phoneId: '109827364521',
+        businessId: '396533460853002',
+        status: 'Connected',
+        slaMinutes: 3
+      },
+      google: {
+        driveIntake: 'Enabled',
+        youtubeDataApi: 'Connected',
+        status: 'Connected'
+      },
+      brightbean: {
+        endpoint: 'http://127.0.0.1:8000',
+        status: 'Connected'
+      },
+      grafana: {
+        url: 'http://127.0.0.1:3000/d/bbi-weekly-health/brainbinary-7c-weekly-account-health',
+        status: 'Online'
+      }
+    };
+  });
+
+  const saveIntegrations = (newIntegrations) => {
+    setIntegrations(newIntegrations);
+    localStorage.setItem('agency_integrations', JSON.stringify(newIntegrations));
+  };
+
+  const syncMetaAds = () => {
+    setAds(prev => prev.map(ad => {
+      // Simulate live fresh sync from Meta Marketing Graph API
+      const randomExtraLeads = Math.floor(Math.random() * 3);
+      return {
+        ...ad,
+        leadsGenerated: (Number(ad.leadsGenerated) || 0) + randomExtraLeads,
+        status: 'Active',
+        lastSynced: new Date().toLocaleTimeString()
+      };
+    }));
+  };
 
   // Firebase Config State
   const [firebaseConfig, setFirebaseConfig] = useState(() => {
@@ -105,30 +163,30 @@ export const AgencyProvider = ({ children }) => {
   // Sync to LocalStorage
   useEffect(() => {
     try {
-      localStorage.setItem('agency_clients_v1', JSON.stringify(clients));
+      localStorage.setItem('agency_clients_v2', JSON.stringify(clients));
     } catch (e) {
       console.warn('LocalStorage error:', e);
     }
   }, [clients]);
 
   useEffect(() => {
-    localStorage.setItem('agency_team_members_v1', JSON.stringify(teamMembers));
+    localStorage.setItem('agency_team_members_v2', JSON.stringify(teamMembers));
   }, [teamMembers]);
 
   useEffect(() => {
-    localStorage.setItem('agency_tasks_v1', JSON.stringify(tasks));
+    localStorage.setItem('agency_tasks_v2', JSON.stringify(tasks));
   }, [tasks]);
 
   useEffect(() => {
-    localStorage.setItem('agency_shoots_v1', JSON.stringify(shoots));
+    localStorage.setItem('agency_shoots_v2', JSON.stringify(shoots));
   }, [shoots]);
 
   useEffect(() => {
-    localStorage.setItem('agency_ads_v1', JSON.stringify(ads));
+    localStorage.setItem('agency_ads_v2', JSON.stringify(ads));
   }, [ads]);
 
   useEffect(() => {
-    localStorage.setItem('agency_chats_v1', JSON.stringify(chats));
+    localStorage.setItem('agency_chats_v2', JSON.stringify(chats));
   }, [chats]);
 
   useEffect(() => {
@@ -139,7 +197,7 @@ export const AgencyProvider = ({ children }) => {
     localStorage.setItem('agency_firebase_config', JSON.stringify(firebaseConfig));
   }, [firebaseConfig]);
 
-  // Helper format timestamp: "04/11/2026, 08:50 AM"
+  // Helper format timestamp: "08/11/2026, 01:15 PM"
   const getCurrentTimestamp = () => {
     const now = new Date();
     const d = String(now.getDate()).padStart(2, '0');
@@ -189,7 +247,7 @@ export const AgencyProvider = ({ children }) => {
         id: 'tm-11',
         clientId: null
       });
-      setActiveTab('production');
+      setActiveTab('ai-studio');
     } else if (roleType === 'meta-ads') {
       setCurrentUser({
         role: 'meta-ads',
@@ -201,39 +259,14 @@ export const AgencyProvider = ({ children }) => {
     } else {
       setCurrentUser({
         role: 'management',
-        name: 'Neha Gupta (Admin / Director)',
+        name: 'Neha Gupta (Admin)',
         id: 'tm-1',
         clientId: null
       });
-      setActiveTab('dashboard');
     }
   };
 
-  // 1. Team Member CRUD
-  const saveTeamMember = (memberData) => {
-    setTeamMembers(prev => {
-      const index = prev.findIndex(m => m.id === memberData.id);
-      if (index >= 0) {
-        const updated = [...prev];
-        updated[index] = { ...updated[index], ...memberData };
-        return updated;
-      } else {
-        const newMember = {
-          ...memberData,
-          id: memberData.id || `tm-${Date.now()}`,
-          activeTasks: 0,
-          avatar: memberData.avatar || '👤'
-        };
-        return [...prev, newMember];
-      }
-    });
-  };
-
-  const deleteTeamMember = (memberId) => {
-    setTeamMembers(prev => prev.filter(m => m.id !== memberId));
-  };
-
-  // 2. Client CRUD
+  // 1. Client CRUD
   const saveClient = (clientData) => {
     setClients(prev => {
       const index = prev.findIndex(c => c.id === clientData.id);
@@ -259,11 +292,34 @@ export const AgencyProvider = ({ children }) => {
     setAds(prev => prev.filter(a => a.clientId !== clientId));
   };
 
-  // 3. Task / Deliverable CRUD
+  // 2. Team Member CRUD
+  const saveTeamMember = (memberData) => {
+    setTeamMembers(prev => {
+      const index = prev.findIndex(m => m.id === memberData.id);
+      if (index >= 0) {
+        const updated = [...prev];
+        updated[index] = { ...updated[index], ...memberData };
+        return updated;
+      } else {
+        const newMember = {
+          ...memberData,
+          id: memberData.id || `tm-${Date.now()}`,
+          activeTasks: 0
+        };
+        return [...prev, newMember];
+      }
+    });
+  };
+
+  const deleteTeamMember = (memberId) => {
+    setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+  };
+
+  // 3. Task CRUD & Approvals
   const saveTask = (taskData) => {
+    const timestamp = getCurrentTimestamp();
     setTasks(prev => {
       const index = prev.findIndex(t => t.id === taskData.id);
-      const timestamp = getCurrentTimestamp();
       if (index >= 0) {
         const updated = [...prev];
         updated[index] = { ...updated[index], ...taskData, lastUpdated: timestamp };
@@ -272,9 +328,10 @@ export const AgencyProvider = ({ children }) => {
         const newTask = {
           ...taskData,
           id: taskData.id || `task-${Date.now()}`,
+          status: taskData.status || 'Raw Data',
           version: taskData.version || 'v1',
           revisionsCount: 0,
-          status: taskData.status || 'Raw Data Ingest',
+          clientFeedback: '',
           lastUpdated: timestamp
         };
         return [newTask, ...prev];
@@ -286,52 +343,39 @@ export const AgencyProvider = ({ children }) => {
     setTasks(prev => prev.filter(t => t.id !== taskId));
   };
 
-  // Client Approval Workflow: Approve
-  const approveTask = (taskId, comment = 'Approved without revisions.') => {
+  const approveTask = (taskId) => {
     const timestamp = getCurrentTimestamp();
     setTasks(prev => prev.map(t => {
       if (t.id === taskId) {
         return {
           ...t,
           status: 'Approved',
-          clientFeedback: comment,
-          lastUpdated: timestamp
+          lastUpdated: timestamp,
+          clientFeedback: 'Approved by Client via Client Portal.'
         };
       }
       return t;
     }));
-
-    const task = tasks.find(t => t.id === taskId);
-    if (task) {
-      sendMessage(task.clientId, `✅ [DELIVERABLE APPROVED] "${task.title}" has been approved! Note: ${comment}`);
-    }
   };
 
-  // Client Approval Workflow: Request Revision
   const requestRevision = (taskId, feedbackText) => {
     const timestamp = getCurrentTimestamp();
     setTasks(prev => prev.map(t => {
       if (t.id === taskId) {
-        const nextRev = (t.revisionsCount || 0) + 1;
         return {
           ...t,
           status: 'Revision Requested',
-          version: `v${nextRev + 1} Needed`,
-          revisionsCount: nextRev,
+          revisionsCount: (t.revisionsCount || 0) + 1,
+          version: `v${(t.revisionsCount || 0) + 2}`,
           clientFeedback: feedbackText,
           lastUpdated: timestamp
         };
       }
       return t;
     }));
-
-    const task = tasks.find(t => t.id === taskId);
-    if (task) {
-      sendMessage(task.clientId, `⚠️ [REVISION REQUESTED] for "${task.title}": "${feedbackText}"`);
-    }
   };
 
-  // 4. Video Shoot CRUD
+  // 4. Shoot CRUD
   const saveShoot = (shootData) => {
     setShoots(prev => {
       const index = prev.findIndex(s => s.id === shootData.id);
@@ -366,7 +410,7 @@ export const AgencyProvider = ({ children }) => {
         const newAd = {
           ...adData,
           id: adData.id || `ad-${Date.now()}`,
-          status: adData.status || 'In Planning'
+          status: adData.status || 'Active'
         };
         return [newAd, ...prev];
       }
@@ -409,13 +453,14 @@ export const AgencyProvider = ({ children }) => {
   const exportFullBackup = () => {
     const fullData = {
       backupDate: new Date().toISOString(),
-      version: '1.2',
+      version: '2.0-English',
       clients,
       tasks,
       shoots,
       ads,
       chats,
-      teamMembers
+      teamMembers,
+      integrations
     };
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(fullData, null, 2))}`;
     const downloadAnchor = document.createElement('a');
@@ -435,6 +480,7 @@ export const AgencyProvider = ({ children }) => {
       if (jsonData.shoots) setShoots(jsonData.shoots);
       if (jsonData.ads) setAds(jsonData.ads);
       if (jsonData.chats) setChats(jsonData.chats);
+      if (jsonData.integrations) setIntegrations(jsonData.integrations);
       return { success: true };
     } catch (e) {
       return { success: false, error: e.message };
@@ -443,7 +489,7 @@ export const AgencyProvider = ({ children }) => {
 
   // Reset to initial clean state
   const resetToFactoryState = () => {
-    if (window.confirm('क्या आप सच में सभी डेटा को रीसेट करना चाहते हैं? (Reset to demo data)')) {
+    if (window.confirm('Are you sure you want to reset all agency CRM data to initial defaults?')) {
       localStorage.clear();
       setClients(generateClients());
       setTeamMembers(TEAM_MEMBERS);
@@ -486,6 +532,9 @@ export const AgencyProvider = ({ children }) => {
         setActiveTab,
         selectedClientId,
         setSelectedClientId,
+        integrations,
+        saveIntegrations,
+        syncMetaAds,
         exportFullBackup,
         importBackup,
         resetToFactoryState,

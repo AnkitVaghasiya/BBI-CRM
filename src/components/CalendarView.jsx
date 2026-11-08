@@ -18,9 +18,11 @@ export const CalendarView = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">पोस्टिंग कैलेंडर (Schedule Hub)</h1>
+        <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+          Social Media Publishing Calendar
+        </h1>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-          तारीख और टाइम स्लॉट्स के अनुसार सभी रील्स, कैरोसेल व पोस्ट्स की लिस्ट।
+          Chronological schedule of approved video reels, photo carousels, and Meta sponsored drops.
         </p>
       </div>
 
@@ -31,11 +33,11 @@ export const CalendarView = () => {
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm">
-                  पब्लिश तारीख: <span className="text-purple-600 dark:text-purple-300">{date}</span>
+                  Publishing Date: <span className="text-purple-600 dark:text-purple-300">{date}</span>
                 </h3>
               </div>
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
-                {groupedByDate[date].length} पोस्ट्स शेड्यूल्ड
+                {groupedByDate[date].length} Posts Scheduled
               </span>
             </div>
 
@@ -66,7 +68,7 @@ export const CalendarView = () => {
                         rel="noreferrer"
                         className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold"
                       >
-                        <span>वीडियो देखें</span>
+                        <span>View Deliverable</span>
                         <ExternalLink className="w-3 h-3" />
                       </a>
                     )}
@@ -79,7 +81,7 @@ export const CalendarView = () => {
 
         {dates.length === 0 && (
           <div className="text-center py-12 text-slate-400 text-xs">
-            आगामी तारीखों के लिए कोई पोस्ट शेड्यूल नहीं है। प्रोडक्शन ट्रैकर से तारीख असाइन करें।
+            No posts scheduled for upcoming dates yet. Assign publishing dates from the Master Production Tracker.
           </div>
         )}
       </div>

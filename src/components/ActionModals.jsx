@@ -42,13 +42,13 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return alert('कृपया नाम दर्ज करें');
+    if (!form.name.trim()) return alert('Please enter a name');
     saveTeamMember(form);
     onClose();
   };
 
   const handleDelete = () => {
-    if (window.confirm(`क्या आप ${form.name} को हटाना चाहते हैं?`)) {
+    if (window.confirm(`Are you sure you want to delete ${form.name} ?`)) {
       deleteTeamMember(form.id);
       onClose();
     }
@@ -60,9 +60,9 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/70">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{memberToEdit ? '✏️ टीम मेंबर एडिट करें' : '➕ नया टीम मेंबर जोड़ें'}</span>
+              <span>{memberToEdit ? '✏️ Edit Team Member' : '➕ Add New Team Member'}</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">नाम, पद, डिपार्टमेंट व संपर्क विवरण बदलें।</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Update name, designation, department, and contact info.</p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             <X className="w-5 h-5" />
@@ -72,18 +72,18 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
         <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
           <div className="grid grid-cols-4 gap-3">
             <div className="col-span-3">
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">पूरा नाम (Full Name) *</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Full Name (Full Name) *</label>
               <input
                 type="text"
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="उदा. राहुल शर्मा"
+                placeholder="e.g. Rahul Sharma"
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">अवतार</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Avatar</label>
               <input
                 type="text"
                 value={form.avatar}
@@ -95,7 +95,7 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">डिपार्टमेंट (Department)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Department (Department)</label>
               <select
                 value={form.department}
                 onChange={(e) => {
@@ -104,22 +104,22 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
                 }}
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
               >
-                <option value="Management">Management (प्रबंधन)</option>
-                <option value="Video Editing">Video Editing (वीडियो एडिटिंग)</option>
-                <option value="AI Content">AI Content (एआई व प्रॉम्प्ट्स)</option>
-                <option value="Meta Ads & SMM">Meta Ads & SMM (मेटा ऐड्स)</option>
-                <option value="Shooting Team">Shooting Team (कैमरा क्रू)</option>
+                <option value="Management">Management (Management)</option>
+                <option value="Video Editing">Video Editing (Video Editing)</option>
+                <option value="AI Content">AI Content (AI & Creative)</option>
+                <option value="Meta Ads & SMM">Meta Ads & SMM (Meta Ads & SMM)</option>
+                <option value="Shooting Team">Shooting Team (Camera Crew)</option>
               </select>
             </div>
 
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">पद / रोल (Role)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Role / Designation (Role)</label>
               <input
                 type="text"
                 required
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                placeholder="उदा. Lead Editor"
+                placeholder="e.g. Lead Editor"
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -127,7 +127,7 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">ईमेल (Email Address)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Email (Email Address)</label>
               <input
                 type="email"
                 value={form.email}
@@ -138,7 +138,7 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
             </div>
 
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">फ़ोन (Phone Number)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Phone (Phone Number)</label>
               <input
                 type="text"
                 value={form.phone}
@@ -158,7 +158,7 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
                 className="px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-600/10 dark:hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 rounded-xl font-medium flex items-center gap-1.5 transition"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>हटाएं (Delete)</span>
+                <span>Delete (Delete)</span>
               </button>
             ) : <div />}
 
@@ -168,13 +168,13 @@ export const TeamMemberModal = ({ isOpen, onClose, memberToEdit }) => {
                 onClick={onClose}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition"
               >
-                रद्द करें
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-sm transition"
               >
-                {memberToEdit ? 'सेव करें (Save)' : 'जोड़ें (Add)'}
+                {memberToEdit ? 'Save (Save)' : 'Add (Add)'}
               </button>
             </div>
           </div>
@@ -248,13 +248,13 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return alert('कृपया नाम दर्ज करें');
+    if (!form.name.trim()) return alert('Please enter a name');
     saveClient(form);
     onClose();
   };
 
   const handleDelete = () => {
-    if (window.confirm(`क्या आप सच में क्लाइंट "${form.name}" को हटाना चाहते हैं?`)) {
+    if (window.confirm(`Are you sure you want to delete client "${form.name}" ?`)) {
       deleteClient(form.id);
       onClose();
     }
@@ -266,9 +266,9 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/70">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{clientToEdit ? '✏️ क्लाइंट प्रोफाइल एडिट करें' : '➕ नया क्लाइंट ऑनबोर्ड करें'}</span>
+              <span>{clientToEdit ? '✏️ Edit Client Profile' : '➕ Onboard New Client'}</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">सर्विस, असाइन्ड टीम और रिटेनर फीस मैनेज करें।</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Configure client profile, enrolled services, and team leads.</p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             <X className="w-5 h-5" />
@@ -279,18 +279,18 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
           {/* Basic Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">कंपनी / ब्रांड नाम *</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Company / Brand Name *</label>
               <input
                 type="text"
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="उदा. IronCore Gym"
+                placeholder="e.g. IronCore Gym"
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">हैंडल / टैग</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Brand Handle / Tag</label>
               <input
                 type="text"
                 value={form.brand}
@@ -303,17 +303,17 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">संपर्क व्यक्ति</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Contact Person</label>
               <input
                 type="text"
                 value={form.contactPerson}
                 onChange={(e) => setForm({ ...form, contactPerson: e.target.value })}
-                placeholder="उदा. डॉ. विवेक"
+                placeholder="e.g. Dr. Vivek Desai"
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">ईमेल</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Email</label>
               <input
                 type="email"
                 value={form.email}
@@ -323,7 +323,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">फ़ोन नंबर</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Phone Number</label>
               <input
                 type="text"
                 value={form.phone}
@@ -336,7 +336,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">इंडस्ट्री</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Industry Category</label>
               <input
                 type="text"
                 value={form.industry}
@@ -346,7 +346,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">मासिक फीस (₹)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Monthly Retainer (₹)</label>
               <input
                 type="number"
                 value={form.monthlyRetainer}
@@ -355,13 +355,13 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">स्टेटस</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Status</label>
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
               >
-                <option value="Active">Active (सक्रिय)</option>
+                <option value="Active">Active (Active)</option>
                 <option value="Onboarding">Onboarding</option>
                 <option value="Paused">Paused</option>
               </select>
@@ -371,7 +371,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
           {/* Enrolled Services */}
           <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
             <label className="text-slate-800 dark:text-slate-300 font-bold block">
-              ली हुई सर्विसेज़ (Subscribed Services):
+              Enrolled Services (Subscribed Services):
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {serviceCategories.map(s => {
@@ -398,11 +398,11 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
           {/* Assigned Specialists */}
           <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
             <label className="text-slate-800 dark:text-slate-300 font-bold block">
-              असाइन्ड स्पेशलिस्ट्स (Assignees):
+              Assigned Department Specialists (Assignees):
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-slate-500 dark:text-slate-400 text-[11px] block mb-1">वीडियो एडिटर:</label>
+                <label className="text-slate-500 dark:text-slate-400 text-[11px] block mb-1">Video Editor:</label>
                 <select
                   value={form.assignees?.videoEditing}
                   onChange={(e) => setForm({ ...form, assignees: { ...form.assignees, videoEditing: e.target.value } })}
@@ -415,7 +415,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
               </div>
 
               <div>
-                <label className="text-slate-500 dark:text-slate-400 text-[11px] block mb-1">शूटिंग लीड:</label>
+                <label className="text-slate-500 dark:text-slate-400 text-[11px] block mb-1">Shooting Lead:</label>
                 <select
                   value={form.assignees?.shooting}
                   onChange={(e) => setForm({ ...form, assignees: { ...form.assignees, shooting: e.target.value } })}
@@ -432,7 +432,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
           {/* Raw Media Drive */}
           <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
             <label className="text-slate-800 dark:text-slate-300 font-bold block mb-1">
-              रॉ डेटा क्लाउड ड्राइव लिंक (Google Drive):
+              Raw Media Cloud Storage Link (Google Drive):
             </label>
             <input
               type="url"
@@ -452,7 +452,7 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
                 className="px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-600/10 dark:hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 rounded-xl font-medium flex items-center gap-1.5 transition"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>हटाएं</span>
+                <span>Delete</span>
               </button>
             ) : <div />}
 
@@ -462,13 +462,13 @@ export const ClientModal = ({ isOpen, onClose, clientToEdit }) => {
                 onClick={onClose}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition"
               >
-                रद्द करें
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-sm transition"
               >
-                {clientToEdit ? 'सेव करें (Save)' : 'ऑनबोर्ड करें (Add)'}
+                {clientToEdit ? 'Save (Save)' : 'Onboard (Add)'}
               </button>
             </div>
           </div>
@@ -524,7 +524,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.title.trim()) return alert('कृपया टाइटल दर्ज करें');
+    if (!form.title.trim()) return alert('Please enter a title');
     const selectedClient = clients.find(c => c.id === form.clientId);
     saveTask({
       ...form,
@@ -534,7 +534,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
   };
 
   const handleDelete = () => {
-    if (window.confirm(`क्या आप "${form.title}" को हटाना चाहते हैं?`)) {
+    if (window.confirm(`Are you sure you want to delete "${form.title}" ?`)) {
       deleteTask(form.id);
       onClose();
     }
@@ -546,9 +546,9 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/70">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{taskToEdit ? '✏️ टास्क / रील एडिट करें' : '➕ नया टास्क जोड़ें'}</span>
+              <span>{taskToEdit ? '✏️ Edit Deliverable Task' : '➕ Add New Deliverable Task'}</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">तारीख, टाइम स्लॉट, स्टेटस और रिव्यू लिंक बदलें।</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Date, Time Slot, Status and Review URL update.</p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             <X className="w-5 h-5" />
@@ -557,20 +557,20 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[80vh] overflow-y-auto text-xs">
           <div>
-            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">टास्क टाइटल *</label>
+            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Task Title *</label>
             <input
               type="text"
               required
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="उदा. 30s वायरल हुक रील #15"
+              placeholder="e.g. 30s Viral Hook Reel #15"
               className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">क्लाइंट चुनें</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Select Client</label>
               <select
                 value={form.clientId}
                 onChange={(e) => {
@@ -587,7 +587,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
             </div>
 
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">सर्विस प्रकार</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Service Category</label>
               <select
                 value={form.service}
                 onChange={(e) => setForm({ ...form, service: e.target.value })}
@@ -602,7 +602,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">तारीख (Date)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Date (Date)</label>
               <input
                 type="date"
                 value={form.scheduledDate}
@@ -611,7 +611,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">समय स्लॉट (Time Slot)</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Time Slot (Time Slot)</label>
               <input
                 type="time"
                 value={form.scheduledTime}
@@ -623,7 +623,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">असाइन सदस्य</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Assign Staff Member</label>
               <select
                 value={form.assignedTo}
                 onChange={(e) => setForm({ ...form, assignedTo: e.target.value })}
@@ -636,7 +636,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
             </div>
 
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">स्टेटस</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Status</label>
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
@@ -655,7 +655,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
           </div>
 
           <div>
-            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">रॉ फुटेज लिंक</label>
+            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Raw Footage Cloud Link</label>
             <input
               type="url"
               value={form.rawMediaUrl}
@@ -666,7 +666,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
           </div>
 
           <div>
-            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">रिव्यू आउटपुट लिंक (Vimeo/Drive)</label>
+            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Review Output Video Link (Vimeo/Drive)</label>
             <input
               type="url"
               value={form.outputUrl}
@@ -685,7 +685,7 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
                 className="px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-600/10 dark:hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 rounded-xl font-medium flex items-center gap-1.5 transition"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>टास्क हटाएं</span>
+                <span>Delete Task</span>
               </button>
             ) : <div />}
 
@@ -695,13 +695,13 @@ export const TaskModal = ({ isOpen, onClose, taskToEdit }) => {
                 onClick={onClose}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition"
               >
-                रद्द करें
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-sm transition"
               >
-                {taskToEdit ? 'सेव करें (Save)' : 'टास्क जोड़ें (Add)'}
+                {taskToEdit ? 'Save (Save)' : 'Task Add (Add)'}
               </button>
             </div>
           </div>
@@ -751,7 +751,7 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.title.trim()) return alert('कृपया टाइटल दर्ज करें');
+    if (!form.title.trim()) return alert('Please enter a title');
     const cl = clients.find(c => c.id === form.clientId);
     saveShoot({
       ...form,
@@ -761,7 +761,7 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
   };
 
   const handleDelete = () => {
-    if (window.confirm(`क्या आप "${form.title}" को हटाना चाहते हैं?`)) {
+    if (window.confirm(`Are you sure you want to delete "${form.title}" ?`)) {
       deleteShoot(form.id);
       onClose();
     }
@@ -773,9 +773,9 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/70">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{shootToEdit ? '✏️ वीडियो शूट एडिट करें' : '➕ नया शूट शेड्यूल करें'}</span>
+              <span>{shootToEdit ? '✏️ Edit Video Shoot Schedule' : '➕ Schedule New Video Shoot'}</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">तारीख, लोकेशन व कैमरा क्रू मैनेज करें।</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Date, Location and Camera Crew manage.</p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             <X className="w-5 h-5" />
@@ -784,20 +784,20 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[80vh] overflow-y-auto text-xs">
           <div>
-            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">शूट का नाम *</label>
+            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Shoot Title *</label>
             <input
               type="text"
               required
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="उदा. ब्रांड एंथम शूट"
+              placeholder="e.g. Festive Lifestyle Wrist & Macro Shoot"
               className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">क्लाइंट</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Client</label>
               <select
                 value={form.clientId}
                 onChange={(e) => setForm({ ...form, clientId: e.target.value })}
@@ -810,7 +810,7 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
             </div>
 
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">स्टेटस</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Status</label>
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
@@ -827,7 +827,7 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">तारीख</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Date</label>
               <input
                 type="date"
                 value={form.shootDate}
@@ -836,7 +836,7 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">कॉल टाइम</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Call Time</label>
               <input
                 type="text"
                 value={form.callTime}
@@ -846,7 +846,7 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
               />
             </div>
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">रैप टाइम</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Wrap Time</label>
               <input
                 type="text"
                 value={form.wrapTime}
@@ -858,12 +858,12 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
           </div>
 
           <div>
-            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">लोकेशन का पता</label>
+            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Location Address</label>
             <input
               type="text"
               value={form.location}
               onChange={(e) => setForm({ ...form, location: e.target.value })}
-              placeholder="उदा. स्टूडियो 9, मुंबई"
+              placeholder="e.g. Diamond City Mall Showroom / Studio A 9, Surat / Mumbai"
               className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none"
             />
           </div>
@@ -877,7 +877,7 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
                 className="px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-600/10 dark:hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 rounded-xl font-medium flex items-center gap-1.5 transition"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>हटाएं</span>
+                <span>Delete</span>
               </button>
             ) : <div />}
 
@@ -887,13 +887,13 @@ export const ShootModal = ({ isOpen, onClose, shootToEdit }) => {
                 onClick={onClose}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition"
               >
-                रद्द करें
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl shadow-sm transition"
               >
-                {shootToEdit ? 'सेव करें (Save)' : 'शेड्यूल करें (Confirm)'}
+                {shootToEdit ? 'Save (Save)' : 'Schedule (Confirm)'}
               </button>
             </div>
           </div>
@@ -943,7 +943,7 @@ export const AdModal = ({ isOpen, onClose, adToEdit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.campaignName.trim()) return alert('कृपया नाम दर्ज करें');
+    if (!form.campaignName.trim()) return alert('Please enter a name');
     const cl = clients.find(c => c.id === form.clientId);
     saveAd({
       ...form,
@@ -953,7 +953,7 @@ export const AdModal = ({ isOpen, onClose, adToEdit }) => {
   };
 
   const handleDelete = () => {
-    if (window.confirm(`क्या आप "${form.campaignName}" को हटाना चाहते हैं?`)) {
+    if (window.confirm(`Are you sure you want to delete "${form.campaignName}" ?`)) {
       deleteAd(form.id);
       onClose();
     }
@@ -965,9 +965,9 @@ export const AdModal = ({ isOpen, onClose, adToEdit }) => {
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/70">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{adToEdit ? '✏️ ऐड कैंपेन एडिट करें' : '➕ नया ऐड कैंपेन जोड़ें'}</span>
+              <span>{adToEdit ? '✏️ Edit Meta Ad Campaign' : '➕ Create New Meta Ad Campaign'}</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">बजट, लीड्स और क्रिएटिव लिंक बदलें।</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Update budget, leads count, creative links, and media buyer.</p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             <X className="w-5 h-5" />
@@ -976,20 +976,20 @@ export const AdModal = ({ isOpen, onClose, adToEdit }) => {
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[80vh] overflow-y-auto text-xs">
           <div>
-            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">कैंपेन का नाम *</label>
+            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Campaign Name *</label>
             <input
               type="text"
               required
               value={form.campaignName}
               onChange={(e) => setForm({ ...form, campaignName: e.target.value })}
-              placeholder="उदा. फेस्टिव ऑफर लीड फनल"
+              placeholder="e.g. Diwali Festive Watch Lead Gen Campaign"
               className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">क्लाइंट</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Client</label>
               <select
                 value={form.clientId}
                 onChange={(e) => setForm({ ...form, clientId: e.target.value })}
@@ -1002,7 +1002,7 @@ export const AdModal = ({ isOpen, onClose, adToEdit }) => {
             </div>
 
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">डेली बजट</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Daily Budget</label>
               <input
                 type="text"
                 value={form.dailyBudget}
@@ -1015,7 +1015,7 @@ export const AdModal = ({ isOpen, onClose, adToEdit }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">लीड्स</label>
+              <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Leads Generated</label>
               <input
                 type="number"
                 value={form.leadsGenerated}
@@ -1046,7 +1046,7 @@ export const AdModal = ({ isOpen, onClose, adToEdit }) => {
           </div>
 
           <div>
-            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">क्रिएटिव लिंक (Google Drive)</label>
+            <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Creative Asset Link (Google Drive)</label>
             <input
               type="url"
               value={form.adCreativesUrl}
@@ -1065,7 +1065,7 @@ export const AdModal = ({ isOpen, onClose, adToEdit }) => {
                 className="px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-600/10 dark:hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 rounded-xl font-medium flex items-center gap-1.5 transition"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>हटाएं</span>
+                <span>Delete</span>
               </button>
             ) : <div />}
 
@@ -1075,13 +1075,13 @@ export const AdModal = ({ isOpen, onClose, adToEdit }) => {
                 onClick={onClose}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition"
               >
-                रद्द करें
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-sm transition"
               >
-                {adToEdit ? 'सेव करें (Save)' : 'लॉन्च करें (Launch)'}
+                {adToEdit ? 'Save (Save)' : 'Launch (Launch)'}
               </button>
             </div>
           </div>

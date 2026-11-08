@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAgency } from '../context/AgencyContext';
 import { 
   Camera, 
@@ -6,12 +6,9 @@ import {
   MapPin, 
   Clock, 
   Calendar, 
-  Users, 
-  CheckCircle2, 
   FileText, 
-  ExternalLink,
-  Edit2,
-  Trash2
+  Edit2, 
+  Trash2 
 } from 'lucide-react';
 
 export const ShootingTracker = ({ onNewShoot, onEditShoot }) => {
@@ -30,13 +27,15 @@ export const ShootingTracker = ({ onNewShoot, onEditShoot }) => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">शूटिंग शेड्यूल (Video Shoots)</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+              Field Production & Video Shooting Schedule
+            </h1>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
-              {shoots.length} शेड्यूल्ड शूट्स
+              {shoots.length} Scheduled Shoots
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            शूट की तारीख, लोकेशन, कॉल टाइम और कैमरा क्रू का सरल प्रबंधन।
+            Shoot dates, call times, wrap times, crew rosters, locations, and equipment checklists.
           </p>
         </div>
 
@@ -45,7 +44,7 @@ export const ShootingTracker = ({ onNewShoot, onEditShoot }) => {
           className="flex items-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-xl shadow-sm shadow-amber-500/20 transition shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>नया शूट जोड़ें (Schedule Shoot)</span>
+          <span>Schedule New Shoot</span>
         </button>
       </div>
 
@@ -84,14 +83,14 @@ export const ShootingTracker = ({ onNewShoot, onEditShoot }) => {
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
                     <Calendar className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                    <span>शूट तारीख</span>
+                    <span>Shoot Date</span>
                   </div>
                   <p className="font-bold text-slate-900 dark:text-white">{shoot.shootDate}</p>
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
                     <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                    <span>समय (Schedule)</span>
+                    <span>Call to Wrap Time</span>
                   </div>
                   <p className="font-bold text-slate-900 dark:text-white">{shoot.callTime} - {shoot.wrapTime}</p>
                 </div>
@@ -100,12 +99,12 @@ export const ShootingTracker = ({ onNewShoot, onEditShoot }) => {
               {/* Location */}
               <div className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
                 <MapPin className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-                <span>{shoot.location || 'लोकेशन तय नहीं'}</span>
+                <span>{shoot.location || 'Location TBD'}</span>
               </div>
 
               {/* Assigned Crew */}
               <div className="space-y-1.5">
-                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">असाइन्ड क्रू</p>
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Production Crew</p>
                 <div className="flex flex-wrap gap-1.5">
                   {shoot.crew && shoot.crew.map(crewId => {
                     const member = teamMembers.find(t => t.id === crewId);
@@ -125,7 +124,7 @@ export const ShootingTracker = ({ onNewShoot, onEditShoot }) => {
               {/* Equipment Checklist */}
               {shoot.equipmentList && shoot.equipmentList.length > 0 && (
                 <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">इक्विपमेंट</p>
+                  <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Gear Checklist</p>
                   <div className="flex flex-wrap gap-1">
                     {shoot.equipmentList.map((eq, i) => (
                       <span key={i} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950 text-[10px] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
@@ -144,16 +143,16 @@ export const ShootingTracker = ({ onNewShoot, onEditShoot }) => {
                     className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition"
                   >
                     <Edit2 className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                    <span>एडिट</span>
+                    <span>Edit</span>
                   </button>
 
                   <button
                     onClick={() => {
-                      if (window.confirm(`क्या आप "${shoot.title}" को हटाना चाहते हैं?`)) {
+                      if (window.confirm(`Delete scheduled shoot "${shoot.title}"?`)) {
                         deleteShoot(shoot.id);
                       }
                     }}
-                    title="हटाएं"
+                    title="Delete Shoot"
                     className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -167,7 +166,7 @@ export const ShootingTracker = ({ onNewShoot, onEditShoot }) => {
                   className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 hover:underline font-bold"
                 >
                   <FileText className="w-3.5 h-3.5" />
-                  <span>शॉटलिस्ट लिंक ↗</span>
+                  <span>Shotlist Brief ↗</span>
                 </a>
               </div>
             </div>
